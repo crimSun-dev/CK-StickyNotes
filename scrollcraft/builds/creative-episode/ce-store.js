@@ -10,6 +10,8 @@
  * Every write is one delta (create, update, remove, restore, add, erase, clear), never a whole collection.
  * Note updates name the revision they read; a stale one fails with 409 and err.note holds the saved note.
  * CE.live (the 'api' backend only) is the /v1/live socket: letters and ink as they happen. It is null otherwise.
+ * CE.rooms is the headquarters corridor: who you are on the hub, Black Box meetings, CK Hall rentals and
+ * today's arrivals, on the same three backends. It rides CE.live's socket or Pages' poller; it opens neither.
  */
 (function () {
   'use strict';
@@ -81,6 +83,16 @@
   }
   function readJSON(key) {
     try { return JSON.parse(localStorage.getItem(key)); } catch (e) { return null; }
+  }
+
+  /* The hub person this device signed in as, for the backends that pass it as `me` (Pages, local).
+     The office server keeps it in an HttpOnly cookie instead, where page script cannot read it. */
+  var HUB_PERSON_KEY = 'creative-episode.hub-person.v1';
+  function savedPerson() {
+    try { return localStorage.getItem(HUB_PERSON_KEY) || null; } catch (e) { return null; }
+  }
+  function savePerson(id) {
+    try { if (id) localStorage.setItem(HUB_PERSON_KEY, id); else localStorage.removeItem(HUB_PERSON_KEY); } catch (e) { /* this tab only */ }
   }
 
   /* ------------------------------------------------------------ notes -- */
@@ -281,8 +293,9 @@
           jwt = null;
           return rpc(fn, args, attempt + 1);
         }
-        if (res.status === 403 && attempt < 3) return wait(200 * (attempt + 1)).then(function () { return rpc(fn, args, attempt + 1); });
         var code = data && typeof data.message === 'string' && /^[a-z_]+$/.test(data.message) ? data.message : undefined;
+        /* A hub role refusal (forbidden) is final; any other 403 may be the token still settling in. */
+        if (res.status === 403 && code !== 'forbidden' && attempt < 3) return wait(200 * (attempt + 1)).then(function () { return rpc(fn, args, attempt + 1); });
         var err = storeError(res.status, code);
         /* A stale update_note carries the saved note as its detail. */
         if (code === 'revision_conflict') { try { err.note = JSON.parse(data.details); } catch (e) { /* no note to show */ } }
@@ -315,6 +328,28 @@
         erase: function (ids) { return rpc('erase_strokes', { ids: ids }); },
         restore: function (ids) { return rpc('restore_strokes', { ids: ids }); },
         clear: function () { return rpc('clear_strokes'); }
+      },
+      /* me is read on every call, so signing in or out takes effect on the next one. */
+      hub: {
+        me: function () {
+          var me = savedPerson();
+          if (!me) return Promise.resolve(null);
+          return rpc('hub_me', { me: me }).catch(function (err) { if (err.status === 404) return null; throw err; });
+        },
+        join: function (name) { return rpc('hub_join', { display_name: name }); },
+        signIn: function (code) { return rpc('hub_me', { me: code }); },
+        signOut: function () { return Promise.resolve(null); },
+        snapshot: function () { return rpc('hub_rooms', { me: savedPerson() }); },
+        list: function (room, day) { return rpc('list_bookings', { me: savedPerson(), room: room, day: day }); },
+        bookMeeting: function (b) {
+          return rpc('book_black_box', { me: savedPerson(), booking_id: b.id, title: b.title, start_at: b.startAt, end_at: b.endAt, note: b.note });
+        },
+        cancelMeeting: function (id) { return rpc('cancel_black_box', { me: savedPerson(), booking_id: id }); },
+        requestHall: function (b) {
+          return rpc('request_ck_hall', { me: savedPerson(), booking_id: b.id, name: b.name, start_at: b.startAt, end_at: b.endAt, note: b.note });
+        },
+        decideHall: function (id, decision) { return rpc('decide_ck_hall', { me: savedPerson(), booking_id: id, decision: decision }); },
+        markArrival: function (coming, note) { return rpc('mark_arrival', { me: savedPerson(), coming: coming, note: note }); }
       },
       saveStroke: saveStroke
     };
@@ -528,6 +563,9 @@
         case 'erase': emit('erase', msg.ids); return;
         case 'restore': emit('restore', msg.strokes); return;
         case 'clear': emit('clear', msg.ids); return;
+        case 'booking': emit('booking', msg.booking); return;
+        case 'booking:drop': emit('bookingDrop', msg.id); return;
+        case 'arrival': emit('arrival', msg.arrival); return;
       }
     }
 
@@ -554,6 +592,8 @@
     return {
       on: function (type, fn) { (handlers[type] = handlers[type] || []).push(fn); },
       connected: function () { return open; },
+      /* The hub cookie changed (sign in or out): open again, so the socket and its hello are that person's. */
+      reconnect: function () { if (ws) ws.close(); },
 
       /* An editor opened on a note at this revision. */
       begin: function (id, revision) {
@@ -720,8 +760,11 @@
     }
     function tick() {
       if (document.hidden) { timer = setTimeout(tick, 800); return; }
-      Promise.all([neon.notes.load(), neon.whiteboard.load()]).then(function (pair) {
+      /* The corridor rides the same read. A wall whose database has no rooms yet still draws its notes. */
+      var rooms = neon.hub.snapshot().catch(function () { return null; });
+      Promise.all([neon.notes.load(), neon.whiteboard.load(), rooms]).then(function (pair) {
         var notes = pair[0], board = pair[1];
+        if (pair[2]) emit('rooms', pair[2]);
         if (!open) {
           open = true;
           notes.notes.forEach(function (n) { seenNotes[n.id] = n; });
@@ -763,6 +806,7 @@
     return {
       on: function (type, fn) { (handlers[type] = handlers[type] || []).push(fn); },
       connected: function () { return open; },
+      reconnect: function () {},   // the next read already carries the new `me`
       begin: function (id, revision) {
         var e = edits[id];
         if (e) { e.ended = false; return; }
@@ -812,6 +856,361 @@
     };
   }
 
+  /* ------------------------------------------------------------ rooms -- */
+  /* The headquarters corridor. A booking is a span [startAt, endAt): a Black Box meeting is 'active' or
+     'cancelled'; a CK Hall booking goes 'requested' -> 'confirmed' | 'declined' | 'cancelled'.
+     Black Box is in use, and the CK Hall ON AIR lamp is lit, exactly while an active meeting or a
+     confirmed hall booking covers now. Nothing stores either fact; both are read from the spans,
+     on the server's clock. The office day is Asia/Jakarta (UTC+7 all year). */
+  var HUB_KEY = 'creative-episode.hub.v1';
+  var JAKARTA_MS = 7 * 3600000;
+  var DAY_MS = 24 * 3600000;
+  var HOLDS = { active: 1, confirmed: 1 };       // the statuses that hold a room
+  var LISTED = { active: 1, requested: 1, confirmed: 1 };
+  var STAFF = { staff: 1, hall_operator: 1 };
+
+  function jakartaDay(t) { return new Date(t + JAKARTA_MS).toISOString().slice(0, 10); }
+  function dayStart(day) { return Date.parse(day + 'T00:00:00Z') - JAKARTA_MS; }
+  function covers(b, from, to) { return Date.parse(b.startAt) < to && Date.parse(b.endAt) > from; }
+
+  function hubPath(room) { return 'v1/hub/' + (room === 'black_box' ? 'black-box' : 'ck-hall'); }
+  var serverHub = {
+    me: function () { return call('GET', 'v1/hub/me').then(function (d) { return d.person; }); },
+    join: function (name) { return call('POST', 'v1/hub/people', { displayName: name }); },
+    signIn: function (code) { return call('POST', 'v1/hub/session', { code: code }); },
+    signOut: function () { return call('DELETE', 'v1/hub/session'); },
+    snapshot: function () { return call('GET', 'v1/hub/rooms'); },
+    list: function (room, day) { return call('GET', hubPath(room) + '?day=' + day).then(function (d) { return d.bookings; }); },
+    bookMeeting: function (b) { return call('POST', 'v1/hub/black-box', b); },
+    cancelMeeting: function (id) { return call('POST', 'v1/hub/black-box/' + encodeURIComponent(id) + '/cancel'); },
+    requestHall: function (b) { return call('POST', 'v1/hub/ck-hall', b); },
+    decideHall: function (id, decision) { return call('POST', 'v1/hub/ck-hall/' + encodeURIComponent(id) + '/' + decision); },
+    markArrival: function (coming, note) { return call('PUT', 'v1/hub/arrivals/today', { coming: coming, note: note }); }
+  };
+
+  /* A file opened on this computer: the same rules as the database, on this device only. Anyone may be
+     anyone here, so joining takes a role; the shared backends only ever make visitors. */
+  var localHub = (function () {
+    function read() {
+      var d = readJSON(HUB_KEY) || {};
+      return {
+        people: Array.isArray(d.people) ? d.people : [],
+        bookings: Array.isArray(d.bookings) ? d.bookings : [],
+        arrivals: Array.isArray(d.arrivals) ? d.arrivals : []
+      };
+    }
+    function act(fn) {
+      return new Promise(function (resolve, reject) {
+        try { var d = read(); var out = fn(d); localStorage.setItem(HUB_KEY, JSON.stringify(d)); resolve(out); } catch (e) { reject(e); }
+      });
+    }
+    function me(d) {
+      var id = savedPerson();
+      return d.people.filter(function (p) { return p.id === id; })[0] || null;
+    }
+    function need(d, roles) {
+      var p = me(d);
+      if (!p) throw storeError(401, 'person_required');
+      if (roles.indexOf(p.role) < 0) throw storeError(403, 'forbidden');
+      return p;
+    }
+    function text(v, cap, required) {
+      var t = typeof v === 'string' ? v.trim() : '';
+      if ((required && !t) || Array.from(t).length > cap) throw storeError(400, 'validation_failed');
+      return t || null;
+    }
+    function span(b) {
+      var s = Date.parse(b.startAt), e = Date.parse(b.endAt);
+      if (!(e > s)) throw storeError(400, 'validation_failed');
+      return { startAt: new Date(s).toISOString(), endAt: new Date(e).toISOString() };
+    }
+    function clash(d, room, b, id) {
+      var s = Date.parse(b.startAt), e = Date.parse(b.endAt);
+      return d.bookings.some(function (x) { return x.id !== id && x.room === room && HOLDS[x.status] && covers(x, s, e); });
+    }
+    function view(b, p) {
+      var out = {}; for (var k in b) if (k !== 'createdBy') out[k] = b[k];
+      out.mine = !!p && b.createdBy === p.id;
+      return out;
+    }
+    function find(d, id, room) {
+      var b = d.bookings.filter(function (x) { return x.id === id && x.room === room; })[0];
+      if (!b) throw storeError(404, 'not_found');
+      return b;
+    }
+    function book(d, p, room, input, title, status) {
+      var existing = d.bookings.filter(function (x) { return x.id === input.id; })[0];
+      if (existing) return view(existing, p);
+      var t = new Date().toISOString();
+      var b = { id: input.id || uuid(), room: room, title: title, startAt: input.startAt, endAt: input.endAt,
+        note: text(input.note, 600, false), status: status, byName: p.displayName, createdBy: p.id, createdAt: t, updatedAt: t };
+      var s = span(b); b.startAt = s.startAt; b.endAt = s.endAt;
+      if (HOLDS[status] && clash(d, room, b)) throw storeError(409, 'booking_conflict');
+      d.bookings.push(b);
+      return view(b, p);
+    }
+    function today() { return jakartaDay(Date.now()); }
+    function list(d, p, room, day) {
+      var from = dayStart(day), to = from + DAY_MS;
+      return d.bookings.filter(function (b) {
+        return b.room === room && LISTED[b.status] && covers(b, from, to) &&
+          (STAFF[p && p.role] || (p && b.createdBy === p.id) || HOLDS[b.status]);
+      }).sort(function (a, b) { return Date.parse(a.startAt) - Date.parse(b.startAt); }).map(function (b) { return view(b, p); });
+    }
+    function arrivals(d, p) {
+      return d.arrivals.filter(function (a) { return a.day === today(); }).map(function (a) {
+        var person = d.people.filter(function (x) { return x.id === a.personId; })[0];
+        var out = { id: a.id, name: person ? person.displayName : '', day: a.day, coming: a.coming, note: a.note, updatedAt: a.updatedAt };
+        out.mine = !!p && a.personId === p.id;
+        return out;
+      }).sort(function (a, b) { return a.name.localeCompare(b.name); });
+    }
+    return {
+      me: function () { return act(function (d) { return me(d); }); },
+      join: function (name, role) {
+        return act(function (d) {
+          var p = { id: uuid(), displayName: text(name, 60, true), role: STAFF[role] ? role : 'visitor' };
+          d.people.push(p);
+          return p;
+        });
+      },
+      signIn: function (code) {
+        return act(function (d) {
+          var p = d.people.filter(function (x) { return x.id === code; })[0];
+          if (!p) throw storeError(404, 'not_found');
+          return p;
+        });
+      },
+      signOut: function () { return Promise.resolve(null); },
+      snapshot: function () {
+        return act(function (d) {
+          var p = me(d);
+          return { now: new Date().toISOString(), day: today(), person: p,
+            blackBox: list(d, p, 'black_box', today()).map(function (b) { return STAFF[p && p.role] || b.mine ? b : occupancy(b); }),
+            ckHall: list(d, p, 'ck_hall', today()).map(function (b) { return STAFF[p && p.role] || b.mine ? b : occupancy(b); }),
+            arrivals: STAFF[p && p.role] ? arrivals(d, p) : null };
+        });
+      },
+      list: function (room, day) {
+        return act(function (d) {
+          var p = need(d, room === 'black_box' ? ['staff', 'hall_operator'] : ['visitor', 'staff', 'hall_operator']);
+          return list(d, p, room, day || today());
+        });
+      },
+      bookMeeting: function (input) {
+        return act(function (d) {
+          var p = need(d, ['staff', 'hall_operator']);
+          return book(d, p, 'black_box', input, text(input.title, 120, true), 'active');
+        });
+      },
+      cancelMeeting: function (id) {
+        return act(function (d) {
+          var p = need(d, ['staff', 'hall_operator']);
+          var b = find(d, id, 'black_box');
+          if (b.status === 'active') { b.status = 'cancelled'; b.updatedAt = new Date().toISOString(); }
+          return view(b, p);
+        });
+      },
+      requestHall: function (input) {
+        return act(function (d) {
+          var p = need(d, ['visitor', 'staff', 'hall_operator']);
+          return book(d, p, 'ck_hall', input, text(input.name, 120, true), 'requested');
+        });
+      },
+      decideHall: function (id, decision) {
+        return act(function (d) {
+          var p = need(d, ['hall_operator']);
+          var target = { confirm: 'confirmed', decline: 'declined', cancel: 'cancelled' }[decision];
+          if (!target) throw storeError(400, 'validation_failed');
+          var b = find(d, id, 'ck_hall');
+          if (b.status === target) return view(b, p);
+          if ((target === 'confirmed' && b.status !== 'requested') || !(b.status === 'requested' || b.status === 'confirmed')) {
+            throw storeError(409, 'invalid_state');
+          }
+          if (target === 'confirmed' && clash(d, 'ck_hall', b, b.id)) throw storeError(409, 'booking_conflict');
+          b.status = target; b.updatedAt = new Date().toISOString();
+          return view(b, p);
+        });
+      },
+      markArrival: function (coming, note) {
+        return act(function (d) {
+          var p = need(d, ['staff', 'hall_operator']);
+          if (typeof coming !== 'boolean') throw storeError(400, 'validation_failed');
+          var n = text(note, 280, false), day = today();
+          var a = d.arrivals.filter(function (x) { return x.personId === p.id && x.day === day; })[0];
+          if (!a) { a = { id: uuid(), personId: p.id, day: day }; d.arrivals.push(a); }
+          a.coming = coming; a.note = n; a.updatedAt = new Date().toISOString();
+          return { id: a.id, name: p.displayName, day: day, coming: coming, note: n, updatedAt: a.updatedAt, mine: true };
+        });
+      }
+    };
+  })();
+  function occupancy(b) {
+    return { id: b.id, room: b.room, startAt: b.startAt, endAt: b.endAt, status: b.status, mine: false };
+  }
+
+  /* One state for the corridor, fed by whichever backend the page has. Answers to writes land at once;
+     the socket (office) or the poll (Pages) brings everyone else's. on('change', fn) hears both. */
+  function rooms(adapter, live) {
+    var person = null, bookings = {}, arrivals = {}, offset = 0, ready = false;
+    var handlers = [], lastSnap = '', lastNow = '', boundary = 0;
+
+    function now() { return Date.now() + offset; }
+    function today() { return jakartaDay(now()); }
+    function emit() {
+      lastNow = nowKey();
+      handlers.forEach(function (fn) { try { fn(); } catch (e) { /* one painter must not stop the rest */ } });
+      if (BACKEND !== 'neon') schedule();
+    }
+    /* What "now" looks like: which meeting and which hall booking cover it. */
+    function nowKey() {
+      var a = holding('black_box', now()), b = holding('ck_hall', now());
+      return (a ? a.id : '-') + '|' + (b ? b.id : '-') + '|' + today();
+    }
+    /* No poller here: one timer, set for the next moment a span starts or ends (or the day turns). */
+    function schedule() {
+      clearTimeout(boundary);
+      var t = now(), next = dayStart(today()) + DAY_MS;
+      Object.keys(bookings).forEach(function (id) {
+        var b = bookings[id];
+        if (!HOLDS[b.status]) return;
+        [Date.parse(b.startAt), Date.parse(b.endAt)].forEach(function (x) { if (x > t && x < next) next = x; });
+      });
+      boundary = setTimeout(emit, Math.min(next - t + 50, 6 * 3600000));
+    }
+    function holding(room, t) {
+      var hit = null;
+      Object.keys(bookings).forEach(function (id) {
+        var b = bookings[id];
+        if (b.room === room && HOLDS[b.status] && Date.parse(b.startAt) <= t && t < Date.parse(b.endAt)) hit = b;
+      });
+      return hit;
+    }
+    function put(b) { if (b && b.id) bookings[b.id] = b; return b; }
+    /* list is the whole truth for room (or both rooms when null) across [from, to): what it lacks is gone. */
+    function merge(list, room, from, to) {
+      var keep = {};
+      list.forEach(function (b) { keep[b.id] = true; put(b); });
+      Object.keys(bookings).forEach(function (id) {
+        var b = bookings[id];
+        if (!keep[id] && (room === null || b.room === room) && covers(b, from, to)) delete bookings[id];
+      });
+    }
+    function setPerson(p) {
+      var was = person ? person.id + person.role : '';
+      person = p || null;
+      if (was !== (person ? person.id + person.role : '')) { bookings = {}; arrivals = {}; }
+    }
+    function snapshot(snap) {
+      if (!snap) return;
+      var t = Date.parse(snap.now);
+      if (!isNaN(t)) offset = t - Date.now();
+      var key = JSON.stringify([snap.person, snap.blackBox, snap.ckHall, snap.arrivals]);
+      if (key === lastSnap && ready) {
+        if (nowKey() !== lastNow) emit();   // Pages: the clock crossed a span edge between polls
+        return;
+      }
+      lastSnap = key;
+      ready = true;
+      setPerson(snap.person);
+      var from = dayStart(snap.day || today());
+      merge((snap.blackBox || []).concat(snap.ckHall || []), null, from, from + DAY_MS);
+      arrivals = {};
+      (snap.arrivals || []).forEach(function (a) { arrivals[a.id] = a; });
+      emit();
+    }
+    function refresh() {
+      return adapter.snapshot().then(snapshot, function () { /* the socket or the next poll catches up */ });
+    }
+    function wrote(b) { lastSnap = ''; put(b); emit(); return b; }
+    /* The person changed: the office socket must reopen under the new cookie; the others carry `me`. */
+    function identity(p) {
+      if (BACKEND !== 'server') savePerson(p ? p.id : null);
+      setPerson(p);
+      lastSnap = '';
+      emit();
+      if (live && live.reconnect) live.reconnect();
+      refresh();
+      return p;
+    }
+    function sorted(list) {
+      return list.sort(function (a, b) { return Date.parse(a.startAt) - Date.parse(b.startAt) || (a.id < b.id ? -1 : 1); });
+    }
+    function onDay(room, day, statuses) {
+      var from = dayStart(day || today()), to = from + DAY_MS;
+      return sorted(Object.keys(bookings).map(function (id) { return bookings[id]; }).filter(function (b) {
+        return b.room === room && statuses[b.status] && covers(b, from, to);
+      }));
+    }
+
+    if (live) {
+      live.on('hello', function (msg) { if (msg.rooms) { lastSnap = ''; snapshot(msg.rooms); } });
+      live.on('rooms', snapshot);
+      live.on('booking', function (b) { put(b); emit(); });
+      live.on('bookingDrop', function (id) { delete bookings[id]; emit(); });
+      live.on('arrival', function (a) { if (a.day === today()) { arrivals[a.id] = a; emit(); } });
+    }
+    if (BACKEND !== 'neon') refresh();
+
+    return {
+      on: function (type, fn) { if (type === 'change') handlers.push(fn); },
+      ready: function () { return ready; },
+      person: function () { return person; },
+      isStaff: function () { return !!person && !!STAFF[person.role]; },
+      isHallOperator: function () { return !!person && person.role === 'hall_operator'; },
+      /* The server's clock as this page best knows it. */
+      now: function () { return new Date(now()); },
+      today: today,
+      dayStart: function (day) { return new Date(dayStart(day || today())); },
+
+      join: function (name, role) { return adapter.join(name, role).then(identity); },
+      signIn: function (code) { return adapter.signIn(String(code).trim()).then(identity); },
+      signOut: function () { return adapter.signOut().then(function () { return identity(null); }); },
+      refresh: refresh,
+      /* Fetch one day's bookings (whatever this person may see) into the state. */
+      load: function (day) {
+        day = day || today();
+        var from = dayStart(day), to = from + DAY_MS, jobs = [];
+        if (person && STAFF[person.role]) jobs.push(adapter.list('black_box', day).then(function (l) { merge(l, 'black_box', from, to); }));
+        if (person) jobs.push(adapter.list('ck_hall', day).then(function (l) { merge(l, 'ck_hall', from, to); }));
+        return Promise.all(jobs).then(function () { emit(); });
+      },
+
+      meetings: function (day) { return onDay('black_box', day, HOLDS); },
+      hall: function (day) { return onDay('ck_hall', day, LISTED); },
+      arrivals: function () {
+        var day = today();
+        return Object.keys(arrivals).map(function (id) { return arrivals[id]; })
+          .filter(function (a) { return a.day === day; })
+          .sort(function (a, b) { return String(a.name).localeCompare(String(b.name)); });
+      },
+      myArrival: function () {
+        var day = today();
+        return Object.keys(arrivals).map(function (id) { return arrivals[id]; })
+          .filter(function (a) { return a.mine && a.day === day; })[0] || null;
+      },
+      /* The active meeting / confirmed hall booking covering t (default: now), or null. */
+      blackBoxInUse: function (t) { return holding('black_box', t === undefined ? now() : +t); },
+      ckHallOnAir: function (t) { return holding('ck_hall', t === undefined ? now() : +t); },
+
+      /* Writes. Each carries its own id, so a retry whose answer was lost never books twice.
+         A refusal rejects with .status and .code: 409 booking_conflict, 403 forbidden, 400 validation_failed. */
+      bookMeeting: function (m) {
+        return adapter.bookMeeting({ id: m.id || uuid(), title: m.title, startAt: m.startAt, endAt: m.endAt, note: m.note || null }).then(wrote);
+      },
+      cancelMeeting: function (id) { return adapter.cancelMeeting(id).then(wrote); },
+      requestHall: function (r) {
+        return adapter.requestHall({ id: r.id || uuid(), name: r.name, startAt: r.startAt, endAt: r.endAt, note: r.note || null }).then(wrote);
+      },
+      decideHall: function (id, decision) { return adapter.decideHall(id, decision).then(wrote); },
+      markArrival: function (coming, note) {
+        return adapter.markArrival(coming, note || null).then(function (a) { arrivals[a.id] = a; lastSnap = ''; emit(); return a; });
+      }
+    };
+  }
+
+  var live = BACKEND === 'server' && window.WebSocket ? liveChannel() : BACKEND === 'neon' ? neonLive() : null;
+
   window.CE = {
     mode: MODE,
     backend: BACKEND,
@@ -822,6 +1221,7 @@
     whiteboard: whiteboard(BACKEND === 'server' ? apiWb : BACKEND === 'neon' ? neon.whiteboard : localWb),
     /* The office wall uses its socket. GitHub Pages watches Neon while the tab is open.
        A file opened on this computer has neither, and stays on this device. */
-    live: BACKEND === 'server' && window.WebSocket ? liveChannel() : BACKEND === 'neon' ? neonLive() : null
+    live: live,
+    rooms: rooms(BACKEND === 'server' ? serverHub : BACKEND === 'neon' ? neon.hub : localHub, live)
   };
 })();

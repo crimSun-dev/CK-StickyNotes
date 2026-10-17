@@ -36,6 +36,7 @@
     --note-green: #C5E87A;
     --note-yellow: #FFE56B;
     --note-none: #FBFAF7;      /* plain paper: the note with no color */
+    --on-air: #E2231A;         /* CK Hall's ON AIR lamp, lit by a confirmed booking. Used for nothing else. */
 
     /* The six Scrollcraft roles, mapped onto the building. */
     --marble: #9C9CA1;         /* the grey marble wall, mean tone */
@@ -104,6 +105,106 @@
   a.pill:active { transform: translateY(1px); }
   .sign__here {
     margin: 14px 0 0; font-size: var(--sc-t-sm); color: var(--sc-ink-soft);
+  }
+
+  /* --------------------------------------------- rooms that open (HQ rooms) -- */
+  /* A room door is a pill that is a button. Its state is read from the bookings that cover now. */
+  button.pill { border: 0; font: inherit; font-size: 1rem; font-weight: 500; text-align: left; }
+  @media (hover: hover) and (pointer: fine) {
+    button.pill { transition: background-color var(--sc-d-fast) var(--sc-ease-out); }
+    button.pill:hover { background: var(--periwinkle); }
+  }
+  button.pill:active { transform: translateY(1px); }
+  button.pill:focus-visible { outline: 2px solid var(--indigo); outline-offset: 3px; }
+  .pill__state { font-size: var(--sc-t-xs); font-weight: 500; }
+  /* Black Box in use: the building's yellow with indigo type, and heavier. Never the hall's red.
+     A static change of color and weight: nothing pulses or flashes. */
+  .pill[data-state="in-use"] { background: var(--spark); color: var(--indigo); font-weight: 650; }
+  .pill[data-state="in-use"] .pill__arrow { background: var(--indigo); color: var(--spark); }
+  .pill[data-state="in-use"] .pill__state { font-weight: 650; }
+  @media (hover: hover) and (pointer: fine) {
+    button.pill[data-state="in-use"]:hover { background: var(--spark); box-shadow: inset 0 0 0 2px var(--indigo); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    button.pill { transition: none; }
+  }
+  /* The CK Hall lamp. Off: an unlit outline. On: the studio red, steady. It has no switch of its own. */
+  .lamp {
+    display: inline-block; margin-left: 8px; padding: 2px 6px; border-radius: 4px;
+    border: 1.5px solid rgb(255 255 255 / 0.4); color: rgb(255 255 255 / 0.7);
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; line-height: 1.2; vertical-align: 1px;
+  }
+  .lamp.is-on { background: var(--on-air); border-color: var(--on-air); color: #FFFFFF; box-shadow: 0 0 10px 1px rgb(226 35 26 / 0.6); }
+  .sheet .lamp { margin: 0 8px 0 0; border-color: rgb(22 22 28 / 0.35); color: var(--note-meta); }
+  .sheet .lamp.is-on { border-color: var(--on-air); color: #FFFFFF; }
+
+  /* Today at the office: a quiet line under the sign, not another door. */
+  .sign__today { margin: 12px 0 0; }
+  .sign__today button {
+    min-height: var(--tap); padding: 0 4px; border: 0; background: none; color: var(--sc-ink-soft);
+    font: inherit; font-size: var(--sc-t-sm); font-weight: 600; text-decoration: underline; text-underline-offset: 3px;
+  }
+  .sign__today button:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; }
+  .toggle { display: flex; flex-wrap: wrap; gap: 8px; }
+  .toggle .btn[aria-pressed="true"] { background: var(--indigo); color: #FFFFFF; border-color: var(--indigo); }
+  .toggle .btn[aria-pressed="false"] { background: #FFFFFF; }
+
+  /* The room sheet: one dialog for whichever room was opened. Paper on a dimmed corridor. */
+  .sheet {
+    border: 0; padding: 0; border-radius: 22px;
+    width: min(36rem, calc(100vw - 32px)); max-height: calc(100svh - 32px);
+    background: var(--paper); color: var(--note-ink); box-shadow: var(--sc-e3);
+  }
+  .sheet::backdrop { background: rgb(22 22 28 / 0.55); }
+  .sheet__inner { padding: 22px 22px 26px; display: grid; gap: 18px; }
+  .sheet__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .sheet__head h2 { margin: 0; font-size: 1.6rem; font-weight: 650; color: var(--indigo); letter-spacing: -0.01em; }
+  .sheet__now { margin: 0; font-weight: 600; }
+  .sheet__now[data-state="in-use"] { background: var(--spark); color: var(--indigo); padding: 8px 12px; border-radius: 10px; }
+  .sheet h3 { margin: 0 0 8px; font-size: 1.05rem; font-weight: 650; }
+  .sheet section { display: grid; gap: 12px; }
+  .sheet form { display: grid; gap: 12px; }
+  .sheet__note { margin: 0; font-size: var(--sc-t-sm); color: var(--note-meta); }
+  .sheet__msg { margin: 0; min-height: 1.4em; font-size: var(--sc-t-sm); }
+  .sheet__msg[data-tone="error"] { font-weight: 650; }
+  .sheet__msg[data-tone="ok"] { font-weight: 600; color: var(--indigo); }
+
+  .field { display: grid; gap: 4px; }
+  .field label, .field > span { font-size: var(--sc-t-sm); font-weight: 600; }
+  .field input, .field select, .field textarea {
+    min-height: var(--tap); padding: 8px 10px; border-radius: 10px;
+    border: 1.5px solid rgb(22 22 28 / 0.45); background: #FFFFFF; color: var(--note-ink); font: inherit;
+  }
+  .field textarea { min-height: 4.5rem; resize: vertical; }
+  .field input:focus-visible, .field select:focus-visible, .field textarea:focus-visible {
+    outline: 2px solid var(--indigo); outline-offset: 1px; border-color: var(--indigo);
+  }
+  .fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; }
+  .row .field { flex: 1 1 10rem; }
+
+  .who { display: grid; gap: 12px; padding: 14px; border-radius: 14px; background: #FFFFFF; }
+  .who__line { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; justify-content: space-between; }
+
+  .slots { list-style: none; margin: 0; padding: 0; display: grid; }
+  .slot {
+    display: grid; grid-template-columns: 7.5rem minmax(0, 1fr) auto; gap: 4px 12px; align-items: center;
+    padding: 10px 4px; border-top: 1px solid rgb(22 22 28 / 0.15);
+  }
+  .slot:last-child { border-bottom: 1px solid rgb(22 22 28 / 0.15); }
+  .slot__time { font-weight: 650; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .slot__what { min-width: 0; overflow-wrap: anywhere; }
+  .slot__what small { display: block; color: var(--note-meta); font-size: var(--sc-t-xs); }
+  .slot__acts { display: flex; gap: 6px; flex-wrap: wrap; justify-content: end; }
+  .slot.is-now { background: rgb(239 229 43 / 0.45); }
+  .slot .btn { min-height: 36px; padding: 0 12px; font-size: var(--sc-t-sm); }
+  .slots__empty { margin: 0; color: var(--note-meta); font-size: var(--sc-t-sm); }
+
+  @media (max-width: 480px) {
+    .fields { grid-template-columns: 1fr 1fr; }
+    .fields .field:first-child { grid-column: 1 / -1; }
+    .slot { grid-template-columns: 1fr auto; }
+    .slot__time { grid-column: 1 / -1; }
   }
 
   /* --------------------------------------------------------- the wall itself -- */
@@ -509,12 +610,13 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     <nav class="sign" aria-label="Corridor sign">
       <ol>
         <li><span class="pill"><span class="pill__arrow"><svg aria-hidden="true"><use href="#i-up"/></svg></span>Founder &amp; Story Producer<span class="sr-only">, straight ahead</span></span></li>
-        <li><span class="pill"><span class="pill__arrow"><svg aria-hidden="true"><use href="#i-up"/></svg></span>Black Box<span class="sr-only">, straight ahead</span></span></li>
-        <li><span class="pill"><span class="pill__arrow"><svg aria-hidden="true"><use href="#i-left"/></svg></span>CK Hall<span class="sr-only">, to the left</span></span></li>
+        <li><button type="button" class="pill" id="pill-black-box" data-room="black_box" data-state="idle" aria-haspopup="dialog" aria-controls="room-sheet"><span class="pill__arrow"><svg aria-hidden="true"><use href="#i-up"/></svg></span><span>Black Box<span class="pill__state" id="black-box-state"></span></span><span class="sr-only" id="black-box-sr">, straight ahead</span></button></li>
+        <li><button type="button" class="pill" id="pill-ck-hall" data-room="ck_hall" aria-haspopup="dialog" aria-controls="room-sheet"><span class="pill__arrow"><svg aria-hidden="true"><use href="#i-left"/></svg></span><span>CK Hall<span class="lamp" id="ck-hall-lamp" aria-hidden="true">ON AIR</span></span><span class="sr-only" id="ck-hall-sr">, to the left</span></button></li>
         <li><a class="pill pill--here" href="#wall" aria-current="page"><span class="pill__arrow"><svg aria-hidden="true"><use href="#i-left"/></svg></span>Creative Episode<span class="sr-only">, you are here</span></a></li>
         <li><span class="pill pill--right">GM<span class="sr-only">, to the right</span><span class="pill__arrow"><svg aria-hidden="true"><use href="#i-right"/></svg></span></span></li>
         <li><span class="pill pill--right" title="Money Lab">The M-Lab<span class="sr-only">, to the right. Money Lab, not open yet</span><span class="pill__arrow"><svg aria-hidden="true"><use href="#i-right"/></svg></span></span></li>
       </ol>
+      <p class="sign__today"><button type="button" id="arrivals-open" aria-haspopup="dialog" aria-controls="room-sheet">Today at the office</button></p>
     </nav>
 
     <div class="bottle" id="bottle">
@@ -611,6 +713,105 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
       </div>
     </form>
   </section>
+
+  <!-- THE ROOMS: one sheet for the room whose door was opened on the sign. -->
+  <dialog class="sheet" id="room-sheet" aria-labelledby="sheet-title">
+    <div class="sheet__inner">
+      <header class="sheet__head">
+        <h2 id="sheet-title">Black Box</h2>
+        <button type="button" class="btn btn--ghost" id="sheet-close">Close</button>
+      </header>
+      <p class="sheet__now" id="sheet-now" role="status" aria-live="polite"></p>
+
+      <!-- Who you are on the hub. Staff and hall operators sign in with the code the office gave them. -->
+      <div class="who" id="who">
+        <p class="who__line" id="who-in" hidden><span id="who-name"></span><button type="button" class="btn btn--ghost" id="who-out">Sign out</button></p>
+        <div id="who-out-forms">
+          <form id="code-form" class="row" novalidate>
+            <div class="field"><label for="code-input">Hub code</label><input id="code-input" name="code" autocomplete="off" spellcheck="false" placeholder="From the office"></div>
+            <button type="submit" class="btn btn--primary">Sign in</button>
+          </form>
+          <form id="join-form" class="row" novalidate>
+            <div class="field"><label for="join-name">Or join as a visitor</label><input id="join-name" name="name" maxlength="60" autocomplete="name" placeholder="Your name"></div>
+            <div class="field" id="join-role-field" hidden><label for="join-role">Role on this device</label>
+              <select id="join-role"><option value="visitor">Visitor</option><option value="staff">Staff</option><option value="hall_operator">Hall operator</option></select></div>
+            <button type="submit" class="btn btn--ghost">Join</button>
+          </form>
+        </div>
+        <p class="sheet__msg" id="who-msg" role="status" aria-live="polite"></p>
+      </div>
+
+      <!-- Black Box: staff meetings, one span each. -->
+      <section id="bb-panel" aria-label="Black Box meetings">
+        <div class="row">
+          <div class="field"><label for="bb-day">Day</label><input type="date" id="bb-day"></div>
+        </div>
+        <p class="sheet__note" id="bb-locked">Black Box meetings are for staff. Sign in with your staff code to see the day and book.</p>
+        <div id="bb-open">
+          <h3 id="bb-day-title"></h3>
+          <ol class="slots" id="bb-list" aria-labelledby="bb-day-title"></ol>
+          <p class="slots__empty" id="bb-empty">Nothing booked. The room is free all day.</p>
+        </div>
+        <form id="bb-form" novalidate>
+          <h3>Book the Black Box</h3>
+          <div class="field"><label for="bb-title">Meeting</label><input id="bb-title" maxlength="120" required placeholder="What is it for?"></div>
+          <div class="fields">
+            <div class="field"><label for="bb-date">Date</label><input type="date" id="bb-date" required></div>
+            <div class="field"><label for="bb-start">From</label><input type="time" id="bb-start" required step="300"></div>
+            <div class="field"><label for="bb-end">To</label><input type="time" id="bb-end" required step="300"></div>
+          </div>
+          <div class="field"><label for="bb-note">Note <span>(optional)</span></label><textarea id="bb-note" maxlength="600" rows="2"></textarea></div>
+          <div class="row"><button type="submit" class="btn btn--primary">Book</button></div>
+          <p class="sheet__msg" id="bb-msg" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <!-- CK Hall: anyone on the hub asks; a hall operator confirms. Confirmed spans light the lamp. -->
+      <section id="hall-panel" aria-label="CK Hall bookings" hidden>
+        <div class="row">
+          <div class="field"><label for="hall-day">Day</label><input type="date" id="hall-day"></div>
+        </div>
+        <p class="sheet__note" id="hall-locked">Sign in, or join as a visitor, to ask for the hall.</p>
+        <div id="hall-open">
+          <h3 id="hall-day-title"></h3>
+          <ol class="slots" id="hall-list" aria-labelledby="hall-day-title"></ol>
+          <p class="slots__empty" id="hall-empty">No bookings or requests. The hall is free all day.</p>
+          <p class="sheet__msg" id="hall-decide-msg" role="status" aria-live="polite"></p>
+        </div>
+        <form id="hall-form" novalidate>
+          <h3>Ask for CK Hall</h3>
+          <div class="field"><label for="hall-name">Name on the booking</label><input id="hall-name" maxlength="120" required autocomplete="name"></div>
+          <div class="fields">
+            <div class="field"><label for="hall-date">Date</label><input type="date" id="hall-date" required></div>
+            <div class="field"><label for="hall-start">From</label><input type="time" id="hall-start" required step="300"></div>
+            <div class="field"><label for="hall-end">To</label><input type="time" id="hall-end" required step="300"></div>
+          </div>
+          <div class="field"><label for="hall-note">Note <span>(optional)</span></label><textarea id="hall-note" maxlength="600" rows="2"></textarea></div>
+          <div class="row"><button type="submit" class="btn btn--primary">Send request</button></div>
+          <p class="sheet__msg" id="hall-msg" role="status" aria-live="polite"></p>
+          <p class="sheet__note">A hall operator confirms each request. The ON AIR lamp lights only for confirmed bookings.</p>
+        </form>
+      </section>
+
+      <!-- Today at the office: one line per person for today in Jakarta. Staff only. -->
+      <section id="arr-panel" aria-label="Today at the office" hidden>
+        <p class="sheet__note" id="arr-locked">The arrival list is for staff. Sign in with your staff code.</p>
+        <div id="arr-open">
+          <form id="arr-form" novalidate>
+            <div class="toggle" role="group" aria-label="Are you coming in today?">
+              <button type="button" class="btn btn--ghost" id="arr-yes" aria-pressed="false">I'm coming in</button>
+              <button type="button" class="btn btn--ghost" id="arr-no" aria-pressed="false">Not coming</button>
+            </div>
+            <div class="field"><label for="arr-note">Note <span>(optional)</span></label><input id="arr-note" maxlength="280" placeholder="From 10, after the shoot…"></div>
+            <p class="sheet__msg" id="arr-msg" role="status" aria-live="polite"></p>
+          </form>
+          <h3 id="arr-title"></h3>
+          <ul class="slots" id="arr-list" aria-labelledby="arr-title"></ul>
+          <p class="slots__empty" id="arr-empty">No one has said yet today.</p>
+        </div>
+      </section>
+    </div>
+  </dialog>
 
 </main>
 
@@ -1485,6 +1686,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
       else wbRestore(h);
       paint(); wbSync();
     } else if (b.id === 'wb-clear') {
+      if (window.CE_STAFF && window.CE_STAFF.canClear === false) return;
       /* One tap, no modal: Undo is the safety net. The server returns every id it cleared. */
       var entry = { type: 'clear', ids: strokes.map(function (s) { return s.id; }), items: strokes.slice() };
       wbHistory.push(entry);
@@ -1498,7 +1700,9 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
       b.hidden = true;
       if (!wbLoaded) loadBoard(); else wbStore.retry();
     }
-  });  var coarse = matchMedia('(pointer: coarse)').matches;
+  });
+  if (window.CE_STAFF && window.CE_STAFF.canClear === false) $('wb-clear').hidden = true;
+  var coarse = matchMedia('(pointer: coarse)').matches;
   if (coarse) {
     document.querySelectorAll('.wb__tray [data-tool]').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
     $('wb-hint').textContent = 'Pick a marker, then draw.';
@@ -1651,6 +1855,303 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     if (window.ScrollCraft) sc = ScrollCraft.mount(document.body);
     else { list.classList.add('sc-in'); Array.prototype.forEach.call(list.children, function (li) { li.classList.add('sc-in'); }); }
   });
+})();
+</script>
+<script>
+/* The corridor's rooms. CE.rooms (ce-store.js) owns every booking and arrival and says when; this
+   script paints the sign and the room sheet and hands what people type to CE.rooms. Times are the
+   office's: Asia/Jakarta. */
+(function () {
+  'use strict';
+
+  var rooms = CE.rooms;
+  var $ = function (id) { return document.getElementById(id); };
+  var TZ = 'Asia/Jakarta';
+  var clock = new Intl.DateTimeFormat('en-GB', { timeZone: TZ, hour: '2-digit', minute: '2-digit', hour12: false });
+  var longDay = new Intl.DateTimeFormat('en-GB', { timeZone: TZ, weekday: 'long', day: 'numeric', month: 'long' });
+  var ROLE = { visitor: 'visitor', staff: 'staff', hall_operator: 'hall operator' };
+  var SAY = {
+    booking_conflict: 'Already booked for part of that time. Pick another slot.',
+    forbidden: 'Your hub role cannot do that.',
+    person_required: 'Say who you are first.',
+    validation_failed: 'Check the name and the times: the end must be after the start.',
+    not_found: 'That is no longer there.',
+    invalid_state: 'That booking has already been decided.'
+  };
+
+  var sheet = $('room-sheet');
+  var openRoom = null;       /* 'black_box' | 'ck_hall' | 'arrivals' while the sheet is open */
+  var day = { black_box: null, ck_hall: null };
+  var TITLE = { black_box: 'Black Box', ck_hall: 'CK Hall', arrivals: 'Today at the office' };
+  var STATUS = { requested: 'Requested', confirmed: 'Confirmed' };
+
+  function time(iso) { return clock.format(new Date(iso)); }
+  function dayTitle(d) { return d === rooms.today() ? 'Today, ' + longDay.format(rooms.dayStart(d)) : longDay.format(rooms.dayStart(d)); }
+  /* A date and a wall-clock time in the office, as an instant. */
+  function instant(d, hhmm) { return new Date(d + 'T' + hhmm + ':00+07:00').toISOString(); }
+  function say(el, text, tone) { el.textContent = text || ''; if (tone) el.dataset.tone = tone; else delete el.dataset.tone; }
+  function refusal(err) { return (err && SAY[err.code]) || 'That did not save. Check your connection and try again.'; }
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text !== undefined) n.textContent = text;
+    return n;
+  }
+
+  /* ----------------------------------------------------------- the sign -- */
+  function paintSign() {
+    var m = rooms.blackBoxInUse();
+    $('pill-black-box').dataset.state = m ? 'in-use' : 'idle';
+    $('black-box-state').textContent = m ? ' · in use till ' + time(m.endAt) : '';
+    $('black-box-sr').textContent = ', straight ahead' + (m ? ', in use until ' + time(m.endAt) : ', free now');
+    var h = rooms.ckHallOnAir();
+    $('ck-hall-lamp').classList[h ? 'add' : 'remove']('is-on');
+    $('ck-hall-sr').textContent = ', to the left' + (h ? ', ON AIR until ' + time(h.endAt) : ', off air');
+  }
+
+  /* ---------------------------------------------------------- the sheet -- */
+  function paintWho() {
+    var p = rooms.person();
+    $('who-in').hidden = !p;
+    $('who-out-forms').hidden = !!p;
+    $('who-name').textContent = p ? 'Signed in as ' + p.displayName + ' · ' + ROLE[p.role] : '';
+  }
+
+  function slot(b, actions) {
+    var li = el('li', 'slot');
+    var now = rooms.now();
+    if (Date.parse(b.startAt) <= now && now < Date.parse(b.endAt)) li.classList.add('is-now');
+    li.appendChild(el('span', 'slot__time', time(b.startAt) + '–' + time(b.endAt)));
+    var what = el('span', 'slot__what', b.title || 'Booked');
+    var meta = [b.byName, b.note].filter(Boolean).join(' · ');
+    if (meta) what.appendChild(el('small', '', meta));
+    li.appendChild(what);
+    var acts = el('span', 'slot__acts');
+    (actions || []).forEach(function (a) { acts.appendChild(a); });
+    li.appendChild(acts);
+    return li;
+  }
+  function action(label, run, msgEl) {
+    var b = el('button', 'btn btn--ghost', label);
+    b.type = 'button';
+    b.addEventListener('click', function () {
+      b.disabled = true;
+      run().then(function () { say(msgEl, ''); }, function (err) { b.disabled = false; say(msgEl, refusal(err), 'error'); });
+    });
+    return b;
+  }
+
+  function paintBlackBox() {
+    var m = rooms.blackBoxInUse();
+    var now = $('sheet-now');
+    now.dataset.state = m ? 'in-use' : 'idle';
+    now.textContent = m ? 'In use now' + (m.title ? ': ' + m.title : '') + ', until ' + time(m.endAt) + '.' : 'Free right now.';
+    var staff = rooms.isStaff();
+    $('bb-locked').hidden = staff;
+    $('bb-open').hidden = !staff;
+    $('bb-form').hidden = !staff;
+    if (!staff) return;
+    var d = day.black_box;
+    $('bb-day-title').textContent = dayTitle(d);
+    var listEl = $('bb-list');
+    listEl.textContent = '';
+    var meetings = rooms.meetings(d);
+    meetings.forEach(function (b) {
+      listEl.appendChild(slot(b, [action('Cancel', function () { return rooms.cancelMeeting(b.id); }, $('bb-msg'))]));
+    });
+    $('bb-empty').hidden = meetings.length > 0;
+  }
+
+  function paintHall() {
+    var h = rooms.ckHallOnAir();
+    var now = $('sheet-now');
+    now.dataset.state = h ? 'on-air' : 'idle';
+    now.textContent = '';
+    var lamp = el('span', 'lamp' + (h ? ' is-on' : ''), 'ON AIR');
+    lamp.setAttribute('aria-hidden', 'true');
+    now.appendChild(lamp);
+    now.appendChild(el('span', '', h ? 'On air now' + (h.title ? ': ' + h.title : '') + ', until ' + time(h.endAt) + '.'
+      : 'Off air. No confirmed booking right now.'));
+    var p = rooms.person();
+    $('hall-locked').hidden = !!p;
+    $('hall-open').hidden = !p;
+    $('hall-form').hidden = !p;
+    if (!p) return;
+    if (!$('hall-name').value) $('hall-name').value = p.displayName;
+    var d = day.ck_hall;
+    $('hall-day-title').textContent = dayTitle(d);
+    var listEl = $('hall-list');
+    listEl.textContent = '';
+    var operator = rooms.isHallOperator();
+    var msg = $('hall-decide-msg');
+    var hall = rooms.hall(d);
+    hall.forEach(function (b) {
+      var acts = [];
+      if (operator && b.status === 'requested') {
+        acts.push(action('Confirm', function () { return rooms.decideHall(b.id, 'confirm'); }, msg));
+        acts.push(action('Decline', function () { return rooms.decideHall(b.id, 'decline'); }, msg));
+      } else if (operator && b.status === 'confirmed') {
+        acts.push(action('Cancel', function () { return rooms.decideHall(b.id, 'cancel'); }, msg));
+      }
+      var row = slot(b, acts);
+      row.children[1].appendChild(el('small', '', STATUS[b.status] + (b.mine ? ' · yours' : '')));
+      listEl.appendChild(row);
+    });
+    $('hall-empty').hidden = hall.length > 0;
+  }
+
+  function paintArrivals() {
+    var list = rooms.arrivals();
+    var coming = list.filter(function (a) { return a.coming; }).length;
+    var now = $('sheet-now');
+    now.dataset.state = 'idle';
+    var staff = rooms.isStaff();
+    now.textContent = staff ? (coming === 1 ? '1 person coming in today.' : coming + ' people coming in today.') : '';
+    $('arr-locked').hidden = staff;
+    $('arr-open').hidden = !staff;
+    if (!staff) return;
+    var mine = rooms.myArrival();
+    $('arr-yes').setAttribute('aria-pressed', String(!!mine && mine.coming));
+    $('arr-no').setAttribute('aria-pressed', String(!!mine && !mine.coming));
+    $('arr-title').textContent = dayTitle(rooms.today());
+    var listEl = $('arr-list');
+    listEl.textContent = '';
+    list.forEach(function (a) {
+      var li = el('li', 'slot');
+      li.appendChild(el('span', 'slot__time', a.coming ? 'Coming in' : 'Not coming'));
+      var who = el('span', 'slot__what', a.name + (a.mine ? ' (you)' : ''));
+      if (a.note) who.appendChild(el('small', '', a.note));
+      li.appendChild(who);
+      li.appendChild(el('span', 'slot__acts'));
+      listEl.appendChild(li);
+    });
+    $('arr-empty').hidden = list.length > 0;
+  }
+
+  function paintSheet() {
+    if (!sheet.open) return;
+    paintWho();
+    $('bb-panel').hidden = openRoom !== 'black_box';
+    $('hall-panel').hidden = openRoom !== 'ck_hall';
+    $('arr-panel').hidden = openRoom !== 'arrivals';
+    if (openRoom === 'black_box') paintBlackBox();
+    else if (openRoom === 'ck_hall') paintHall();
+    else if (openRoom === 'arrivals') paintArrivals();
+  }
+
+  function render() { paintSign(); paintSheet(); }
+
+  function open(room) {
+    openRoom = room;
+    $('sheet-title').textContent = TITLE[room];
+    $('join-role-field').hidden = CE.backend !== 'local';
+    ['who-msg', 'bb-msg', 'hall-msg', 'hall-decide-msg', 'arr-msg'].forEach(function (id) { say($(id), ''); });
+    if (room !== 'arrivals') {
+      day[room] = day[room] || rooms.today();
+      var prefix = room === 'black_box' ? 'bb' : 'hall';
+      $(prefix + '-day').value = day[room];
+      if (!$(prefix + '-date').value) $(prefix + '-date').value = rooms.today();
+    }
+    sheet.showModal();
+    paintSheet();
+    if (room !== 'arrivals') rooms.load(day[room]).catch(function () { /* today's snapshot is already shown */ });
+  }
+
+  $('pill-black-box').addEventListener('click', function () { open('black_box'); });
+  $('pill-ck-hall').addEventListener('click', function () { open('ck_hall'); });
+  $('arrivals-open').addEventListener('click', function () { open('arrivals'); });
+  $('sheet-close').addEventListener('click', function () { sheet.close(); });
+  /* 'close' arrives a task later: if another door was opened meanwhile, the sheet belongs to it now. */
+  sheet.addEventListener('close', function () { if (!sheet.open) openRoom = null; });
+
+  $('bb-day').addEventListener('change', function () {
+    if (!this.value) return;
+    day.black_box = this.value;
+    $('bb-date').value = this.value;
+    paintSheet();
+    rooms.load(this.value).catch(function () {});
+  });
+
+  $('hall-day').addEventListener('change', function () {
+    if (!this.value) return;
+    day.ck_hall = this.value;
+    $('hall-date').value = this.value;
+    paintSheet();
+    rooms.load(this.value).catch(function () {});
+  });
+
+  /* ------------------------------------------------------- who you are -- */
+  function signedIn(p) {
+    say($('who-msg'), 'Welcome, ' + p.displayName + '.', 'ok');
+    var d = openRoom && day[openRoom];
+    if (d) rooms.load(d).catch(function () {});
+  }
+  $('code-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var code = $('code-input').value.trim();
+    if (!code) { say($('who-msg'), 'Type the code the office gave you.', 'error'); return; }
+    rooms.signIn(code).then(function (p) { $('code-input').value = ''; signedIn(p); }, function (err) {
+      say($('who-msg'), err && (err.status === 404 || err.status === 400) ? 'No one on the hub has that code.' : refusal(err), 'error');
+    });
+  });
+  $('join-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var name = $('join-name').value.trim();
+    if (!name) { say($('who-msg'), 'Type your name first.', 'error'); return; }
+    rooms.join(name, $('join-role').value).then(function (p) { $('join-name').value = ''; signedIn(p); },
+      function (err) { say($('who-msg'), refusal(err), 'error'); });
+  });
+  $('who-out').addEventListener('click', function () {
+    rooms.signOut().then(function () { say($('who-msg'), 'Signed out.'); });
+  });
+
+  /* ------------------------------------------------------- Black Box -- */
+  $('bb-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var msg = $('bb-msg');
+    var title = $('bb-title').value.trim(), d = $('bb-date').value, s = $('bb-start').value, t = $('bb-end').value;
+    if (!title || !d || !s || !t) { say(msg, 'Give the meeting a name, a date, and both times.', 'error'); return; }
+    if (t <= s) { say(msg, 'The meeting has to end after it starts.', 'error'); return; }
+    say(msg, 'Booking…');
+    rooms.bookMeeting({ title: title, startAt: instant(d, s), endAt: instant(d, t), note: $('bb-note').value.trim() || null })
+      .then(function (b) {
+        $('bb-title').value = ''; $('bb-note').value = '';
+        say(msg, 'Booked: ' + b.title + ', ' + time(b.startAt) + '–' + time(b.endAt) + '.', 'ok');
+        if (d !== day.black_box) { day.black_box = d; $('bb-day').value = d; rooms.load(d).catch(function () {}); }
+        paintSheet();
+      }, function (err) { say(msg, refusal(err), 'error'); });
+  });
+
+  /* --------------------------------------------------------- CK Hall -- */
+  $('hall-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var msg = $('hall-msg');
+    var name = $('hall-name').value.trim(), d = $('hall-date').value, s = $('hall-start').value, t = $('hall-end').value;
+    if (!name || !d || !s || !t) { say(msg, 'Give a name, a date, and both times.', 'error'); return; }
+    if (t <= s) { say(msg, 'The booking has to end after it starts.', 'error'); return; }
+    say(msg, 'Sending…');
+    rooms.requestHall({ name: name, startAt: instant(d, s), endAt: instant(d, t), note: $('hall-note').value.trim() || null })
+      .then(function (b) {
+        $('hall-note').value = '';
+        say(msg, 'Requested ' + time(b.startAt) + '–' + time(b.endAt) + '. A hall operator will confirm it.', 'ok');
+        if (d !== day.ck_hall) { day.ck_hall = d; $('hall-day').value = d; rooms.load(d).catch(function () {}); }
+        paintSheet();
+      }, function (err) { say(msg, refusal(err), 'error'); });
+  });
+
+  /* -------------------------------------------------------- arrivals -- */
+  function mark(coming) {
+    var msg = $('arr-msg');
+    rooms.markArrival(coming, $('arr-note').value.trim() || null).then(function () {
+      say(msg, coming ? 'Marked: coming in today.' : 'Marked: not coming today.', 'ok');
+    }, function (err) { say(msg, refusal(err), 'error'); });
+  }
+  $('arr-yes').addEventListener('click', function () { mark(true); });
+  $('arr-no').addEventListener('click', function () { mark(false); });
+  $('arr-form').addEventListener('submit', function (e) { e.preventDefault(); });
+
+  rooms.on('change', render);
+  render();
 })();
 </script>
 </body>
