@@ -290,6 +290,17 @@
       });
     }
 
+    /* One chain per stroke, so a later, longer save cannot land before an earlier one. */
+    var strokeChain = {};
+    function saveStroke(s) {
+      var run = function () {
+        return rpc('save_stroke', { stroke_id: s.id, ink: s.ink, width: s.width, points: s.points });
+      };
+      var next = (strokeChain[s.id] || Promise.resolve()).then(run, run);
+      strokeChain[s.id] = next.then(function (out) { return out; }, function () { return null; });
+      return next;
+    }
+
     return {
       notes: {
         load: function () { return rpc('list_notes'); },
@@ -300,11 +311,12 @@
       },
       whiteboard: {
         load: function () { return rpc('list_strokes'); },
-        add: function (s) { return rpc('add_stroke', { stroke_id: s.id, ink: s.ink, width: s.width, points: s.points }); },
+        add: function (s) { return saveStroke(s); },
         erase: function (ids) { return rpc('erase_strokes', { ids: ids }); },
         restore: function (ids) { return rpc('restore_strokes', { ids: ids }); },
         clear: function () { return rpc('clear_strokes'); }
-      }
+      },
+      saveStroke: saveStroke
     };
   })();
 
@@ -537,6 +549,8 @@
 
     connect();
 
+    return api();
+    function api() {
     return {
       on: function (type, fn) { (handlers[type] = handlers[type] || []).push(fn); },
       connected: function () { return open; },
@@ -598,6 +612,204 @@
       erased: function (ids) { if (ids.length) send({ t: 'erase', ids: ids.slice(0, WB_CAPACITY) }); },
       cleared: function (ids) { if (ids.length) send({ t: 'clear', ids: ids.slice(0, WB_CAPACITY) }); }
     };
+    }
+  }
+
+  /* GitHub Pages has no office socket. It writes each change to Neon and reads the wall
+     again while the tab is open, so other pages see letters and lines without a refresh. */
+  function neonLive() {
+    var open = false, seq = 0, timer = 0;
+    var handlers = {}, edits = {}, seenNotes = {}, seenStrokes = {}, own = {};
+    var inkActive = null, inkSent = 0, inkTimer = 0;
+
+    function emit(type, data) {
+      (handlers[type] || []).forEach(function (fn) { try { fn(data); } catch (e) { /* one painter must not stop the rest */ } });
+    }
+    function settle(id) {
+      var e = edits[id];
+      if (!e) return;
+      var idle = !e.inflight && !e.queued;
+      if (idle || !open) finish(id, idle ? 'ok' : 'offline');
+      if (idle && e.ended) delete edits[id];
+    }
+    function finish(id, outcome) {
+      var e = edits[id];
+      if (!e) return;
+      var w = e.waiters; e.waiters = [];
+      w.forEach(function (fn) { fn(outcome); });
+    }
+    function pump(id) {
+      var e = edits[id];
+      if (!e) return;
+      if (e.inflight || !e.queued || !open) { settle(id); return; }
+      var q = e.queued;
+      e.queued = null; e.sent = q; e.inflight = ++seq;
+      var mySeq = e.inflight;
+      var patch = { body: q.body, revision: e.rev || 0 };
+      if (q.color !== undefined) patch.color = q.color;
+      neon.notes.update(id, patch).then(function (note) {
+        var cur = edits[id];
+        if (!cur || cur.inflight !== mySeq) return;
+        cur.rev = note.revision; cur.inflight = 0;
+        seenNotes[id] = note;
+        emit('ack', note);
+        pump(id);
+      }, function (err) {
+        var cur = edits[id];
+        if (!cur || cur.inflight !== mySeq) return;
+        cur.inflight = 0;
+        if (err && err.status === 409 && err.note) {
+          cur.rev = err.note.revision; cur.queued = null;
+          seenNotes[id] = err.note;
+          finish(id, 'conflict');
+          emit('conflict', err.note);
+          settle(id);
+          return;
+        }
+        if (err && err.status === 404) {
+          finish(id, 'gone');
+          delete edits[id];
+          emit('drop', id);
+          return;
+        }
+        if (!cur.queued) cur.queued = q;
+        setTimeout(function () { pump(id); }, 400);
+      });
+    }
+    function applyNotes(list) {
+      var ids = {};
+      list.forEach(function (n) {
+        ids[n.id] = true;
+        var prev = seenNotes[n.id];
+        seenNotes[n.id] = n;
+        if (prev && prev.body === n.body && prev.color === n.color && prev.revision === n.revision) return;
+        var mine = edits[n.id];
+        if (mine && (mine.queued || mine.inflight)) {
+          var pending = mine.queued || mine.sent;
+          if (pending && pending.body !== n.body) {
+            mine.rev = n.revision;
+            mine.queued = null;
+            emit('conflict', n);
+            return;
+          }
+        } else if (mine) mine.rev = n.revision;
+        emit('note', n);
+      });
+      Object.keys(seenNotes).forEach(function (id) {
+        if (ids[id]) return;
+        delete seenNotes[id];
+        emit('drop', id);
+      });
+    }
+    function applyStrokes(list) {
+      var ids = {};
+      list.forEach(function (s) {
+        ids[s.id] = true;
+        var prev = seenStrokes[s.id];
+        var len = s.points ? s.points.length : 0;
+        seenStrokes[s.id] = len;
+        if (own[s.id]) return;
+        if (prev === undefined || prev !== len) emit('stroke', s);
+      });
+      Object.keys(seenStrokes).forEach(function (id) {
+        if (ids[id]) return;
+        delete seenStrokes[id];
+        delete own[id];
+        emit('erase', [id]);
+      });
+    }
+    function tick() {
+      if (document.hidden) { timer = setTimeout(tick, 800); return; }
+      Promise.all([neon.notes.load(), neon.whiteboard.load()]).then(function (pair) {
+        var notes = pair[0], board = pair[1];
+        if (!open) {
+          open = true;
+          notes.notes.forEach(function (n) { seenNotes[n.id] = n; });
+          board.strokes.forEach(function (s) { seenStrokes[s.id] = s.points.length; });
+          emit('state', true);
+          emit('hello', { notes: notes.notes, hasMore: notes.hasMore, strokes: board.strokes, previews: [] });
+          Object.keys(edits).forEach(function (id) {
+            var x = edits[id];
+            if (!seenNotes[id]) { finish(id, 'gone'); delete edits[id]; return; }
+            x.rev = seenNotes[id].revision;
+            if (x.inflight) { x.queued = x.queued || x.sent; x.inflight = 0; }
+          });
+          Object.keys(edits).forEach(pump);
+          return;
+        }
+        applyNotes(notes.notes);
+        applyStrokes(board.strokes);
+      }, function () {
+        if (open) { open = false; emit('state', false); }
+      }).then(function () { timer = setTimeout(tick, 400); });
+    }
+    function flushInk() {
+      clearTimeout(inkTimer); inkTimer = 0;
+      var d = inkActive;
+      if (!d || !d.points.length) return;
+      if (!d.partIds) d.partIds = [d.id];
+      while (inkSent < d.points.length) {
+        var part = Math.floor(inkSent / WB_MAX_POINTS);
+        var end = Math.min(d.points.length, (part + 1) * WB_MAX_POINTS);
+        if (!d.partIds[part]) d.partIds[part] = uuid();
+        var slice = d.points.slice(part * WB_MAX_POINTS, end);
+        own[d.partIds[part]] = true;
+        neon.saveStroke({ id: d.partIds[part], ink: d.ink, width: d.width, points: slice });
+        inkSent = end;
+      }
+    }
+
+    tick();
+    return {
+      on: function (type, fn) { (handlers[type] = handlers[type] || []).push(fn); },
+      connected: function () { return open; },
+      begin: function (id, revision) {
+        var e = edits[id];
+        if (e) { e.ended = false; return; }
+        edits[id] = { rev: revision || 0, inflight: 0, sent: null, queued: null, ended: false, waiters: [] };
+      },
+      input: function (id, body, color) {
+        var e = edits[id];
+        var b = String(body).trim();
+        if (!e || !b || Array.from(b).length > 600) return;
+        var c = color !== undefined ? color : e.queued ? e.queued.color : undefined;
+        e.queued = { body: b, color: c };
+        pump(id);
+      },
+      revision: function (id) { return edits[id] ? edits[id].rev : undefined; },
+      settle: function (id) {
+        return new Promise(function (resolve) {
+          var e = edits[id];
+          if (!e) { resolve('ok'); return; }
+          e.waiters.push(resolve);
+          settle(id);
+        });
+      },
+      end: function (id) {
+        if (!edits[id]) return;
+        edits[id].ended = true;
+        settle(id);
+      },
+      saved: function (note) {
+        var e = edits[note.id];
+        if (!e) return;
+        e.rev = note.revision; e.queued = null; e.sent = null;
+        seenNotes[note.id] = note;
+        settle(note.id);
+      },
+      ink: function (d) {
+        if (d !== inkActive) { flushInk(); inkActive = d; inkSent = 0; }
+        if (!inkTimer) inkTimer = setTimeout(flushInk, 80);
+      },
+      inkEnd: function (d) {
+        if (d !== inkActive && d !== undefined) inkActive = d;
+        flushInk();
+        inkActive = null;
+      },
+      inkDrop: function (id) { delete own[id]; },
+      erased: function () {},
+      cleared: function () {}
+    };
   }
 
   window.CE = {
@@ -608,7 +820,8 @@
     isSample: function (n) { return n.id.indexOf('sample-') === 0; },
     notes: BACKEND === 'server' ? apiNotes : BACKEND === 'neon' ? neon.notes : localNotes,
     whiteboard: whiteboard(BACKEND === 'server' ? apiWb : BACKEND === 'neon' ? neon.whiteboard : localWb),
-    /* Only the office server can hold a socket; GitHub Pages and the file copy never open one. */
-    live: BACKEND === 'server' && window.WebSocket ? liveChannel() : null
+    /* The office wall uses its socket. GitHub Pages watches Neon while the tab is open.
+       A file opened on this computer has neither, and stays on this device. */
+    live: BACKEND === 'server' && window.WebSocket ? liveChannel() : BACKEND === 'neon' ? neonLive() : null
   };
 })();
