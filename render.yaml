@@ -1,0 +1,24 @@
+# Render Blueprint for the Creative Episode wall.
+# Runs from the repo root, not server/: Render hides files outside rootDir at runtime,
+# and the server serves the page from ../scrollcraft/builds/creative-episode.
+services:
+  - type: web
+    name: creative-episode
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm ci --prefix server && npm run migrate --prefix server
+    startCommand: npm start --prefix server
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: HOST
+        value: 0.0.0.0
+      - key: TRUST_PROXY
+        value: "1"
+      - key: HUB_COMPANY_SLUG
+        value: kmk
+      # Secrets: Render asks for these when the Blueprint is created. Never commit them.
+      - key: DATABASE_URL
+        sync: false

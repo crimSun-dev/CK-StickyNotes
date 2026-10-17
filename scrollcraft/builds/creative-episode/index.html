@@ -1,0 +1,1657 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Creative Episode</title>
+<meta name="description" content="Creative Episode brainstorm wall. Good Ideas Start Here.">
+<meta name="theme-color" content="#9C9CA1">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='1' y='7' width='30' height='18' rx='9' fill='%232E3A8C'/><circle cx='10' cy='16' r='6' fill='%23EFE52B'/><path d='M13 16H7m2.6-2.8L7 16l2.6 2.8' stroke='%232E3A8C' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+<link rel="preload" href="fonts/rubik-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="scrollcraft.css">
+<style>
+  @font-face {
+    font-family: "Rubik";
+    font-style: normal; font-display: swap; font-weight: 300 900;
+    src: url(fonts/rubik-latin-wght-normal.woff2) format("woff2-variations");
+    unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+  }
+  @font-face {
+    font-family: "Rubik";
+    font-style: normal; font-display: swap; font-weight: 300 900;
+    src: url(fonts/rubik-latin-ext-wght-normal.woff2) format("woff2-variations");
+    unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+  }
+
+  /* Headquarters colors, sampled from the building. Binding: no second palette. */
+  :root {
+    --indigo: #2E3A8C;
+    --periwinkle: #5B63B8;
+    --spark: #EFE52B;          /* the current pill's arrow; the wall's neon bulb is its painted twin */
+    --paper: #F4F2EE;
+    --board: #16161C;
+    --note-blue: #7EC8E3;
+    --note-pink: #F4A7C3;
+    --note-green: #C5E87A;
+    --note-yellow: #FFE56B;
+    --note-none: #FBFAF7;      /* plain paper: the note with no color */
+
+    /* The six Scrollcraft roles, mapped onto the building. */
+    --marble: #9C9CA1;         /* the grey marble wall, mean tone */
+    --led: #FFC24E;            /* the warm LED strip around the board */
+    --led-ring: 0 0 0 3px var(--led), 0 0 6px 3px rgb(255 196 84 / 0.75), 0 0 18px 4px rgb(247 178 52 / 0.4);
+    --sc-canvas: var(--marble);
+    --sc-surface: var(--board);
+    --sc-ink: var(--board);
+    --sc-ink-soft: #1A1C30;    /* secondary on marble: 4.8:1 on its darkest patch */
+    --sc-accent: var(--indigo);
+    --sc-accent-ink: #FFFFFF;
+    --sc-font-display: "Rubik", ui-rounded, system-ui, sans-serif;
+    --sc-font-text: "Rubik", ui-rounded, system-ui, sans-serif;
+    --sc-shadow-color: 240 20% 6%;
+
+    --on-board: #F4F2EE;
+    --on-board-soft: #C9C8D6;  /* 10.9:1 on the felt */
+    --note-ink: #16161C;
+    --note-meta: #3A3A4E;      /* 5.9:1 on the palest pastel */
+    --sign-w: 17.5rem;
+    --r-note: 4px;
+    --r-board: 28px;
+    --tap: 44px;
+    color-scheme: light;
+  }
+
+  body { font-weight: 400; }
+  [hidden] { display: none !important; }
+  .sr-only {
+    position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+  button { cursor: pointer; }
+  button:disabled, button[aria-disabled="true"] { cursor: default; }
+
+  /* ---------------------------------------------------- the corridor sign -- */
+  .sign { z-index: var(--sc-z-chrome); }
+  .sign ol {
+    list-style: none; margin: 0; padding: 0;
+    display: grid; gap: 8px; justify-items: start; width: max-content;
+  }
+  .sign li { display: contents; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 10px;
+    min-height: var(--tap);
+    padding: 5px 18px 5px 5px;
+    border-radius: var(--sc-r-pill);
+    background: var(--indigo);
+    color: #FFFFFF;
+    font-size: 1rem; font-weight: 500; letter-spacing: -0.005em; line-height: 1.1;
+    text-decoration: none; white-space: nowrap;
+  }
+  .pill--right { padding: 5px 5px 5px 18px; justify-self: end; }
+  .pill__arrow {
+    flex: none; display: grid; place-items: center;
+    width: 34px; height: 34px; border-radius: 50%;
+    background: var(--periwinkle); color: #FFFFFF;
+  }
+  .pill__arrow svg { width: 18px; height: 18px; }
+  .pill--here .pill__arrow { background: var(--spark); color: var(--indigo); }
+  .pill--here { box-shadow: var(--sc-e1); }
+  @media (hover: hover) and (pointer: fine) {
+    a.pill { transition: background-color var(--sc-d-fast) var(--sc-ease-out); }
+    a.pill:hover { background: var(--periwinkle); }
+  }
+  a.pill:active { transform: translateY(1px); }
+  .sign__here {
+    margin: 14px 0 0; font-size: var(--sc-t-sm); color: var(--sc-ink-soft);
+  }
+
+  /* --------------------------------------------------------- the wall itself -- */
+  /* Grey marble with thin pale veins, the LED strip in warm amber: sampled from the room. */
+  html { background: var(--marble); }
+  body { background: var(--marble) url("assets/marble.webp") 0 0 / 1200px 1200px repeat; }
+
+  .room { position: relative; padding: clamp(1.25rem, 4vh, 3rem) var(--sc-gutter) var(--sc-6); }
+  .room > .sign { margin-bottom: var(--sc-6); }
+
+  .bottle {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "head" "felt" "wb";
+    gap: 28px;
+  }
+
+  .wall-head {
+    grid-area: head; position: relative; z-index: 2;
+    display: flex; align-items: flex-end; justify-content: space-between; gap: var(--sc-4);
+  }
+  .wall-head h1 { margin: 0; line-height: 0; }
+  .wall-head h1 img { height: clamp(78px, 9.5vw, 136px); width: auto; transform: rotate(-3deg); transform-origin: left bottom; }
+  .wall-head__line { display: flex; align-items: center; gap: clamp(8px, 1.6vw, 22px); margin: 0; }
+  .wall-head__line img:first-child { height: clamp(108px, 12vw, 176px); width: auto; }
+  .wall-head__bulb { height: clamp(62px, 7vw, 104px); width: auto; }
+
+  .board {
+    grid-area: felt;
+    position: relative; z-index: 2;
+    background: var(--board);
+    color: var(--on-board);
+    border-radius: 30px;
+    padding: clamp(1.25rem, 2.6vw, 2.25rem);
+    box-shadow: var(--led-ring);
+  }
+  .room :focus-visible { box-shadow: 0 0 0 5px rgb(255 255 255 / 0.55); }
+  .board :focus-visible { outline-color: var(--paper); box-shadow: none; }
+  .board__head {
+    display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between;
+    gap: var(--sc-2) var(--sc-5);
+    margin-bottom: clamp(1.25rem, 2.4vw, 2rem);
+  }
+  .board__count { margin: 0; font-size: var(--sc-t-lg); font-weight: 600; color: var(--on-board); }
+  .board__sample { margin: 2px 0 0; font-size: var(--sc-t-sm); color: var(--on-board-soft); max-width: 36ch; }
+  .board__go {
+    display: inline-flex; align-items: center; gap: 6px; min-height: var(--tap);
+    color: var(--on-board); font-weight: 600; font-size: var(--sc-t-sm);
+    text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.28em;
+  }
+  .board__go svg { width: 16px; height: 16px; }
+
+  /* the whiteboard: a working surface, not a picture of one */
+  .whiteboard {
+    grid-area: wb;
+    position: relative; z-index: 0;
+    display: flex; flex-direction: column;
+    height: clamp(340px, 46svh, 470px);
+    background: linear-gradient(172deg, #FDFDFC 0%, #F3F4F3 55%, #E9EAEA 100%);
+    color: var(--board);
+    border-radius: 30px;
+    box-shadow: var(--led-ring);
+  }
+  .wb__surface { position: relative; flex: 1 1 auto; min-height: 0; margin: 14px 14px 0; }
+  .wb__surface canvas {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    touch-action: none; cursor: crosshair; border-radius: 18px;
+  }
+  .wb__surface[data-tool="eraser"] canvas { cursor: cell; }
+  @media (pointer: coarse) { .wb__surface:not(.is-armed) canvas { touch-action: pan-y; } }
+  .wb__hint {
+    position: absolute; inset: 0; display: grid; place-items: center; margin: 0;
+    pointer-events: none; text-align: center; padding: 0 1rem;
+    color: #565A6C; font-size: var(--sc-t-sm);
+  }
+  .wb__tray {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+    padding: 10px 14px 14px;
+  }
+  .wb__tool {
+    display: inline-flex; align-items: center; gap: 7px;
+    min-height: var(--tap); padding: 0 13px 0 9px;
+    border-radius: var(--sc-r-pill); border: 1.5px solid rgb(22 22 28 / 0.28);
+    background: #FFFFFF; color: var(--board);
+    font-size: var(--sc-t-sm); font-weight: 500; white-space: nowrap;
+  }
+  .wb__tool svg { width: 18px; height: 18px; }
+  .wb__tool[aria-pressed="true"] { border: 2px solid var(--indigo); font-weight: 650; }
+  .wb__tool[aria-disabled="true"] { opacity: 0.5; cursor: default; }
+  .wb__ink { width: 18px; height: 18px; border-radius: 50%; background: var(--ink); box-shadow: inset 0 0 0 2px #FFFFFF, 0 0 0 1px rgb(22 22 28 / 0.25); }
+  @media (hover: hover) and (pointer: fine) {
+    .wb__tool { transition: border-color var(--sc-d-fast) var(--sc-ease-out); }
+    .wb__tool:hover:not([aria-disabled="true"]) { border-color: var(--indigo); }
+  }
+  .wb__tool:active:not([aria-disabled="true"]) { transform: translateY(1px); }
+  .wb__sep { width: 1px; height: 26px; background: rgb(22 22 28 / 0.2); margin: 0 4px; }
+  .wb__status { margin: 0 0 0 auto; font-size: var(--sc-t-xs); color: #3E4152; padding-left: 6px; }
+
+  /* the bottle outline + LED strip, drawn from the measured layout */
+  .bottle__shape { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 1; display: none; }
+  .bottle__fill { fill: var(--board); }
+  .bottle__led { fill: none; stroke: var(--led); stroke-width: 3.5; stroke-linejoin: round; filter: drop-shadow(0 0 5px rgb(255 196 84 / 0.95)) drop-shadow(0 0 14px rgb(247 178 52 / 0.55)); }
+
+  .flower { position: absolute; z-index: 3; pointer-events: none; height: auto; }
+  .flower--g1 { width: 50px; left: -6px; bottom: -22px; transform: rotate(-12deg); }
+  .flower--g2 { width: 44px; left: 52px; bottom: -24px; transform: rotate(20deg); }
+  .flower--w1 { width: 38px; right: 24%; top: -18px; transform: rotate(8deg); }
+  .flower--w2 { width: 34px; right: 26px; bottom: -16px; }
+
+  .wall {
+    list-style: none; margin: 0; padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+    gap: clamp(1rem, 2.2vw, 1.75rem);
+    align-items: start;
+  }
+  .wall > li { min-width: 0; }
+  .wall > li.is-editing { grid-column: span 2; }
+
+  .note {
+    --tilt: 0deg;
+    position: relative;
+    display: flex; flex-direction: column;
+    aspect-ratio: 1 / 1;
+    padding: 18px 16px 8px 18px;
+    background: var(--paper-c, var(--note-none));
+    color: var(--note-ink);
+    border-radius: var(--r-note);
+    transform: rotate(var(--tilt));
+    box-shadow: 0 1px 1px hsl(240 30% 2% / 0.4), 0 10px 18px -8px hsl(240 30% 2% / 0.7);
+    outline: none;
+  }
+  .note[data-color="blue"]   { --paper-c: var(--note-blue); }
+  .note[data-color="pink"]   { --paper-c: var(--note-pink); }
+  .note[data-color="green"]  { --paper-c: var(--note-green); }
+  .note[data-color="yellow"] { --paper-c: var(--note-yellow); }
+  .note :focus-visible { outline: 2px solid var(--indigo); outline-offset: 1px; }
+  .note__body {
+    flex: 1 1 auto;
+    margin: 0;
+    font-size: 1rem; line-height: 1.42; font-weight: 450; letter-spacing: -0.005em;
+    white-space: pre-wrap; overflow-wrap: anywhere;
+  }
+  .note__meta {
+    display: flex; align-items: center; justify-content: space-between; gap: 6px;
+    margin-top: 10px; min-height: var(--tap);
+    font-size: var(--sc-t-xs); color: var(--note-meta);
+  }
+  .note__info { white-space: nowrap; }
+  .note__meta { flex-wrap: wrap; row-gap: 0; }
+  .note__tools { margin-left: auto; }
+  .note__tag {
+    display: inline-block; padding: 2px 8px; border-radius: var(--sc-r-pill);
+    border: 1px solid currentColor; font-weight: 600; letter-spacing: 0.01em;
+  }
+  .note__tools { display: flex; margin-right: -6px; }
+  .tool {
+    display: grid; place-items: center;
+    width: var(--tap); height: var(--tap);
+    padding: 0; border: 0; border-radius: 50%;
+    background: transparent; color: var(--note-meta);
+  }
+  .tool svg { width: 19px; height: 19px; }
+  @media (hover: hover) and (pointer: fine) {
+    .tool { transition: background-color var(--sc-d-fast) var(--sc-ease-out), color var(--sc-d-fast) var(--sc-ease-out); }
+    .tool:hover { background: rgb(22 22 28 / 0.09); color: var(--note-ink); }
+  }
+  .tool:active { transform: scale(0.94); }
+
+  /* editing in place */
+  .note--edit { aspect-ratio: auto; transform: none; padding: 16px; }
+  .note--edit label.edit__label { font-size: var(--sc-t-sm); font-weight: 600; }
+  .note--edit textarea {
+    display: block; width: 100%; margin-top: 6px; min-height: 7.5rem; resize: vertical;
+    padding: 10px 12px; border-radius: 6px;
+    border: 1.5px solid rgb(22 22 28 / 0.6);
+    background: rgb(255 255 255 / 0.55); color: var(--note-ink);
+    font-size: 1rem; line-height: 1.42;
+  }
+  .note--edit textarea:focus-visible { outline: 2px solid var(--indigo); outline-offset: 1px; border-color: var(--indigo); }
+  .edit__error { margin: 6px 0 0; font-size: var(--sc-t-sm); font-weight: 600; color: var(--note-ink); }
+  .edit__actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+
+  /* empty wall: a different composition from the grid */
+  .wall-empty {
+    display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center;
+    gap: clamp(1.5rem, 4vw, 3.5rem);
+    padding: clamp(0.5rem, 2vw, 1.5rem) 0 clamp(1rem, 3vw, 2rem);
+  }
+  .wall-empty[hidden] { display: none; }
+  .wall-empty__slot {
+    width: clamp(8.5rem, 16vw, 11rem); aspect-ratio: 1 / 1;
+    border: 2px dashed rgb(244 242 238 / 0.45); border-radius: var(--r-note);
+    transform: rotate(-2deg);
+    display: grid; place-items: center; color: rgb(244 242 238 / 0.6);
+  }
+  .wall-empty__slot svg { width: 34px; height: 34px; }
+  .wall-empty h3 { margin: 0; font-size: var(--sc-t-xl); font-weight: 600; letter-spacing: var(--sc-track-snug); line-height: 1.15; }
+  .wall-empty p { margin: var(--sc-2) 0 0; color: var(--on-board-soft); max-width: 36ch; }
+  .wall-empty a {
+    display: inline-flex; align-items: center; min-height: var(--tap); margin-top: var(--sc-3);
+    color: var(--on-board); font-weight: 600; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.28em;
+  }
+
+  .board__foot {
+    display: flex; align-items: center; gap: var(--sc-3); flex-wrap: wrap;
+    min-height: var(--tap); margin-top: clamp(1rem, 2.5vw, 2rem);
+    color: var(--on-board-soft); font-size: var(--sc-t-sm);
+  }
+  .board__foot p { margin: 0; }
+  .board__foot .btn--ghost { color: var(--on-board); border-color: rgb(244 242 238 / 0.5); }
+
+  /* --------------------------------------------------------------- buttons -- */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: var(--tap); padding: 0 18px;
+    border-radius: var(--sc-r-pill); border: 1.5px solid transparent;
+    font-size: 1rem; font-weight: 600; line-height: 1; white-space: nowrap;
+  }
+  .btn--primary { background: var(--indigo); color: #FFFFFF; }
+  .btn--ghost { background: transparent; color: var(--note-ink); border-color: rgb(22 22 28 / 0.45); }
+  @media (hover: hover) and (pointer: fine) {
+    .btn { transition: background-color var(--sc-d-fast) var(--sc-ease-out), border-color var(--sc-d-fast) var(--sc-ease-out); }
+    .btn--primary:hover { background: var(--periwinkle); }
+    .btn--ghost:hover { border-color: currentColor; }
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn[aria-disabled="true"] { background: var(--periwinkle); }
+
+  /* --------------------------------------------------------------- composer -- */
+  .compose-act { padding-block: var(--sc-4) clamp(3rem, 10vh, 6rem); }
+  .composer {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(16rem, 0.9fr);
+    grid-template-areas: "label label" "paper side";
+    gap: var(--sc-3) clamp(1.5rem, 4vw, 3.5rem);
+    max-width: 64rem;
+  }
+  .composer__label {
+    grid-area: label;
+    font-size: var(--sc-t-xl); font-weight: 600; letter-spacing: var(--sc-track-snug); line-height: 1.15;
+  }
+  .composer__paper {
+    grid-area: paper; position: relative;
+    background: var(--paper-c, var(--note-none));
+    border-radius: var(--r-note);
+    box-shadow: var(--sc-e2), inset 0 0 0 1.5px rgb(22 22 28 / 0.6);
+    transition: background-color 180ms var(--sc-ease-out);
+  }
+  .composer__paper[data-color="blue"]   { --paper-c: var(--note-blue); }
+  .composer__paper[data-color="pink"]   { --paper-c: var(--note-pink); }
+  .composer__paper[data-color="green"]  { --paper-c: var(--note-green); }
+  .composer__paper[data-color="yellow"] { --paper-c: var(--note-yellow); }
+  .composer__paper:focus-within { box-shadow: var(--sc-e2), inset 0 0 0 2px var(--indigo); }
+  .composer textarea {
+    display: block; width: 100%; min-height: clamp(11rem, 26vh, 15rem); resize: vertical;
+    padding: 20px 22px; border: 0; border-radius: var(--r-note);
+    background: transparent; color: var(--note-ink);
+    font-size: 1.25rem; line-height: 1.45; font-weight: 450;
+  }
+  .composer textarea:focus-visible { outline: none; }
+  .composer textarea::placeholder { color: #45455A; opacity: 1; }
+  .composer__paper.is-invalid { box-shadow: var(--sc-e2), inset 0 0 0 2px var(--note-ink); }
+  .composer__error { margin: 10px 0 0; font-weight: 600; color: var(--note-ink); display: flex; gap: 8px; align-items: center; }
+  .composer__error[hidden] { display: none; }
+  .composer__error svg { width: 18px; height: 18px; flex: none; }
+  .composer__side { grid-area: side; display: flex; flex-direction: column; gap: var(--sc-5); }
+
+  .swatches { border: 0; margin: 0; padding: 0; min-width: 0; }
+  .swatches legend { padding: 0; margin-bottom: var(--sc-2); font-weight: 600; }
+  .swatches legend span { font-weight: 400; color: var(--sc-ink-soft); }
+  .swatches__list { display: flex; flex-wrap: wrap; gap: 8px; }
+  .swatch { position: relative; }
+  .swatch input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+  .swatch label {
+    display: inline-flex; align-items: center; gap: 8px;
+    min-height: var(--tap); padding: 0 14px 0 8px;
+    border-radius: var(--sc-r-pill);
+    border: 1.5px solid rgb(22 22 28 / 0.22);
+    background: #FFFFFF;
+    font-size: 1rem; font-weight: 500; cursor: pointer; user-select: none;
+  }
+  .swatch__chip {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--chip); box-shadow: inset 0 0 0 1px rgb(22 22 28 / 0.22);
+    display: grid; place-items: center; color: var(--note-ink);
+  }
+  .swatch__chip svg { width: 15px; height: 15px; opacity: 0; }
+  .swatch input:checked + label { border: 2px solid var(--indigo); font-weight: 650; padding-left: 7.5px; }
+  .swatch input:checked + label .swatch__chip svg { opacity: 1; }
+  .swatch input:focus-visible + label { outline: 2px solid var(--indigo); outline-offset: 3px; }
+  @media (hover: hover) and (pointer: fine) {
+    .swatch label { transition: border-color var(--sc-d-fast) var(--sc-ease-out); }
+    .swatch label:hover { border-color: var(--indigo); }
+  }
+  [data-chip="none"]   { --chip: var(--note-none); }
+  [data-chip="none"]   { background-image: repeating-linear-gradient(135deg, transparent 0 5px, rgb(22 22 28 / 0.16) 5px 6px); }
+  [data-chip="blue"]   { --chip: var(--note-blue); }
+  [data-chip="pink"]   { --chip: var(--note-pink); }
+  [data-chip="green"]  { --chip: var(--note-green); }
+  [data-chip="yellow"] { --chip: var(--note-yellow); }
+  .note--edit .swatch label { background: rgb(255 255 255 / 0.7); padding-right: 12px; font-size: var(--sc-t-sm); }
+  .note--edit .swatches { margin-top: 12px; }
+  .note--edit .swatches legend { font-size: var(--sc-t-sm); }
+
+  .composer__actions { display: flex; flex-direction: column; align-items: flex-start; gap: var(--sc-3); }
+  .stick { min-height: 52px; padding: 0 28px; font-size: 1rem; box-shadow: var(--sc-e1); }
+  .composer__status { margin: 0; font-size: var(--sc-t-sm); color: var(--sc-ink-soft); min-height: 1.5em; }
+  .composer__status[data-tone="error"] { color: var(--note-ink); font-weight: 600; }
+  .composer__status[data-tone="ok"] { color: var(--note-ink); font-weight: 600; }
+
+  /* the flight: the only engineered motion on the page */
+  .flight {
+    position: fixed; z-index: 80; margin: 0; pointer-events: none;
+    box-shadow: var(--sc-e3);
+    will-change: transform, opacity;
+  }
+
+  /* ---------------------------------------------------- bottle, side by side -- */
+  @media (min-width: 1280px) {
+    .bottle {
+      grid-template-columns: minmax(0, 1fr) minmax(23rem, 0.72fr);
+      grid-template-areas: "head felt" "wb felt";
+      gap: 0;
+      align-items: start;
+    }
+    .wall-head { padding: 0 calc(var(--neck, 110px) + 12px) 26px 10px; align-self: end; }
+    .board { align-self: stretch; padding: 30px 32px 30px 36px; }
+    .whiteboard { border-radius: 46px 0 0 46px; height: auto; min-height: clamp(340px, 46svh, 470px); align-self: stretch; }
+    .bottle.is-drawn .bottle__shape { display: block; }
+    .bottle.is-drawn .board { background: transparent; box-shadow: none; border-radius: 0; }
+    .bottle.is-drawn .whiteboard { box-shadow: none; }
+    .bottle.is-drawn .wb__surface { margin-right: calc(var(--neck, 110px) + 10px); margin-left: 22px; }
+    .bottle.is-drawn .wb__tray { padding-left: 22px; padding-right: calc(var(--neck, 110px) * 0.8); }
+    .wall { grid-template-columns: repeat(auto-fill, minmax(8.75rem, 1fr)); gap: 14px; }
+    .note { padding: 16px 12px 6px 16px; }
+    .flower--w1 { right: 30%; top: -16px; }
+  }
+  @media (min-width: 1024px) {
+    .room > .sign { position: fixed; top: clamp(1.5rem, 6vh, 4rem); left: var(--sc-gutter); margin: 0; }
+    .room { padding-left: calc(var(--sc-gutter) + var(--sign-w) + clamp(2rem, 4vw, 4rem)); }
+  }
+  /* --------------------------------------------------------------- phone -- */
+  @media (max-width: 700px) {
+    .room { padding-inline: 12px; }
+    .room > .sign { margin-bottom: var(--sc-5); }
+    .wall-head { padding-inline: 4px; }
+    .board { padding: 18px 14px 18px; border-radius: 22px; }
+    .board__meta { text-align: left; }
+    .whiteboard { border-radius: 22px; height: clamp(360px, 62svh, 520px); }
+    .wb__surface { margin: 10px 10px 0; }
+    .wb__tray { padding: 8px 10px 12px; }
+    .wb__status { margin-left: 0; flex-basis: 100%; padding-left: 2px; }
+    .wall { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .wall > li.is-editing { grid-column: 1 / -1; }
+    .note { padding: 14px 12px 4px 14px; aspect-ratio: auto; min-height: 10rem; }
+    .note__body { font-size: 1rem; }
+    .wall-empty { grid-template-columns: 1fr; }
+    .composer { grid-template-columns: 1fr; grid-template-areas: "label" "paper" "side"; padding-inline: 6px; }
+    .compose-act { padding-top: var(--sc-2); }
+    .flower--w1 { right: 18px; }
+  }
+  @media (max-width: 380px) {
+    .wall { grid-template-columns: 1fr; }
+  }
+</style>
+
+</head>
+<body>
+<!--
+THESIS: The building is the interface. The painted corridor sign is the only navigation, and the page ends in a working note field. Refuses the landing-page shape: no hero claim, no CTA bar, no feature cards.
+OWN-WORLD: The real Creative Episode wall. Grey marble (#9C9CA1, pale veins), the neon wordmark, the marker line "Good Ideas Start Here" with the neon bulb, and the bottle board: a long whiteboard flowing into a felt-black #16161C bulb, outlined by a warm LED strip (#FFC24E). Indigo #2E3A8C corridor pills with white Rubik type; paper notes in #7EC8E3 / #F4A7C3 / #C5E87A / #FFE56B or plain paper; paper flowers on the frame.
+STORY: Know where you are (the sign), feel the wall (real notes), write a sentence and watch it stick, with or without a color.
+FIRST VIEWPORT: Sign fixed top-left. The wall fills the rest: neon name and painted line above the whiteboard, the felt bulb with the notes at right, all inside one LED outline.
+FORM: Scrollcraft grammar 2.3 Live surface, brief-pinned; Impeccable concept roll not run because the brief pins world and grammar (seed key: none).
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
+-->
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5M5.5 11.5 12 5l6.5 6.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-left" viewBox="0 0 24 24"><path d="M19 12H5m6.5-6.5L5 12l6.5 6.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-right" viewBox="0 0 24 24"><path d="M5 12h14m-6.5-6.5L19 12l-6.5 6.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 5v14m-6.5-6.5L12 19l6.5-6.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4Zm9.5-13.5 4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4.5 7h15M10 4h4M6.5 7l.9 12.1A1 1 0 0 0 8.4 20h7.2a1 1 0 0 0 1-.9L17.5 7M10 11v5.5M14 11v5.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-eraser" viewBox="0 0 24 24"><path d="m14.5 4.5 5 5L11 18H6.5L4 15.5l10.5-11ZM8.5 10.5l5 5M11 18h9" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5M4 9h10.5a5.5 5.5 0 0 1 0 11H11" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7.5v5.5M12 16.3v.2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+  </defs>
+</svg>
+
+<main id="top">
+
+  <!-- THE ROOM: the corridor sign, then the Creative Episode wall exactly as it is built:
+       neon name, painted line and bulb, and the bottle board (whiteboard + felt) inside an LED strip. -->
+  <section id="room" class="room" data-sc-act="flow" aria-label="Creative Episode">
+
+    <!-- The building's own wayfinding. The only navigation on the page. -->
+    <nav class="sign" aria-label="Corridor sign">
+      <ol>
+        <li><span class="pill"><span class="pill__arrow"><svg aria-hidden="true"><use href="#i-up"/></svg></span>Founder &amp; Story Producer<span class="sr-only">, straight ahead</span></span></li>
+        <li><span class="pill"><span class="pill__arrow"><svg aria-hidden="true"><use href="#i-up"/></svg></span>Black Box<span class="sr-only">, straight ahead</span></span></li>
+        <li><span class="pill"><span class="pill__arrow"><svg aria-hidden="true"><use href="#i-left"/></svg></span>CK Hall<span class="sr-only">, to the left</span></span></li>
+        <li><a class="pill pill--here" href="#wall" aria-current="page"><span class="pill__arrow"><svg aria-hidden="true"><use href="#i-left"/></svg></span>Creative Episode<span class="sr-only">, you are here</span></a></li>
+        <li><span class="pill pill--right">GM<span class="sr-only">, to the right</span><span class="pill__arrow"><svg aria-hidden="true"><use href="#i-right"/></svg></span></span></li>
+        <li><span class="pill pill--right" title="Money Lab">The M-Lab<span class="sr-only">, to the right. Money Lab, not open yet</span><span class="pill__arrow"><svg aria-hidden="true"><use href="#i-right"/></svg></span></span></li>
+      </ol>
+    </nav>
+
+    <div class="bottle" id="bottle">
+      <svg class="bottle__shape" id="bottle-shape" aria-hidden="true" focusable="false">
+        <path class="bottle__fill" id="bottle-fill" d=""/>
+        <path class="bottle__led" id="bottle-led" d=""/>
+      </svg>
+
+      <header class="wall-head">
+        <h1><img src="assets/creative-episode.webp" width="560" height="221" alt="Creative Episode" fetchpriority="high"></h1>
+        <p class="wall-head__line">
+          <img src="assets/good-ideas-start-here.webp" width="169" height="352" alt="Good Ideas Start Here">
+          <img class="wall-head__bulb" src="assets/lightbulb.webp" width="164" height="210" alt="">
+        </p>
+      </header>
+
+      <!-- THE FELT: live notes. -->
+      <section id="wall" class="board" aria-labelledby="wall-title" tabindex="-1">
+        <h2 class="sr-only" id="wall-title">Notes on the wall</h2>
+        <img class="flower flower--g1" src="assets/flower-gold.webp" width="160" height="156" alt="">
+        <img class="flower flower--g2" src="assets/flower-gold.webp" width="160" height="156" alt="">
+        <img class="flower flower--w1" src="assets/flower-white.webp" width="160" height="157" alt="">
+        <img class="flower flower--w2" src="assets/flower-white.webp" width="160" height="157" alt="">
+
+        <header class="board__head">
+          <div class="board__meta">
+            <p class="board__count" id="board-count"></p>
+            <p class="board__sample" id="arrival-count"></p>
+          </div>
+          <a class="board__go" href="#compose" data-jump="compose">Write a note<svg aria-hidden="true"><use href="#i-down"/></svg></a>
+        </header>
+
+        <ol class="wall" id="wall-list" aria-label="Notes" data-sc-in data-sc-stagger="45"></ol>
+
+        <div class="wall-empty" id="wall-empty" hidden>
+          <div class="wall-empty__slot" aria-hidden="true"><svg><use href="#i-plus"/></svg></div>
+          <div>
+            <h3>Nothing on the wall yet.</h3>
+            <p>The first note you stick goes right here.</p>
+            <a href="#compose" data-jump="compose">Write the first note</a>
+          </div>
+        </div>
+
+        <div class="board__foot">
+          <p id="board-status" role="status" aria-live="polite"></p>
+          <button type="button" class="btn btn--ghost" id="undo" hidden>Undo</button>
+          <button type="button" class="btn btn--ghost" id="retry" hidden>Retry</button>
+        </div>
+      </section>
+
+      <!-- THE WHITEBOARD: draw with a mouse, pen or finger. -->
+      <section class="whiteboard" id="whiteboard" aria-labelledby="wb-title">
+        <h2 class="sr-only" id="wb-title">Whiteboard</h2>
+        <div class="wb__surface" id="wb-surface" data-tool="pen">
+          <canvas id="wb-canvas" role="img" aria-label="Whiteboard drawing. Empty."></canvas>
+          <p class="wb__hint" id="wb-hint">Draw here with a mouse, pen, or finger.</p>
+        </div>
+        <div class="wb__tray" role="group" aria-label="Whiteboard tools">
+          <button type="button" class="wb__tool" data-tool="pen" data-ink="#16161C" aria-pressed="true"><span class="wb__ink" style="--ink:#16161C"></span>Black</button>
+          <button type="button" class="wb__tool" data-tool="pen" data-ink="#2E3A8C" aria-pressed="false"><span class="wb__ink" style="--ink:#2E3A8C"></span>Blue</button>
+          <button type="button" class="wb__tool" data-tool="eraser" aria-pressed="false"><svg aria-hidden="true"><use href="#i-eraser"/></svg>Eraser</button>
+          <span class="wb__sep" aria-hidden="true"></span>
+          <button type="button" class="wb__tool" id="wb-undo" aria-label="Undo last whiteboard change" aria-disabled="true"><svg aria-hidden="true"><use href="#i-undo"/></svg>Undo</button>
+          <button type="button" class="wb__tool" id="wb-clear" aria-disabled="true"><svg aria-hidden="true"><use href="#i-trash"/></svg>Clear</button>
+          <p class="wb__status" id="wb-status" role="status" aria-live="polite"></p>
+          <button type="button" class="wb__tool" id="wb-retry" hidden>Retry</button>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <!-- THE CLOSE: a real input, not a promise. -->
+  <section id="compose" class="room compose-act" data-sc-act="flow" aria-label="Write a note">
+    <form class="composer" id="composer" novalidate>
+      <label class="composer__label" for="note-body">Your idea</label>
+
+      <div class="composer__paper" id="composer-paper" data-color="">
+        <textarea id="note-body" name="body" rows="5" maxlength="600" required
+          placeholder="Write it the way it comes out."
+          aria-describedby="note-error"></textarea>
+      </div>
+
+      <div class="composer__side">
+        <fieldset class="swatches">
+          <legend>Paper color <span>(optional)</span></legend>
+          <div class="swatches__list" id="composer-swatches"></div>
+        </fieldset>
+
+        <div class="composer__actions">
+          <button type="submit" class="btn btn--primary stick" id="stick">Stick it</button>
+          <p class="composer__status" id="compose-status" role="status" aria-live="polite"></p>
+          <p class="composer__error" id="note-error" role="alert" hidden><svg aria-hidden="true"><use href="#i-alert"/></svg>Write something first. One word is enough.</p>
+        </div>
+      </div>
+    </form>
+  </section>
+
+</main>
+
+<script src="scrollcraft.js"></script>
+<!-- Data layer. ce-config.js exists only when the wall server serves this page (window.CE_STORE = 'api')
+     or the GitHub Pages deploy adds it (window.CE_STORE = 'neon');
+     ce-store.js owns every read and write of notes and whiteboard strokes. Keep both tags, in this order. -->
+<script src="ce-config.js"></script>
+<script src="ce-store.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  /* Data comes from ce-store.js (window.CE). This script only presents it. */
+  var API = CE.mode === 'api';
+  var notesStore = CE.notes;
+  var live = CE.live;          /* the office server's live channel; null on GitHub Pages and from a file */
+  var COLORS = [
+    { value: null, key: 'none', name: 'No color' },
+    { value: 'blue', key: 'blue', name: 'Blue' },
+    { value: 'pink', key: 'pink', name: 'Pink' },
+    { value: 'green', key: 'green', name: 'Green' },
+    { value: 'yellow', key: 'yellow', name: 'Yellow' }
+  ];
+  var COLOR_NAME = { blue: 'Blue', pink: 'Pink', green: 'Green', yellow: 'Yellow' };
+
+  var reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  var $ = function (id) { return document.getElementById(id); };
+
+
+  /* ------------------------------------------------------------- state -- */
+  var notes = [];
+  var editing = null;
+  var lastRemoved = null;
+  var undoTimer = 0;
+  var sc = null;
+  var loadState = 'loading';   /* loading | ready | error */
+  var hasMore = false;
+  var pending = 0;             /* note writes in flight */
+  var pendingCreate = null;    /* last unconfirmed create, reused on retry so it never lands twice */
+  var removing = {};
+  var restoring = false;
+
+  var list = $('wall-list');
+  var nodes = new Map();
+
+  var isSample = CE.isSample;
+  var uid = CE.uuid;
+  function tiltFor(id) {
+    var h = 0;
+    for (var i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) | 0;
+    var t = ((Math.abs(h) % 41) - 20) / 10;      /* -2.0 .. 2.0 deg */
+    if (Math.abs(t) < 0.6) t = t < 0 ? -0.8 : 0.8;
+    return t;
+  }
+  var fmtTime = new Intl.DateTimeFormat(undefined, { hour: '2-digit', minute: '2-digit' });
+  var fmtDay = new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'short' });
+  function when(iso) {
+    var d = new Date(iso);
+    if (isNaN(d)) return '';
+    var today = new Date().toDateString() === d.toDateString();
+    return today ? fmtTime.format(d) : fmtDay.format(d);
+  }
+  function snippet(s) { s = s.replace(/\s+/g, ' ').trim(); return s.length > 40 ? s.slice(0, 40) + '…' : s; }
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function icon(name) {
+    var ns = 'http://www.w3.org/2000/svg';
+    var s = document.createElementNS(ns, 'svg');
+    s.setAttribute('aria-hidden', 'true');
+    var u = document.createElementNS(ns, 'use');
+    u.setAttribute('href', '#i-' + name);
+    s.appendChild(u);
+    return s;
+  }
+
+  /* ---------------------------------------------------- color radiogroup -- */
+  function swatchGroup(container, name, selected) {
+    container.textContent = '';
+    COLORS.forEach(function (c) {
+      var wrap = el('div', 'swatch');
+      var id = name + '-' + c.key;
+      var input = el('input');
+      input.type = 'radio'; input.name = name; input.id = id; input.value = c.value || '';
+      if ((selected || null) === c.value) input.checked = true;
+      var label = el('label');
+      label.htmlFor = id;
+      var chip = el('span', 'swatch__chip');
+      chip.setAttribute('data-chip', c.key);
+      chip.appendChild(icon('check'));
+      label.appendChild(chip);
+      label.appendChild(document.createTextNode(c.name));
+      wrap.appendChild(input); wrap.appendChild(label);
+      container.appendChild(wrap);
+    });
+  }
+  function readColor(form, name) {
+    var v = (form.querySelector('input[name="' + name + '"]:checked') || {}).value || '';
+    return v ? v : null;
+  }
+
+  /* ------------------------------------------------------------ render -- */
+  function buildNote(n) {
+    var art = el('article', 'note');
+    art.tabIndex = -1;
+    art.setAttribute('data-color', n.color || 'none');
+    art.style.setProperty('--tilt', tiltFor(n.id) + 'deg');
+    var bodyId = 'nb-' + n.id;
+    art.setAttribute('aria-labelledby', bodyId);
+
+    var body = el('p', 'note__body', n.body);
+    body.id = bodyId; body.dir = 'auto';
+    art.appendChild(body);
+
+    var meta = el('footer', 'note__meta');
+    var info = el('span', 'note__info');
+    if (isSample(n)) {
+      info.appendChild(el('span', 'note__tag', 'Sample'));
+    } else {
+      var t = el('time', null, when(n.createdAt));
+      t.dateTime = n.createdAt;
+      t.title = new Date(n.createdAt).toLocaleString();
+      info.appendChild(t);
+    }
+    info.appendChild(el('span', 'sr-only', n.color ? ', ' + COLOR_NAME[n.color] + ' paper' : ', plain paper'));
+    meta.appendChild(info);
+
+    var tools = el('span', 'note__tools');
+    var edit = el('button', 'tool');
+    edit.type = 'button'; edit.setAttribute('data-act', 'edit');
+    edit.setAttribute('aria-label', 'Edit note: ' + snippet(n.body));
+    edit.appendChild(icon('edit'));
+    var del = el('button', 'tool');
+    del.type = 'button'; del.setAttribute('data-act', 'delete');
+    del.setAttribute('aria-label', 'Delete note: ' + snippet(n.body));
+    del.appendChild(icon('trash'));
+    tools.appendChild(edit); tools.appendChild(del);
+    meta.appendChild(tools);
+    art.appendChild(meta);
+    return art;
+  }
+
+  function buildEditor(n) {
+    var form = el('form', 'note note--edit');
+    form.setAttribute('data-color', n.color || 'none');
+    form.noValidate = true;
+    var taId = 'edit-' + n.id;
+    var label = el('label', 'edit__label', 'Edit note');
+    label.htmlFor = taId;
+    var ta = el('textarea');
+    ta.id = taId; ta.maxLength = 600; ta.value = n.body; ta.dir = 'auto';
+    var err = el('p', 'edit__error', 'A note needs words. Delete it instead if it is done.');
+    err.id = taId + '-err'; err.hidden = true; err.setAttribute('role', 'alert');
+    ta.setAttribute('aria-describedby', err.id);
+    var fs = el('fieldset', 'swatches');
+    fs.appendChild(el('legend', null, 'Paper color'));
+    var sw = el('div', 'swatches__list');
+    swatchGroup(sw, 'edit-color-' + n.id, n.color);
+    fs.appendChild(sw);
+    var actions = el('div', 'edit__actions');
+    var save = el('button', 'btn btn--primary', 'Save');
+    save.type = 'submit';
+    var cancel = el('button', 'btn btn--ghost', 'Cancel');
+    cancel.type = 'button'; cancel.setAttribute('data-act', 'cancel');
+    actions.appendChild(save); actions.appendChild(cancel);
+    form.appendChild(label); form.appendChild(ta); form.appendChild(err);
+    form.appendChild(fs); form.appendChild(actions);
+
+    sw.addEventListener('change', function () {
+      var c = readColor(form, 'edit-color-' + n.id);
+      form.setAttribute('data-color', c || 'none');
+      if (live) live.input(n.id, ta.value, c);
+    });
+    /* Live walls: every letter goes out as it is typed. CE.live skips empty bodies. */
+    ta.addEventListener('input', function () {
+      if (ta.value.trim()) { err.hidden = true; ta.removeAttribute('aria-invalid'); }
+      if (live) live.input(n.id, ta.value);
+    });
+    form.addEventListener('submit', function (e) { e.preventDefault(); saveEdit(n.id, form, ta, err); });
+    form.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { e.preventDefault(); cancelEdit(n.id); }
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); form.requestSubmit(); }
+    });
+    return form;
+  }
+
+  /* An open editor is never rebuilt by new data: that would reset the caret under the person typing. */
+  function sig(n) { return editing === n.id ? 'E\u0001' + n.createdAt : [n.body, n.color, n.createdAt].join('\u0001'); }
+
+  function render() {
+    var revealed = list.classList.contains('sc-in');
+    var seen = new Set();
+    notes.forEach(function (n, i) {
+      seen.add(n.id);
+      var li = nodes.get(n.id);
+      if (!li) {
+        li = el('li');
+        li.setAttribute('data-id', n.id);
+        if (revealed) li.classList.add('sc-in');
+        nodes.set(n.id, li);
+      }
+      var s = sig(n);
+      if (li.__sig !== s) {
+        li.textContent = '';
+        li.appendChild(editing === n.id ? buildEditor(n) : buildNote(n));
+        li.classList.toggle('is-editing', editing === n.id);
+        li.__sig = s;
+      }
+      if (list.children[i] !== li) list.insertBefore(li, list.children[i] || null);
+    });
+    nodes.forEach(function (li, id) {
+      if (!seen.has(id)) { li.remove(); nodes.delete(id); }
+    });
+
+    var count = notes.length;
+    var samples = notes.filter(isSample).length;
+    $('wall-empty').hidden = count > 0;
+    list.hidden = count === 0;
+    $('board-count').textContent = count === 0 ? 'Empty wall' : count + (count === 1 ? ' note' : ' notes');
+
+    var line = '';
+    if (count === 0) line = 'Yours can be the first note.';
+    else if (samples === count) line = (count === 1 ? 'It is a Sample.' : 'All marked Sample.') + ' Edit or delete them like any other.';
+    else if (samples) line = samples + ' marked Sample.';
+    else if (hasMore) line = 'Showing the newest ' + count + '.';
+    $('arrival-count').textContent = line;
+    $('arrival-count').hidden = !line;
+
+    if (sc) { sc.layout(); sc.read(); }
+    if (typeof drawBottle === 'function') drawBottle();
+  }
+
+  /* ------------------------------------------------------------ status -- */
+  function composeStatus(text, tone) {
+    var s = $('compose-status');
+    s.textContent = text;
+    if (tone) s.setAttribute('data-tone', tone); else s.removeAttribute('data-tone');
+  }
+  function boardStatus(text) { $('board-status').textContent = text; }
+  var isMac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+  var HINT = (isMac ? '⌘' : 'Ctrl') + ' + Enter also sticks it.';
+
+  /* ------------------------------------------------------------ commit -- */
+  /* Notes are pessimistic: the wall only changes from what the store confirms. */
+  function upsert(n) {
+    var i = notes.findIndex(function (x) { return x.id === n.id; });
+    if (i >= 0) { notes[i] = n; return; }
+    var t = Date.parse(n.createdAt), j = notes.length;
+    while (j > 0 && Date.parse(notes[j - 1].createdAt) > t) j--;
+    notes.splice(j, 0, n);
+  }
+  function drop(id) { notes = notes.filter(function (x) { return x.id !== id; }); }
+
+  var MSG = API ? {
+    create: "Couldn't reach the wall. Your words are still in the field. Try Stick it again.",
+    edit: "Couldn't reach the wall. Your edit is still open. Try Save again.",
+    remove: "Couldn't reach the wall. The note is still up.",
+    restore: "Couldn't reach the wall to put it back. Try Undo again.",
+    load: "Couldn't reach the wall. Check the connection, then retry.",
+    gone: 'Someone already took that note down.',
+    conflict: "Someone else changed this note. Their words are what's on the wall.",
+    quiet: 'The wall is quiet. Reconnecting…'
+  } : {
+    create: "Couldn't save on this device. Your words are still in the field. Try Stick it again.",
+    edit: "Couldn't save that change on this device. Your edit is still open.",
+    remove: "Couldn't remove that note on this device. It is still on the wall.",
+    restore: "Couldn't put it back on this device.",
+    load: "Couldn't open the notes on this device.",
+    gone: 'That note is already gone.',
+    conflict: "Someone else changed this note. Their words are what's on the wall."
+  };
+  var REJECTED = "The wall didn't accept that note. Keep it under 600 characters.";
+
+  /* ---------------------------------------------------------- composer -- */
+  var form = $('composer');
+  var ta = $('note-body');
+  var paper = $('composer-paper');
+  var stickBtn = $('stick');
+  var busy = false;
+  swatchGroup($('composer-swatches'), 'note-color', null);
+  $('composer-swatches').addEventListener('change', function () {
+    paper.setAttribute('data-color', readColor(form, 'note-color') || '');
+  });
+  function resetColor() {
+    var none = form.querySelector('input[name="note-color"][value=""]');
+    if (none) none.checked = true;
+    paper.setAttribute('data-color', '');
+  }
+  function setBusy(b) {
+    busy = b;
+    stickBtn.setAttribute('aria-disabled', b ? 'true' : 'false');
+  }
+  function showError(on) {
+    $('note-error').hidden = !on;
+    paper.classList.toggle('is-invalid', on);
+    if (on) ta.setAttribute('aria-invalid', 'true'); else ta.removeAttribute('aria-invalid');
+  }
+  ta.addEventListener('input', function () { if (ta.value.trim()) showError(false); });
+  ta.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); form.requestSubmit(); }
+  });
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (busy) return;
+    var body = ta.value.trim();
+    if (!body) { showError(true); composeStatus(''); ta.focus(); return; }
+    showError(false);
+    var color = readColor(form, 'note-color');
+    if (!pendingCreate || pendingCreate.body !== body || pendingCreate.color !== color) {
+      pendingCreate = { id: uid(), body: body, color: color };
+    }
+    setBusy(true);
+    pending++;
+    composeStatus('Sticking it to the wall…');
+    notesStore.create(pendingCreate).then(function (saved) {
+      pending--;
+      pendingCreate = null;
+      if (loadState !== 'ready') return loadWall().then(function () { return saved; });
+      upsert(saved);
+      render();
+      return saved;
+    }).then(function (saved) {
+      return land(saved);
+    }, function (err) {
+      pending--;
+      setBusy(false);
+      composeStatus(err && err.status === 400 ? REJECTED : MSG.create, 'error');
+      throw null;
+    }).then(function () {
+      setBusy(false);
+      composeStatus('Stuck. It is on the wall.', 'ok');
+      ta.focus({ preventScroll: true });
+    }, function () {});
+  });
+
+  /* The landing: the note leaves the field and sticks in its slot. */
+  function land(note) {
+    var li = nodes.get(note.id);
+    var art = li && li.firstChild;
+    var fromRect = paper.getBoundingClientRect();
+    var textForFlight = ta.value;
+    ta.value = '';
+    resetColor();
+    if (!art) return Promise.resolve();
+
+    if (reduced.matches || !art.animate) {
+      if (art.animate) art.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 220, easing: 'ease-out' });
+      return Promise.resolve();
+    }
+
+    var r = art.getBoundingClientRect();
+    if (r.top < 8 || r.bottom > innerHeight - 8) {
+      art.scrollIntoView({ block: 'center', behavior: 'instant' });
+      r = art.getBoundingClientRect();
+      fromRect = paper.getBoundingClientRect();
+    }
+    var clone = art.cloneNode(true);
+    clone.removeAttribute('aria-labelledby');
+    clone.querySelectorAll('[id]').forEach(function (x) { x.removeAttribute('id'); });
+    clone.querySelectorAll('button').forEach(function (b) { b.tabIndex = -1; });
+    clone.setAttribute('aria-hidden', 'true');
+    clone.classList.add('flight');
+    clone.style.left = r.left + 'px'; clone.style.top = r.top + 'px';
+    clone.style.width = r.width + 'px'; clone.style.height = r.height + 'px';
+    clone.style.transform = 'none';
+    document.body.appendChild(clone);
+    art.style.visibility = 'hidden';
+
+    var tilt = tiltFor(note.id);
+    var fx = Math.max(fromRect.left, Math.min(fromRect.left + 24, innerWidth - r.width)) - r.left;
+    var fy = (fromRect.top + 16) - r.top;
+    var anim = clone.animate([
+      { transform: 'translate(' + fx + 'px,' + fy + 'px) rotate(0deg) scale(0.96)', opacity: 0 },
+      { transform: 'translate(' + fx + 'px,' + (fy - 6) + 'px) rotate(0deg) scale(1.02)', opacity: 1, offset: 0.14 },
+      { transform: 'translate(0px,-4px) rotate(' + tilt + 'deg) scale(1.035)', opacity: 1, offset: 0.84 },
+      { transform: 'translate(0px,0px) rotate(' + tilt + 'deg) scale(1)', opacity: 1 }
+    ], { duration: 680, easing: 'cubic-bezier(0.23, 1, 0.32, 1)', fill: 'forwards' });
+    return new Promise(function (resolve) {
+      var done = function () { art.style.visibility = ''; clone.remove(); resolve(); };
+      anim.onfinish = done; anim.oncancel = done;
+    });
+  }
+
+  /* ------------------------------------------------------ wall actions -- */
+  list.addEventListener('click', function (e) {
+    var btn = e.target.closest('button[data-act]');
+    if (!btn) return;
+    var li = btn.closest('li[data-id]');
+    if (!li) return;
+    var id = li.getAttribute('data-id');
+    var act = btn.getAttribute('data-act');
+    if (act === 'edit') startEdit(id);
+    else if (act === 'delete') remove(id);
+    else if (act === 'cancel') cancelEdit(id);
+  });
+
+  /* What the note said when the editor opened: Cancel puts it back, and its revision guards the save. */
+  var editStart = null;
+  function noteById(id) { return notes.find(function (n) { return n.id === id; }); }
+  function startEdit(id) {
+    if (editing && editing !== id) cancelEdit(editing, true);
+    var n = noteById(id);
+    if (!n) return;
+    editing = id;
+    editStart = { body: n.body, color: n.color, revision: n.revision };
+    if (live) live.begin(id, n.revision);
+    render();
+    var t = $('edit-' + id);
+    if (t) { t.focus(); t.setSelectionRange(t.value.length, t.value.length); }
+  }
+  function focusTool(id, act) {
+    var li = nodes.get(id);
+    var b = li && li.querySelector('button[data-act="' + act + '"]');
+    if (b) b.focus();
+  }
+  /* On a live wall the letters are already out, so Cancel sends the words the note had when it opened. */
+  function cancelEdit(id, silent) {
+    if (live && editStart) {
+      var n = noteById(id);
+      if (n && (n.body !== editStart.body || n.color !== editStart.color)) live.input(id, editStart.body, editStart.color);
+      live.end(id);
+    }
+    editing = null;
+    editStart = null;
+    render();
+    if (!silent) focusTool(id, 'edit');
+  }
+  function closeEditor(id) {
+    if (live) live.end(id);
+    editing = null;
+    editStart = null;
+  }
+  /* The server kept someone else's words: the open editor shows them, caret at the end. */
+  function showConflict(saved) {
+    upsert(saved);
+    if (editing === saved.id) {
+      var t = $('edit-' + saved.id);
+      if (t) {
+        t.value = saved.body;
+        if (document.activeElement === t) t.setSelectionRange(t.value.length, t.value.length);
+      }
+      var f = t && t.form;
+      var radio = f && f.querySelector('input[name="edit-color-' + saved.id + '"][value="' + (saved.color || '') + '"]');
+      if (radio) { radio.checked = true; f.setAttribute('data-color', saved.color || 'none'); }
+      if (editStart) editStart.revision = saved.revision;
+      if (live) live.saved(saved);
+    }
+    render();
+    boardStatus(MSG.conflict);
+  }
+  function editFailed(id, f, e) {
+    f.removeAttribute('aria-busy');
+    if (e && e.status === 404) { closeEditor(id); drop(id); render(); boardStatus(MSG.gone); return; }
+    if (e && e.status === 409 && e.note) { showConflict(e.note); return; }
+    boardStatus(e && e.status === 400 ? REJECTED : MSG.edit);
+  }
+  function saveEdit(id, f, t, err) {
+    var body = t.value.trim();
+    if (!body) { err.hidden = false; t.setAttribute('aria-invalid', 'true'); t.focus(); return; }
+    if (f.getAttribute('aria-busy') === 'true') return;
+    var color = readColor(f, 'edit-color-' + id);
+    f.setAttribute('aria-busy', 'true');
+    pending++;
+    boardStatus('Saving…');
+    function done(saved) {
+      pending--;
+      closeEditor(id);
+      if (saved) upsert(saved);
+      render();
+      boardStatus('Note saved.');
+      focusTool(id, 'edit');
+    }
+    function viaRest(revision) {
+      return notesStore.update(id, { body: body, color: color, revision: revision }).then(function (saved) {
+        if (live) live.saved(saved);
+        done(saved);
+      }, function (e) { pending--; editFailed(id, f, e); });
+    }
+    if (!live) { viaRest(editStart ? editStart.revision : undefined); return; }
+    /* Live: the words are already going out. Wait for the last of them; if the socket is down, save over REST. */
+    live.input(id, body, color);
+    live.settle(id).then(function (outcome) {
+      if (outcome === 'ok') { done(null); return; }
+      if (outcome === 'offline') { viaRest(live.revision(id)); return; }
+      pending--;
+      f.removeAttribute('aria-busy');   /* conflict or gone: the live handlers already said so */
+    });
+  }
+
+  function remove(id) {
+    var removed = notes.find(function (n) { return n.id === id; });
+    if (!removed || removing[id]) return;
+    removing[id] = true;
+    pending++;
+    notesStore.remove(id).then(function () {
+      pending--;
+      delete removing[id];
+      if (editing === id) closeEditor(id);
+      drop(id);
+      render();
+      lastRemoved = { note: removed };
+      boardStatus('Note removed.');
+      var u = $('undo');
+      u.hidden = false;
+      clearTimeout(undoTimer);
+      undoTimer = setTimeout(function () {
+        if (document.activeElement === u) { var f = list.querySelector('button[data-act="edit"]'); if (f) f.focus(); else ta.focus({ preventScroll: true }); }
+        u.hidden = true; lastRemoved = null; if ($('board-status').textContent === 'Note removed.') boardStatus(''); }, 10000);
+      u.focus();
+    }, function (e) {
+      pending--;
+      delete removing[id];
+      if (e && e.status === 404) { if (editing === id) closeEditor(id); drop(id); render(); boardStatus(MSG.gone); return; }
+      boardStatus(MSG.remove);
+    });
+  }
+  /* Undo restores the same note: same id, same createdAt, same place on the wall. */
+  $('undo').addEventListener('click', function () {
+    if (!lastRemoved || restoring) return;
+    var r = lastRemoved;
+    restoring = true;
+    pending++;
+    notesStore.restore(r.note.id).then(function (saved) {
+      pending--;
+      restoring = false;
+      lastRemoved = null;
+      clearTimeout(undoTimer);
+      $('undo').hidden = true;
+      upsert(saved);
+      render();
+      boardStatus('Note is back on the wall.');
+      focusTool(saved.id, 'delete');
+    }, function () {
+      pending--;
+      restoring = false;
+      boardStatus(MSG.restore);
+    });
+  });
+
+  /* ------------------------------------------------------ live notes -- */
+  /* What other walls do arrives through CE.live. An open editor keeps its own words and caret;
+     only a revision conflict replaces them, and only a removal closes it. */
+  if (live) {
+    live.on('note', function (n) {
+      if (loadState !== 'ready') return;
+      upsert(n); render();
+    });
+    live.on('ack', function (n) { upsert(n); render(); });
+    live.on('conflict', showConflict);
+    live.on('drop', function (id) {
+      if (removing[id] || !noteById(id)) return;   /* our own removal, already handled */
+      var wasEditing = editing === id;
+      if (wasEditing) closeEditor(id);
+      drop(id); render();
+      if (wasEditing) boardStatus(MSG.gone);
+    });
+    live.on('hello', function (data) {
+      notes = data.notes.slice();
+      hasMore = !!data.hasMore;
+      if (editing && !noteById(editing)) { closeEditor(editing); boardStatus(MSG.gone); }
+      if (loadState !== 'ready') {
+        loadState = 'ready';
+        $('retry').hidden = true;
+        var s = $('board-status').textContent;
+        if (s === MSG.load || s === 'Loading the wall…') boardStatus('');
+      }
+      render();
+    });
+    /* The only sign of a dropped connection is one line in the status region that is already there. */
+    var beforeQuiet = null;
+    live.on('state', function (up) {
+      var s = $('board-status').textContent;
+      if (!up && s !== MSG.quiet) { beforeQuiet = s; boardStatus(MSG.quiet); }
+      if (up && s === MSG.quiet) { boardStatus(beforeQuiet || ''); beforeQuiet = null; }
+    });
+  }
+
+  /* Jumps to the note field land the cursor in it. */
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[data-jump="compose"]');
+    if (!a) return;
+    e.preventDefault();
+    $('compose').scrollIntoView({ block: 'start', behavior: reduced.matches ? 'auto' : 'smooth' });
+    ta.focus({ preventScroll: true });
+    history.replaceState(null, '', '#compose');
+  });
+
+  /* Clear the staggered entrance delay once the wall is up, so later changes are not delayed. */
+  new MutationObserver(function () {
+    if (list.classList.contains('sc-in')) {
+      setTimeout(function () { Array.prototype.forEach.call(list.children, function (li) { li.style.transitionDelay = ''; }); }, 1400);
+    }
+  }).observe(list, { attributes: true, attributeFilter: ['class'] });
+
+  /* ------------------------------------------------- the bottle outline -- */
+  /* The board on the wall is one shape: a long whiteboard flowing into a felt bulb,
+     outlined by an LED strip. Drawn from the measured layout so it follows real content. */
+  var bottle = $('bottle');
+  var wideMQ = matchMedia('(min-width: 1280px)');
+  function drawBottle() {
+    if (!wideMQ.matches) { bottle.classList.remove('is-drawn'); return; }
+    var bb = bottle.getBoundingClientRect();
+    var fr = $('wall').getBoundingClientRect();
+    var wr = $('whiteboard').getBoundingClientRect();
+    var W = bb.width, fx = fr.left - bb.left, H = fr.bottom - bb.top;
+    var wt = wr.top - bb.top, wb = wr.bottom - bb.top;
+    var nl = Math.round(Math.max(80, Math.min(140, W * 0.1)));
+    bottle.style.setProperty('--neck', nl + 'px');
+    var nr = 26, rw = 46, rf = 34, k;
+    var A = [fx - nl, wt], T = [fx + nr, 0];
+    var tall = H - wb > 2;
+    var B = [fx, tall ? wb : H];
+    k = (T[0] - A[0]) * 0.55;
+    var f = function (n) { return Math.round(n * 10) / 10; };
+    var P = function (x, y) { return f(x) + ' ' + f(y); };
+    var shoulder = 'C ' + P(A[0] + k, wt) + ' ' + P(T[0] - k, 0) + ' ' + P(T[0], 0);
+    var bellyRev = 'C ' + P(B[0] - (B[0] - A[0]) * 0.55, B[1]) + ' ' + P(A[0], A[1] + (B[1] - A[1]) * 0.6) + ' ' + P(A[0], A[1]);
+    var right = 'L ' + P(W - rf, 0) + ' Q ' + P(W, 0) + ' ' + P(W, rf) + ' L ' + P(W, H - rf) + ' Q ' + P(W, H) + ' ' + P(W - rf, H);
+    var lower = tall
+      ? ' L ' + P(fx + rf, H) + ' Q ' + P(fx, H) + ' ' + P(fx, H - rf) + ' L ' + P(fx, wb + 16) + ' Q ' + P(fx, wb) + ' ' + P(fx - 16, wb) + ' L ' + P(B[0], B[1])
+      : ' L ' + P(B[0], B[1]);
+    $('bottle-fill').setAttribute('d', 'M ' + P(T[0], 0) + ' ' + right + lower + ' ' + bellyRev + ' ' + shoulder + ' Z');
+    var led = 'M ' + P(A[0], wt) + ' L ' + P(rw, wt) + ' Q ' + P(0, wt) + ' ' + P(0, wt + rw) +
+      ' L ' + P(0, wb - rw) + ' Q ' + P(0, wb) + ' ' + P(rw, wb) +
+      (tall ? ' L ' + P(fx - 16, wb) + ' Q ' + P(fx, wb) + ' ' + P(fx, wb + 16) + ' L ' + P(fx, H - rf) + ' Q ' + P(fx, H) + ' ' + P(fx + rf, H) : '') +
+      ' L ' + P(W - rf, H) + ' Q ' + P(W, H) + ' ' + P(W, H - rf) + ' L ' + P(W, rf) + ' Q ' + P(W, 0) + ' ' + P(W - rf, 0) +
+      ' L ' + P(T[0], 0) + ' C ' + P(T[0] - k, 0) + ' ' + P(A[0] + k, wt) + ' ' + P(A[0], wt) + ' Z';
+    $('bottle-led').setAttribute('d', led);
+    var svg = $('bottle-shape');
+    svg.setAttribute('viewBox', '0 0 ' + f(W) + ' ' + f(Math.max(H, wb)));
+    bottle.classList.add('is-drawn');
+  }
+  if (window.ResizeObserver) new ResizeObserver(function () { drawBottle(); }).observe(bottle);
+  wideMQ.addEventListener('change', drawBottle);
+
+  /* --------------------------------------------------------- whiteboard -- */
+  /* Drawing is optimistic: ink shows at once and CE.whiteboard saves it in order in the background.
+     Undo history holds stroke ids, never object references, so it still works after a refetch. */
+  var wbStore = CE.whiteboard;
+  var cv = $('wb-canvas'), surface = $('wb-surface');
+  var ctx = cv.getContext('2d');
+  var strokes = [], wbHistory = [], wbTool = 'pen', wbInk = 'black';
+  var drawing = null, erasing = null, cw = 1, ch = 1, k = 1;
+  var PEN = 0.0042, ERASE_R = 14;
+  var wbLoaded = false, wbFull = false, wbAfterSave = null;
+  var previews = new Map();    /* lines other people are drawing right now, by stroke id */
+  var wbGone = new Set();      /* ids this wall erased, so a late commit from the socket cannot bring one back */
+  var INK_OF = {};
+  Object.keys(CE.INK).forEach(function (name) { INK_OF[CE.INK[name].toUpperCase()] = name; });
+  var WB = {
+    saved: API ? 'Saved.' : 'Saved on this device.',
+    undone: API ? 'Undone.' : 'Undone. Saved on this device.',
+    cleared: API ? 'Whiteboard cleared for everyone. Undo brings it back.' : 'Whiteboard cleared. Undo brings it back until you leave.',
+    full: 'The whiteboard is full. Clear it to keep drawing.',
+    localFail: "Couldn't save the drawing on this device. It stays until you leave.",
+    loadFail: "Couldn't load the whiteboard. Check the connection, then retry.",
+    dropped: "That line couldn't be saved, so it came off the board."
+  };
+
+  function wbStatus(text) { $('wb-status').textContent = text; }
+  function wbSync() {
+    $('wb-hint').hidden = strokes.length > 0 || !!drawing;
+    $('wb-undo').setAttribute('aria-disabled', String(wbHistory.length === 0));
+    $('wb-clear').setAttribute('aria-disabled', String(strokes.length === 0));
+    cv.setAttribute('aria-label', strokes.length
+      ? 'Whiteboard drawing with ' + strokes.length + (strokes.length === 1 ? ' line.' : ' lines.')
+      : 'Whiteboard drawing. Empty.');
+  }
+  function wbHas(id) { return strokes.some(function (s) { return s.id === id; }); }
+  function wbInsert(s) {
+    var i = strokes.findIndex(function (x) { return x.id === s.id; });
+    if (i >= 0) { strokes[i] = s; return; }
+    var t = Date.parse(s.createdAt), j = strokes.length;
+    while (j > 0 && Date.parse(strokes[j - 1].createdAt) > t) j--;
+    strokes.splice(j, 0, s);
+  }
+  function wbDrop(ids) {
+    var set = new Set(ids);
+    strokes = strokes.filter(function (s) { return !set.has(s.id); });
+  }
+  function wbForget(id) {
+    wbHistory.forEach(function (h) { h.ids = h.ids.filter(function (x) { return x !== id; }); });
+    wbHistory = wbHistory.filter(function (h) { return h.ids.length || h.type === 'clear'; });
+  }
+
+  /* The save queue reports honestly: saving, saved, or exactly how many lines are not saved yet. */
+  wbStore.onStatus(function (st) {
+    $('wb-retry').hidden = st.state !== 'failed';
+    if (st.state === 'saving') { if (API && !wbFull) wbStatus('Saving…'); return; }
+    if (st.state === 'saved') {
+      if (wbFull) { wbStatus(WB.full); return; }
+      wbStatus(wbAfterSave || WB.saved); wbAfterSave = null; return;
+    }
+    if (!API) { wbStatus(WB.localFail); return; }
+    var n = st.unsaved;
+    wbStatus(n === 1 ? "Couldn't save 1 line. It's still on your screen."
+      : n > 1 ? "Couldn't save " + n + " lines. They're still on your screen."
+      : "Couldn't save your last change. It's still on your screen.");
+  });
+
+  /* A line the server will never take (board full, invalid) leaves the board instead of pretending. */
+  function wbRejected(s, err) {
+    if (!err || !(err.status === 400 || err.status === 409)) return;
+    wbDrop([s.id]); wbForget(s.id);
+    if (live) live.inkDrop(s.id);
+    if (err.code === 'whiteboard_full') { wbFull = true; wbStatus(WB.full); }
+    else wbStatus(WB.dropped);
+    paint(); wbSync();
+  }
+  function wbAdd(d) {
+    /* The server takes up to MAX_POINTS points per stroke: a longer gesture becomes consecutive strokes.
+       Parts keep the ids CE.live already streamed them under, so other walls swap the preview for the saved line. */
+    var t0 = Date.now(), parts = [], max = wbStore.MAX_POINTS;
+    for (var i = 0; i < d.points.length; i += max) {
+      var partId = (d.partIds && d.partIds[i / max]) || (i ? uid() : d.id);
+      parts.push({ id: partId, ink: d.ink, width: d.width, points: d.points.slice(i, i + max),
+        createdAt: new Date(t0 + parts.length).toISOString() });
+    }
+    parts.forEach(function (s) {
+      strokes.push(s);
+      wbStore.add(s).then(function (saved) { if (saved && saved.createdAt) s.createdAt = saved.createdAt; },
+        function (err) { wbRejected(s, err); });
+    });
+    wbHistory.push({ type: 'add', ids: parts.map(function (s) { return s.id; }) });
+  }
+  function wbErase(ids) {
+    wbFull = false;
+    ids.forEach(function (id) { wbGone.add(id); });
+    if (live) live.erased(ids);
+    wbStore.erase(ids).catch(function () { /* nothing to undo locally: the lines are already gone or never saved */ });
+  }
+  function wbRestore(h) {
+    h.ids.forEach(function (id) { wbGone.delete(id); });
+    h.items.forEach(function (s) { wbGone.delete(s.id); if (!wbHas(s.id)) wbInsert(s); });
+    wbStore.restore(function () { return h.ids; }).then(function (res) {
+      res.strokes.forEach(wbInsert); paint(); wbSync();
+    }, function () {});
+  }
+  function sizeCanvas() {
+    var r = surface.getBoundingClientRect();
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    cw = Math.max(1, r.width); ch = Math.max(1, r.height);
+    cv.width = Math.round(cw * dpr); cv.height = Math.round(ch * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    paint();
+  }
+  function strokePath(s) {
+    var pts = s.points, w = Math.max(1.6, s.width * k);
+    ctx.strokeStyle = CE.INK[s.ink] || CE.INK.black; ctx.lineWidth = w;
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.beginPath();
+    var x0 = pts[0][0] * k, y0 = pts[0][1] * k;
+    ctx.moveTo(x0, y0);
+    if (pts.length === 1) { ctx.lineTo(x0 + 0.01, y0); }
+    for (var i = 1; i < pts.length - 1; i++) {
+      var mx = (pts[i][0] + pts[i + 1][0]) / 2 * k, my = (pts[i][1] + pts[i + 1][1]) / 2 * k;
+      ctx.quadraticCurveTo(pts[i][0] * k, pts[i][1] * k, mx, my);
+    }
+    if (pts.length > 1) { var l = pts[pts.length - 1]; ctx.lineTo(l[0] * k, l[1] * k); }
+    ctx.stroke();
+  }
+  function paint() {
+    if (!drawing && !erasing) fitK();
+    ctx.clearRect(0, 0, cw, ch);
+    ctx.globalAlpha = 0.94;
+    strokes.forEach(strokePath);
+    previews.forEach(strokePath);
+    if (drawing) strokePath(drawing);
+    ctx.globalAlpha = 1;
+  }
+  /* One scale for x and y, fitted so the whole drawing stays visible when the board changes shape. */
+  function fitK() {
+    var mx = 0, my = 0;
+    strokes.forEach(function (s) { s.points.forEach(function (q) { if (q[0] > mx) mx = q[0]; if (q[1] > my) my = q[1]; }); });
+    k = Math.min(cw / Math.max(1, mx), my ? (ch - 4) / my : Infinity);
+  }
+  function clampN(v, a, b) { return v < a ? a : v > b ? b : v; }
+  function pt(e) {
+    var r = cv.getBoundingClientRect();
+    return [clampN((e.clientX - r.left) / k, 0, cw / k), clampN((e.clientY - r.top) / k, 0, ch / k)];
+  }
+  function hits(s, p) {
+    var rr = (ERASE_R + s.width * k / 2) / k;
+    for (var i = 0; i < s.points.length; i++) {
+      var dx = s.points[i][0] - p[0], dy = s.points[i][1] - p[1];
+      if (dx * dx + dy * dy <= rr * rr) return true;
+      if (i > 0) {
+        var a = s.points[i - 1], b = s.points[i];
+        var vx = b[0] - a[0], vy = b[1] - a[1], len = vx * vx + vy * vy;
+        if (len) {
+          var t = Math.max(0, Math.min(1, ((p[0] - a[0]) * vx + (p[1] - a[1]) * vy) / len));
+          var cx = a[0] + t * vx - p[0], cy = a[1] + t * vy - p[1];
+          if (cx * cx + cy * cy <= rr * rr) return true;
+        }
+      }
+    }
+    return false;
+  }
+  function eraseAt(p) {
+    for (var i = strokes.length - 1; i >= 0; i--) {
+      if (hits(strokes[i], p)) { erasing.push(strokes[i]); strokes.splice(i, 1); }
+    }
+  }
+  function canDraw() {
+    if (API && !wbLoaded) { wbStatus(WB.loadFail); $('wb-retry').hidden = false; return false; }
+    if (API && wbTool === 'pen' && (wbFull || strokes.length >= wbStore.CAPACITY)) { wbFull = true; wbStatus(WB.full); return false; }
+    return true;
+  }
+  cv.addEventListener('pointerdown', function (e) {
+    if (e.button !== 0 && e.pointerType === 'mouse') return;
+    if (e.pointerType === 'touch' && coarse && !surface.classList.contains('is-armed')) return;
+    if (!canDraw()) return;
+    e.preventDefault();
+    cv.setPointerCapture(e.pointerId);
+    if (wbTool === 'eraser') { erasing = []; eraseAt(pt(e)); paint(); }
+    else { drawing = { id: uid(), ink: wbInk, width: PEN, points: [pt(e)] }; paint(); }
+    wbSync();
+  });
+  cv.addEventListener('pointermove', function (e) {
+    if (!drawing && !erasing) return;
+    var evs = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
+    if (!evs.length) evs = [e];
+    evs.forEach(function (ev) {
+      var p = pt(ev);
+      if (drawing) {
+        var last = drawing.points[drawing.points.length - 1];
+        if (Math.abs(p[0] - last[0]) + Math.abs(p[1] - last[1]) > 0.0015) drawing.points.push([Math.round(p[0] * 1e4) / 1e4, Math.round(p[1] * 1e4) / 1e4]);
+      } else eraseAt(p);
+    });
+    if (drawing && live) live.ink(drawing);
+    paint();
+  });
+  function endStroke() {
+    if (drawing) {
+      var d = drawing; drawing = null;
+      if (live) live.inkEnd(d);
+      wbAdd(d); paint();
+    } else if (erasing) {
+      if (erasing.length) {
+        var ids = erasing.map(function (s) { return s.id; });
+        wbHistory.push({ type: 'erase', ids: ids, items: erasing });
+        wbErase(ids);
+      }
+      erasing = null;
+    }
+    wbSync();
+  }
+  cv.addEventListener('pointerup', endStroke);
+  cv.addEventListener('pointercancel', endStroke);
+  cv.addEventListener('lostpointercapture', endStroke);
+
+  document.querySelector('.wb__tray').addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+    if (!b || b.getAttribute('aria-disabled') === 'true') return;
+    if (b.hasAttribute('data-tool')) {
+      wbTool = b.getAttribute('data-tool');
+      if (b.hasAttribute('data-ink')) wbInk = INK_OF[b.getAttribute('data-ink').toUpperCase()] || 'black';
+      document.querySelectorAll('.wb__tray [data-tool]').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+      surface.setAttribute('data-tool', wbTool);
+      surface.classList.add('is-armed');
+      $('wb-hint').textContent = 'Draw here with a mouse, pen, or finger.';
+    } else if (b.id === 'wb-undo') {
+      var h = wbHistory.pop();
+      if (!h) return;
+      wbAfterSave = WB.undone;
+      if (h.type === 'add') { wbDrop(h.ids); wbErase(h.ids); }
+      else wbRestore(h);
+      paint(); wbSync();
+    } else if (b.id === 'wb-clear') {
+      /* One tap, no modal: Undo is the safety net. The server returns every id it cleared. */
+      var entry = { type: 'clear', ids: strokes.map(function (s) { return s.id; }), items: strokes.slice() };
+      wbHistory.push(entry);
+      strokes = []; wbFull = false;
+      entry.ids.forEach(function (id) { wbGone.add(id); });
+      if (live) live.cleared(entry.ids);
+      wbStatus(WB.cleared); wbAfterSave = WB.cleared;
+      wbStore.clear().then(function (res) { entry.ids = res.cleared; }, function () {});
+      paint(); wbSync();
+    } else if (b.id === 'wb-retry') {
+      b.hidden = true;
+      if (!wbLoaded) loadBoard(); else wbStore.retry();
+    }
+  });  var coarse = matchMedia('(pointer: coarse)').matches;
+  if (coarse) {
+    document.querySelectorAll('.wb__tray [data-tool]').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
+    $('wb-hint').textContent = 'Pick a marker, then draw.';
+    document.addEventListener('pointerdown', function (e) {
+      if (!e.target.closest('#whiteboard') && surface.classList.contains('is-armed')) {
+        surface.classList.remove('is-armed');
+        document.querySelectorAll('.wb__tray [data-tool]').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
+        $('wb-hint').textContent = 'Pick a marker, then draw.';
+      }
+    }, true);
+  }
+  function loadBoard() {
+    return wbStore.load().then(function (data) {
+      wbLoaded = true;
+      if (!(live && live.connected())) strokes = data.strokes.slice();   /* a live hello is newer */
+      wbFull = API && strokes.length >= wbStore.CAPACITY;
+      wbStatus(wbFull ? WB.full : '');
+      $('wb-retry').hidden = true;
+      paint(); wbSync();
+    }, function () {
+      wbStatus(WB.loadFail);
+      $('wb-retry').hidden = false;
+    });
+  }
+  /* Back on the tab: pick up what colleagues drew, unless a line is mid-draw or still saving. */
+  function wbIdle() { return wbLoaded && !drawing && !erasing && !wbStore.busy(); }
+  document.addEventListener('visibilitychange', function () {
+    if (!API || document.visibilityState !== 'visible' || (live && live.connected())) return;
+    if (!wbLoaded) { loadBoard(); return; }
+    if (!wbIdle()) return;
+    wbStore.load().then(function (data) {
+      if (!wbIdle()) return;
+      strokes = data.strokes.slice();
+      wbFull = strokes.length >= wbStore.CAPACITY;
+      paint(); wbSync();
+    }, function () {});
+  });
+  /* What other walls draw arrives through CE.live: a growing line while their pen is down,
+     the saved stroke when it lifts, and erases and clears as they happen. One repaint per frame. */
+  if (live) {
+    var repaintQueued = false;
+    var wbRepaint = function () {
+      if (repaintQueued) return;
+      repaintQueued = true;
+      requestAnimationFrame(function () { repaintQueued = false; paint(); wbSync(); });
+    };
+    live.on('ink', function (m) {
+      var p = previews.get(m.id);
+      if (!p) {
+        if (wbHas(m.id) || wbGone.has(m.id)) return;
+        p = { id: m.id, ink: m.ink, width: m.width, points: [] };
+        previews.set(m.id, p);
+      }
+      m.points.forEach(function (q) { p.points.push(q); });
+      wbRepaint();
+    });
+    live.on('inkDrop', function (id) { if (previews.delete(id)) wbRepaint(); });
+    live.on('stroke', function (s) {
+      previews.delete(s.id);
+      if (!wbGone.has(s.id)) {
+        wbInsert(s);
+        if (API && strokes.length >= wbStore.CAPACITY) wbFull = true;
+      }
+      wbRepaint();
+    });
+    live.on('erase', function (ids) {
+      wbDrop(ids);
+      ids.forEach(function (id) { previews.delete(id); });
+      wbRepaint();
+    });
+    live.on('clear', function (ids) { wbDrop(ids); wbFull = false; wbRepaint(); });
+    live.on('restore', function (list) {
+      list.forEach(function (s) { wbGone.delete(s.id); wbInsert(s); });
+      wbRepaint();
+    });
+    live.on('hello', function (data) {
+      previews = new Map();
+      data.previews.forEach(function (p) { if (!wbHas(p.id)) previews.set(p.id, p); });
+      if (!drawing && !erasing && !wbStore.busy()) {
+        strokes = data.strokes.slice();
+      } else {
+        /* Mid-gesture or still saving: add what is new, take nothing away. */
+        data.strokes.forEach(function (s) { if (!wbHas(s.id) && !wbGone.has(s.id)) wbInsert(s); });
+      }
+      wbFull = strokes.length >= wbStore.CAPACITY;
+      if (!wbLoaded) { wbLoaded = true; $('wb-retry').hidden = true; wbStatus(wbFull ? WB.full : ''); }
+      wbRepaint();
+    });
+    live.on('state', function (up) { if (!up && previews.size) { previews.clear(); wbRepaint(); } });
+  }
+  if (window.ResizeObserver) new ResizeObserver(sizeCanvas).observe(surface);
+  sizeCanvas(); wbSync();
+  loadBoard();
+  /* ------------------------------------------------------------- boot -- */
+  /* A failed load is a real state: say so, offer Retry, and never fall back to samples. */
+  function showLoadError() {
+    list.hidden = true;
+    $('wall-empty').hidden = true;
+    $('board-count').textContent = 'Wall unavailable';
+    $('arrival-count').textContent = "The notes didn't load.";
+    $('arrival-count').hidden = false;
+    boardStatus(MSG.load);
+    $('retry').hidden = false;
+    if (typeof drawBottle === 'function') drawBottle();
+  }
+  function loadWall() {
+    loadState = 'loading';
+    return notesStore.load().then(function (data) {
+      /* A live hello that already landed is newer than this list; keep it. */
+      if (!(live && live.connected())) {
+        notes = data.notes.slice();
+        hasMore = !!data.hasMore;
+      }
+      loadState = 'ready';
+      $('retry').hidden = true;
+      var s = $('board-status').textContent;
+      if (s === MSG.load || s === 'Loading the wall…') boardStatus('');
+      render();
+    }, function () {
+      loadState = 'error';
+      showLoadError();
+    });
+  }
+  $('retry').addEventListener('click', function () {
+    $('retry').hidden = true;
+    boardStatus('Loading the wall…');
+    loadWall().then(function () { if (loadState === 'ready') $('wall').focus({ preventScroll: true }); });
+  });
+
+  /* GitHub Pages, or a live wall whose socket is down: when the tab comes back, quietly pick up what colleagues stuck meanwhile.
+     Skipped while an edit is open or a save is in flight, so nothing the user is doing gets replaced. */
+  var refreshing = false;
+  function idle() { return !editing && pending === 0 && !busy; }
+  document.addEventListener('visibilitychange', function () {
+    if (!API || document.visibilityState !== 'visible' || (live && live.connected()) || refreshing || !idle()) return;
+    if (loadState === 'error') { $('retry').hidden = true; loadWall(); return; }
+    if (loadState !== 'ready') return;
+    refreshing = true;
+    notesStore.load().then(function (data) {
+      refreshing = false;
+      if (!idle()) return;
+      notes = data.notes.slice();
+      hasMore = !!data.hasMore;
+      render();
+    }, function () { refreshing = false; });
+  });
+
+  if (matchMedia('(pointer: fine)').matches) composeStatus(HINT);
+  loadWall().then(function () {
+    if (window.ScrollCraft) sc = ScrollCraft.mount(document.body);
+    else { list.classList.add('sc-in'); Array.prototype.forEach.call(list.children, function (li) { li.classList.add('sc-in'); }); }
+  });
+})();
+</script>
+</body>
+</html>

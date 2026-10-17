@@ -1,0 +1,26 @@
+{
+  "name": "creative-episode-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Serves the Creative Episode brainstorm wall and its /v1 notes API, backed by Neon Postgres.",
+  "type": "commonjs",
+  "main": "src/server.js",
+  "engines": {
+    "node": ">=20.12"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "migrate": "node scripts/migrate.js",
+    "migrate:test": "node scripts/migrate.js --test",
+    "test": "node --test --test-concurrency=1"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "pg": "^8.16.0",
+    "ws": "^8.22.0"
+  },
+  "devDependencies": {
+    "supertest": "^7.1.0"
+  }
+}

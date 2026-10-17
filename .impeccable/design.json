@@ -1,0 +1,574 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-16T00:00:00Z",
+  "title": "Design System: Creative Episode",
+  "extensions": {
+    "colorMeta": {
+      "indigo": {
+        "role": "primary",
+        "displayName": "Corridor Indigo",
+        "canonical": "oklch(38.9% 0.136 272.2)",
+        "tonalRamp": [
+          "oklch(15% 0.12 272.2)",
+          "oklch(26% 0.136 272.2)",
+          "oklch(38% 0.136 272.2)",
+          "oklch(49% 0.136 272.2)",
+          "oklch(61% 0.136 272.2)",
+          "oklch(72% 0.136 272.2)",
+          "oklch(84% 0.136 272.2)",
+          "oklch(95% 0.12 272.2)"
+        ]
+      },
+      "periwinkle": {
+        "role": "secondary",
+        "displayName": "Arrow Periwinkle",
+        "canonical": "oklch(53.5% 0.132 276.9)",
+        "tonalRamp": [
+          "oklch(15% 0.12 276.9)",
+          "oklch(26% 0.132 276.9)",
+          "oklch(38% 0.132 276.9)",
+          "oklch(49% 0.132 276.9)",
+          "oklch(61% 0.132 276.9)",
+          "oklch(72% 0.132 276.9)",
+          "oklch(84% 0.132 276.9)",
+          "oklch(95% 0.12 276.9)"
+        ]
+      },
+      "spark": {
+        "role": "tertiary",
+        "displayName": "The Spark",
+        "canonical": "oklch(90.2% 0.184 106.2)",
+        "tonalRamp": [
+          "oklch(15% 0.12 106.2)",
+          "oklch(26% 0.184 106.2)",
+          "oklch(38% 0.184 106.2)",
+          "oklch(49% 0.184 106.2)",
+          "oklch(61% 0.184 106.2)",
+          "oklch(72% 0.184 106.2)",
+          "oklch(84% 0.184 106.2)",
+          "oklch(95% 0.12 106.2)"
+        ]
+      },
+      "led": {
+        "role": "tertiary",
+        "displayName": "LED Amber",
+        "canonical": "oklch(84.9% 0.146 80.3)",
+        "tonalRamp": [
+          "oklch(15% 0.12 80.3)",
+          "oklch(26% 0.146 80.3)",
+          "oklch(38% 0.146 80.3)",
+          "oklch(49% 0.146 80.3)",
+          "oklch(61% 0.146 80.3)",
+          "oklch(72% 0.146 80.3)",
+          "oklch(84% 0.146 80.3)",
+          "oklch(95% 0.12 80.3)"
+        ]
+      },
+      "marble": {
+        "role": "neutral",
+        "displayName": "Marble",
+        "canonical": "oklch(69.4% 0.007 286.2)",
+        "tonalRamp": [
+          "oklch(15% 0.007 286.2)",
+          "oklch(26% 0.007 286.2)",
+          "oklch(38% 0.007 286.2)",
+          "oklch(49% 0.007 286.2)",
+          "oklch(61% 0.007 286.2)",
+          "oklch(72% 0.007 286.2)",
+          "oklch(84% 0.007 286.2)",
+          "oklch(95% 0.007 286.2)"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Corridor Paper",
+        "canonical": "oklch(96.2% 0.006 84.6)",
+        "tonalRamp": [
+          "oklch(15% 0.006 84.6)",
+          "oklch(26% 0.006 84.6)",
+          "oklch(38% 0.006 84.6)",
+          "oklch(49% 0.006 84.6)",
+          "oklch(61% 0.006 84.6)",
+          "oklch(72% 0.006 84.6)",
+          "oklch(84% 0.006 84.6)",
+          "oklch(95% 0.006 84.6)"
+        ]
+      },
+      "board": {
+        "role": "neutral",
+        "displayName": "Felt Board",
+        "canonical": "oklch(20.3% 0.012 285.3)",
+        "tonalRamp": [
+          "oklch(15% 0.012 285.3)",
+          "oklch(26% 0.012 285.3)",
+          "oklch(38% 0.012 285.3)",
+          "oklch(49% 0.012 285.3)",
+          "oklch(61% 0.012 285.3)",
+          "oklch(72% 0.012 285.3)",
+          "oklch(84% 0.012 285.3)",
+          "oklch(95% 0.012 285.3)"
+        ]
+      },
+      "whiteboard": {
+        "role": "neutral",
+        "displayName": "Whiteboard",
+        "canonical": "oklch(99.4% 0.001 106.4)",
+        "tonalRamp": [
+          "oklch(15% 0.001 106.4)",
+          "oklch(26% 0.001 106.4)",
+          "oklch(38% 0.001 106.4)",
+          "oklch(49% 0.001 106.4)",
+          "oklch(61% 0.001 106.4)",
+          "oklch(72% 0.001 106.4)",
+          "oklch(84% 0.001 106.4)",
+          "oklch(95% 0.001 106.4)"
+        ]
+      },
+      "whiteboard-shade": {
+        "role": "neutral",
+        "displayName": "Whiteboard Shade",
+        "canonical": "oklch(93.6% 0.001 197.1)",
+        "tonalRamp": [
+          "oklch(15% 0.001 197.1)",
+          "oklch(26% 0.001 197.1)",
+          "oklch(38% 0.001 197.1)",
+          "oklch(49% 0.001 197.1)",
+          "oklch(61% 0.001 197.1)",
+          "oklch(72% 0.001 197.1)",
+          "oklch(84% 0.001 197.1)",
+          "oklch(95% 0.001 197.1)"
+        ]
+      },
+      "note-blue": {
+        "role": "note",
+        "displayName": "Note Blue",
+        "canonical": "oklch(79.4% 0.083 223.3)",
+        "tonalRamp": [
+          "oklch(15% 0.083 223.3)",
+          "oklch(26% 0.083 223.3)",
+          "oklch(38% 0.083 223.3)",
+          "oklch(49% 0.083 223.3)",
+          "oklch(61% 0.083 223.3)",
+          "oklch(72% 0.083 223.3)",
+          "oklch(84% 0.083 223.3)",
+          "oklch(95% 0.083 223.3)"
+        ]
+      },
+      "note-pink": {
+        "role": "note",
+        "displayName": "Note Pink",
+        "canonical": "oklch(81.0% 0.097 356.0)",
+        "tonalRamp": [
+          "oklch(15% 0.097 356.0)",
+          "oklch(26% 0.097 356.0)",
+          "oklch(38% 0.097 356.0)",
+          "oklch(49% 0.097 356.0)",
+          "oklch(61% 0.097 356.0)",
+          "oklch(72% 0.097 356.0)",
+          "oklch(84% 0.097 356.0)",
+          "oklch(95% 0.097 356.0)"
+        ]
+      },
+      "note-green": {
+        "role": "note",
+        "displayName": "Note Green",
+        "canonical": "oklch(88.2% 0.143 123.8)",
+        "tonalRamp": [
+          "oklch(15% 0.12 123.8)",
+          "oklch(26% 0.143 123.8)",
+          "oklch(38% 0.143 123.8)",
+          "oklch(49% 0.143 123.8)",
+          "oklch(61% 0.143 123.8)",
+          "oklch(72% 0.143 123.8)",
+          "oklch(84% 0.143 123.8)",
+          "oklch(95% 0.12 123.8)"
+        ]
+      },
+      "note-yellow": {
+        "role": "note",
+        "displayName": "Note Yellow",
+        "canonical": "oklch(92.0% 0.144 97.4)",
+        "tonalRamp": [
+          "oklch(15% 0.12 97.4)",
+          "oklch(26% 0.144 97.4)",
+          "oklch(38% 0.144 97.4)",
+          "oklch(49% 0.144 97.4)",
+          "oklch(61% 0.144 97.4)",
+          "oklch(72% 0.144 97.4)",
+          "oklch(84% 0.144 97.4)",
+          "oklch(95% 0.12 97.4)"
+        ]
+      },
+      "note-none": {
+        "role": "neutral",
+        "displayName": "Plain Note Paper",
+        "canonical": "oklch(98.5% 0.004 91.4)",
+        "tonalRamp": [
+          "oklch(15% 0.004 91.4)",
+          "oklch(26% 0.004 91.4)",
+          "oklch(38% 0.004 91.4)",
+          "oklch(49% 0.004 91.4)",
+          "oklch(61% 0.004 91.4)",
+          "oklch(72% 0.004 91.4)",
+          "oklch(84% 0.004 91.4)",
+          "oklch(95% 0.004 91.4)"
+        ]
+      },
+      "ink-soft": {
+        "role": "neutral",
+        "displayName": "Marble Ink Soft",
+        "canonical": "oklch(23.5% 0.039 278.6)",
+        "tonalRamp": [
+          "oklch(15% 0.039 278.6)",
+          "oklch(26% 0.039 278.6)",
+          "oklch(38% 0.039 278.6)",
+          "oklch(49% 0.039 278.6)",
+          "oklch(61% 0.039 278.6)",
+          "oklch(72% 0.039 278.6)",
+          "oklch(84% 0.039 278.6)",
+          "oklch(95% 0.039 278.6)"
+        ]
+      },
+      "on-board-soft": {
+        "role": "neutral",
+        "displayName": "Felt Soft",
+        "canonical": "oklch(83.8% 0.019 289.3)",
+        "tonalRamp": [
+          "oklch(15% 0.019 289.3)",
+          "oklch(26% 0.019 289.3)",
+          "oklch(38% 0.019 289.3)",
+          "oklch(49% 0.019 289.3)",
+          "oklch(61% 0.019 289.3)",
+          "oklch(72% 0.019 289.3)",
+          "oklch(84% 0.019 289.3)",
+          "oklch(95% 0.019 289.3)"
+        ]
+      },
+      "note-meta": {
+        "role": "neutral",
+        "displayName": "Note Meta",
+        "canonical": "oklch(35.7% 0.034 284.5)",
+        "tonalRamp": [
+          "oklch(15% 0.034 284.5)",
+          "oklch(26% 0.034 284.5)",
+          "oklch(38% 0.034 284.5)",
+          "oklch(49% 0.034 284.5)",
+          "oklch(61% 0.034 284.5)",
+          "oklch(72% 0.034 284.5)",
+          "oklch(84% 0.034 284.5)",
+          "oklch(95% 0.034 284.5)"
+        ]
+      },
+      "white": {
+        "role": "neutral",
+        "displayName": "White",
+        "canonical": "oklch(100% 0 0)",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(49% 0 0)",
+          "oklch(61% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Top of the ramp: composer label and empty-wall heading."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "The note count at the head of the felt."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Empty-wall copy, 36ch."
+      },
+      "note": {
+        "displayName": "Note",
+        "purpose": "Words on a paper note."
+      },
+      "note-input": {
+        "displayName": "Note Input",
+        "purpose": "The composer field."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Corridor pills and swatch names."
+      },
+      "button": {
+        "displayName": "Button",
+        "purpose": "Buttons and jump links."
+      },
+      "small": {
+        "displayName": "Small",
+        "purpose": "Sample line, status lines, whiteboard tools and hint."
+      },
+      "meta": {
+        "displayName": "Meta",
+        "purpose": "Timestamps, the Sample tag, the whiteboard save status."
+      }
+    },
+    "shadows": [
+      {
+        "name": "pressed",
+        "value": "0 1px 2px hsl(240 20% 6% / 0.28), 0 2px 6px -1px hsl(240 20% 6% / 0.20)",
+        "purpose": "Current pill and the Stick it button."
+      },
+      {
+        "name": "hung",
+        "value": "0 2px 4px hsl(240 20% 6% / 0.24), 0 8px 18px -4px hsl(240 20% 6% / 0.30)",
+        "purpose": "Composer paper on the marble (plus inset 0 0 0 1.5px rgb(22 22 28 / 0.6))."
+      },
+      {
+        "name": "on-the-felt",
+        "value": "0 1px 1px hsl(240 30% 2% / 0.4), 0 10px 18px -8px hsl(240 30% 2% / 0.7)",
+        "purpose": "Paper notes resting on the board."
+      },
+      {
+        "name": "in-flight",
+        "value": "0 4px 8px hsl(240 20% 6% / 0.22), 0 18px 40px -8px hsl(240 20% 6% / 0.38), 0 48px 90px -24px hsl(240 20% 6% / 0.30)",
+        "purpose": "The flying note clone only."
+      },
+      {
+        "name": "led-ring",
+        "value": "0 0 0 3px #FFC24E, 0 0 6px 3px rgb(255 196 84 / 0.75), 0 0 18px 4px rgb(247 178 52 / 0.4)",
+        "purpose": "LED strip on each stacked bottle panel below 1280px. The page's only glow, a deliberate physical-light exception."
+      },
+      {
+        "name": "led-stroke",
+        "value": "stroke #FFC24E 3.5px; filter: drop-shadow(0 0 5px rgb(255 196 84 / 0.95)) drop-shadow(0 0 14px rgb(247 178 52 / 0.55))",
+        "purpose": "The single SVG LED outline of the drawn bottle at 1280px and wider."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.23, 1, 0.32, 1)",
+        "purpose": "Every transition and the flight."
+      },
+      {
+        "name": "duration-fast",
+        "value": "160ms",
+        "purpose": "Hover background and border changes, fine pointers only."
+      },
+      {
+        "name": "paper-color",
+        "value": "180ms",
+        "purpose": "Composer sheet taking a new note color."
+      },
+      {
+        "name": "flight",
+        "value": "680ms; keyframes: fade-in at composer (scale .96→1.02, 14%), travel and rotate to tilt (scale 1.035, -4px, 84%), settle (scale 1)",
+        "purpose": "The one engineered motion: a saved note flies to its slot."
+      },
+      {
+        "name": "wall-reveal",
+        "value": "620ms opacity + 14px rise, 45ms stagger, once",
+        "purpose": "Notes entering on first view."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "220ms opacity only",
+        "purpose": "Replaces the flight and the reveal rise under prefers-reduced-motion."
+      },
+      {
+        "name": "bottle-redraw",
+        "value": "ResizeObserver, no animation",
+        "purpose": "The bottle path and LED are re-measured on every resize at 1280px and wider; they never animate."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "narrow",
+        "value": "max-width: 380px"
+      },
+      {
+        "name": "phone",
+        "value": "max-width: 700px"
+      },
+      {
+        "name": "sign-fixed",
+        "value": "min-width: 1024px"
+      },
+      {
+        "name": "bottle-drawn",
+        "value": "min-width: 1280px"
+      },
+      {
+        "name": "touch",
+        "value": "pointer: coarse (whiteboard arms only after a marker is picked)"
+      }
+    ],
+    "materials": [
+      {
+        "name": "marble",
+        "value": "#9C9CA1 url(assets/marble.webp) 0 0 / 1200px repeat",
+        "purpose": "Page ground: grey marble with thin pale veins."
+      },
+      {
+        "name": "whiteboard-sheen",
+        "value": "linear-gradient(172deg, #FDFDFC 0%, #F3F4F3 55%, #E9EAEA 100%)",
+        "purpose": "Whiteboard surface."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Corridor Pill (inert)",
+      "kind": "nav",
+      "refersTo": "sign-pill",
+      "description": "A room on the painted sign that is map, not destination. Left/up arrow variant.",
+      "html": "<span class=\"ds-pill\"><span class=\"ds-pill__arrow\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" aria-hidden=\"true\"><path d=\"M12 19V5M5.5 11.5 12 5l6.5 6.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span>Black Box</span>",
+      "css": ".ds-pill { font-family: \"Rubik\", ui-rounded, system-ui, sans-serif; display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 5px 18px 5px 5px; border-radius: 999px; background: var(--indigo, #2E3A8C); color: #FFFFFF; font-size: 1rem; font-weight: 500; letter-spacing: -0.005em; line-height: 1.1; text-decoration: none; white-space: nowrap; } .ds-pill--right { padding: 5px 5px 5px 18px; } .ds-pill__arrow { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--periwinkle, #5B63B8); color: #FFFFFF; }"
+    },
+    {
+      "name": "Corridor Pill (current)",
+      "kind": "nav",
+      "refersTo": "sign-pill-arrow-current",
+      "description": "The one link on the sign: Creative Episode, marked with the single yellow spark.",
+      "html": "<a class=\"ds-pill ds-pill--here\" href=\"#wall\" aria-current=\"page\"><span class=\"ds-pill__arrow\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" aria-hidden=\"true\"><path d=\"M19 12H5m6.5-6.5L5 12l6.5 6.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span>Creative Episode</a>",
+      "css": ".ds-pill { font-family: \"Rubik\", ui-rounded, system-ui, sans-serif; display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 5px 18px 5px 5px; border-radius: 999px; background: var(--indigo, #2E3A8C); color: #FFFFFF; font-size: 1rem; font-weight: 500; letter-spacing: -0.005em; line-height: 1.1; text-decoration: none; white-space: nowrap; } .ds-pill--right { padding: 5px 5px 5px 18px; } .ds-pill__arrow { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--periwinkle, #5B63B8); color: #FFFFFF; } .ds-pill--here { box-shadow: 0 1px 2px hsl(240 20% 6% / .28), 0 2px 6px -1px hsl(240 20% 6% / .20); transition: background-color 160ms cubic-bezier(0.23,1,0.32,1); } .ds-pill--here .ds-pill__arrow { background: var(--spark, #EFE52B); color: var(--indigo, #2E3A8C); } .ds-pill--here:hover { background: var(--periwinkle, #5B63B8); } .ds-pill--here:active { transform: translateY(1px); } .ds-pill--here:focus-visible { outline: 2px solid var(--indigo, #2E3A8C); outline-offset: 3px; }"
+    },
+    {
+      "name": "Corridor Pill (right arrow)",
+      "kind": "nav",
+      "refersTo": "sign-pill-right",
+      "description": "A room to the right: the disc moves to the end, as painted.",
+      "html": "<span class=\"ds-pill ds-pill--right\">The M-Lab<span class=\"ds-pill__arrow\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" aria-hidden=\"true\"><path d=\"M5 12h14m-6.5-6.5L19 12l-6.5 6.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span></span>",
+      "css": ".ds-pill { font-family: \"Rubik\", ui-rounded, system-ui, sans-serif; display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 5px 18px 5px 5px; border-radius: 999px; background: var(--indigo, #2E3A8C); color: #FFFFFF; font-size: 1rem; font-weight: 500; letter-spacing: -0.005em; line-height: 1.1; text-decoration: none; white-space: nowrap; } .ds-pill--right { padding: 5px 5px 5px 18px; } .ds-pill__arrow { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--periwinkle, #5B63B8); color: #FFFFFF; }"
+    },
+    {
+      "name": "Paper Note on Felt",
+      "kind": "card",
+      "refersTo": "paper-note",
+      "description": "A note on the LED-ringed felt: square, tilted, ink type, round tools.",
+      "html": "<div class=\"ds-board\"><article class=\"ds-note\" style=\"--tilt:-1.4deg\"><p class=\"ds-note__body\">Friday lunch: everyone brings one idea on a note.</p><footer class=\"ds-note__meta\"><span class=\"ds-note__tag\">Sample</span><span><button class=\"ds-tool\" aria-label=\"Edit note\"><svg viewBox=\"0 0 24 24\" width=\"19\" height=\"19\" aria-hidden=\"true\"><path d=\"M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4Zm9.5-13.5 4 4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></button><button class=\"ds-tool\" aria-label=\"Delete note\"><svg viewBox=\"0 0 24 24\" width=\"19\" height=\"19\" aria-hidden=\"true\"><path d=\"M4.5 7h15M10 4h4M6.5 7l.9 12.1A1 1 0 0 0 8.4 20h7.2a1 1 0 0 0 1-.9L17.5 7M10 11v5.5M14 11v5.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></button></span></footer></article></div>",
+      "css": ".ds-board { font-family: \"Rubik\", ui-rounded, system-ui, sans-serif; background: var(--board, #16161C); color: var(--paper, #F4F2EE); border-radius: 30px; padding: 32px; box-shadow: 0 0 0 3px var(--led, #FFC24E), 0 0 6px 3px rgb(255 196 84 / .75), 0 0 18px 4px rgb(247 178 52 / .4); } .ds-note { width: 13rem; aspect-ratio: 1/1; display: flex; flex-direction: column; padding: 18px 16px 8px 18px; background: var(--note-blue, #7EC8E3); color: var(--board, #16161C); border-radius: 4px; transform: rotate(var(--tilt)); box-shadow: 0 1px 1px hsl(240 30% 2% / .4), 0 10px 18px -8px hsl(240 30% 2% / .7); } .ds-note__body { flex: 1; margin: 0; font-size: 1rem; line-height: 1.42; font-weight: 450; letter-spacing: -0.005em; } .ds-note__meta { display: flex; align-items: center; justify-content: space-between; min-height: 44px; font-size: .8rem; color: #3A3A4E; } .ds-note__tag { padding: 2px 8px; border-radius: 999px; border: 1px solid currentColor; font-weight: 600; } .ds-tool { display: inline-grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: #3A3A4E; cursor: pointer; transition: background-color 160ms cubic-bezier(0.23,1,0.32,1), color 160ms cubic-bezier(0.23,1,0.32,1); } .ds-tool:hover { background: rgb(22 22 28 / .09); color: var(--board, #16161C); } .ds-tool:active { transform: scale(.94); } .ds-tool:focus-visible { outline: 2px solid var(--indigo, #2E3A8C); outline-offset: 1px; }"
+    },
+    {
+      "name": "Whiteboard",
+      "kind": "custom",
+      "refersTo": "whiteboard",
+      "description": "Drawing surface with a marker tray: Black and Blue markers, Eraser, Undo, Clear; aria-pressed and aria-disabled states.",
+      "html": "<section class=\"ds-wb\"><div class=\"ds-wb__surface\"><p class=\"ds-wb__hint\">Draw here with a mouse, pen, or finger.</p></div><div class=\"ds-wb__tray\" role=\"group\" aria-label=\"Whiteboard tools\"><button class=\"ds-wb__tool\" aria-pressed=\"true\"><span class=\"ds-wb__ink\" style=\"--ink:#16161C\"></span>Black</button><button class=\"ds-wb__tool\" aria-pressed=\"false\"><span class=\"ds-wb__ink\" style=\"--ink:#2E3A8C\"></span>Blue</button><button class=\"ds-wb__tool\" aria-pressed=\"false\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" aria-hidden=\"true\"><path d=\"m14.5 4.5 5 5L11 18H6.5L4 15.5l10.5-11ZM8.5 10.5l5 5M11 18h9\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>Eraser</button><span class=\"ds-wb__sep\" aria-hidden=\"true\"></span><button class=\"ds-wb__tool\" aria-disabled=\"true\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" aria-hidden=\"true\"><path d=\"M9 14 4 9l5-5M4 9h10.5a5.5 5.5 0 0 1 0 11H11\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>Undo</button><button class=\"ds-wb__tool\" aria-disabled=\"true\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" aria-hidden=\"true\"><path d=\"M4.5 7h15M10 4h4M6.5 7l.9 12.1A1 1 0 0 0 8.4 20h7.2a1 1 0 0 0 1-.9L17.5 7M10 11v5.5M14 11v5.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>Clear</button><p class=\"ds-wb__status\" role=\"status\">Saved on this device.</p></div></section>",
+      "css": ".ds-wb { font-family: \"Rubik\", ui-rounded, system-ui, sans-serif; display: flex; flex-direction: column; height: 340px; max-width: 40rem; background: linear-gradient(172deg, #FDFDFC 0%, #F3F4F3 55%, #E9EAEA 100%); color: var(--board, #16161C); border-radius: 30px; box-shadow: 0 0 0 3px var(--led, #FFC24E), 0 0 6px 3px rgb(255 196 84 / .75), 0 0 18px 4px rgb(247 178 52 / .4); } .ds-wb__surface { flex: 1; margin: 14px 14px 0; border-radius: 18px; display: grid; place-items: center; cursor: crosshair; } .ds-wb__hint { margin: 0; color: #565A6C; font-size: .9rem; } .ds-wb__tray { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 10px 14px 14px; } .ds-wb__tool { font-family: \"Rubik\", ui-rounded, system-ui, sans-serif; display: inline-flex; align-items: center; gap: 7px; min-height: 44px; padding: 0 13px 0 9px; border-radius: 999px; border: 1.5px solid rgb(22 22 28 / .28); background: #FFFFFF; color: #16161C; font-size: .9rem; font-weight: 500; white-space: nowrap; cursor: pointer; transition: border-color 160ms cubic-bezier(0.23,1,0.32,1); } .ds-wb__tool:hover:not([aria-disabled=\"true\"]) { border-color: var(--indigo, #2E3A8C); } .ds-wb__tool:active:not([aria-disabled=\"true\"]) { transform: translateY(1px); } .ds-wb__tool:focus-visible { outline: 2px solid var(--indigo, #2E3A8C); outline-offset: 3px; } .ds-wb__tool[aria-pressed=\"true\"] { border: 2px solid var(--indigo, #2E3A8C); font-weight: 650; } .ds-wb__tool[aria-disabled=\"true\"] { opacity: .5; cursor: default; } .ds-wb__ink { width: 18px; height: 18px; border-radius: 50%; background: var(--ink); box-shadow: inset 0 0 0 2px #FFFFFF, 0 0 0 1px rgb(22 22 28 / .25); } .ds-wb__sep { width: 1px; height: 26px; background: rgb(22 22 28 / .2); margin: 0 4px; } .ds-wb__status { margin: 0 0 0 auto; font-size: .8rem; color: #3E4152; }"
+    },
+    {
+      "name": "Composer Paper",
+      "kind": "input",
+      "refersTo": "composer-paper",
+      "description": "The note field: a sheet of plain paper that takes the chosen color.",
+      "html": "<label class=\"ds-composer\"><span class=\"ds-composer__label\">Your idea</span><span class=\"ds-composer__paper\"><textarea rows=\"4\" placeholder=\"Write it the way it comes out.\"></textarea></span></label>",
+      "css": ".ds-composer { font-family: \"Rubik\", ui-rounded, system-ui, sans-serif; display: grid; gap: 12px; max-width: 32rem; padding: 24px; background: #9C9CA1; color: var(--board, #16161C); } .ds-composer__label { font-size: clamp(1.6rem, 1.35rem + 1.2vw, 2.25rem); font-weight: 600; letter-spacing: -0.02em; line-height: 1.15; } .ds-composer__paper { display: block; background: var(--note-none, #FBFAF7); border-radius: 4px; box-shadow: 0 2px 4px hsl(240 20% 6% / .24), 0 8px 18px -4px hsl(240 20% 6% / .30), inset 0 0 0 1.5px rgb(22 22 28 / .6); transition: background-color 180ms cubic-bezier(0.23,1,0.32,1); } .ds-composer__paper:focus-within { box-shadow: 0 2px 4px hsl(240 20% 6% / .24), 0 8px 18px -4px hsl(240 20% 6% / .30), inset 0 0 0 2px var(--indigo, #2E3A8C); } .ds-composer textarea { display: block; width: 100%; box-sizing: border-box; padding: 20px 22px; border: 0; background: transparent; font: inherit; font-size: 1.25rem; line-height: 1.45; font-weight: 450; color: var(--board, #16161C); resize: vertical; } .ds-composer textarea:focus-visible { outline: none; } .ds-composer textarea::placeholder { color: #45455A; opacity: 1; }"
+    },
+    {
+      "name": "Color Swatch Radios",
+      "kind": "chip",
+      "refersTo": "swatch",
+      "description": "Paper color radiogroup: named pills with a chip, never color alone.",
+      "html": "<fieldset class=\"ds-swatches\"><legend>Paper color <span>(optional)</span></legend><div class=\"ds-swatches__list\"><input type=\"radio\" name=\"ds-c\" id=\"ds-c0\" checked><label for=\"ds-c0\"><span class=\"ds-chip ds-chip--none\"><svg viewBox=\"0 0 24 24\" width=\"15\" height=\"15\" aria-hidden=\"true\"><path d=\"m5 12.5 4.5 4.5L19 7.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span>No color</label><input type=\"radio\" name=\"ds-c\" id=\"ds-c1\"><label for=\"ds-c1\"><span class=\"ds-chip\" style=\"--chip:#7EC8E3\"><svg viewBox=\"0 0 24 24\" width=\"15\" height=\"15\" aria-hidden=\"true\"><path d=\"m5 12.5 4.5 4.5L19 7.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span>Blue</label><input type=\"radio\" name=\"ds-c\" id=\"ds-c2\"><label for=\"ds-c2\"><span class=\"ds-chip\" style=\"--chip:#F4A7C3\"><svg viewBox=\"0 0 24 24\" width=\"15\" height=\"15\" aria-hidden=\"true\"><path d=\"m5 12.5 4.5 4.5L19 7.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span>Pink</label><input type=\"radio\" name=\"ds-c\" id=\"ds-c3\"><label for=\"ds-c3\"><span class=\"ds-chip\" style=\"--chip:#C5E87A\"><svg viewBox=\"0 0 24 24\" width=\"15\" height=\"15\" aria-hidden=\"true\"><path d=\"m5 12.5 4.5 4.5L19 7.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span>Green</label><input type=\"radio\" name=\"ds-c\" id=\"ds-c4\"><label for=\"ds-c4\"><span class=\"ds-chip\" style=\"--chip:#FFE56B\"><svg viewBox=\"0 0 24 24\" width=\"15\" height=\"15\" aria-hidden=\"true\"><path d=\"m5 12.5 4.5 4.5L19 7.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span>Yellow</label></div></fieldset>",
+      "css": ".ds-swatches { font-family: \"Rubik\", ui-rounded, system-ui, sans-serif; border: 0; margin: 0; padding: 0; color: var(--board, #16161C); } .ds-swatches legend { padding: 0; margin-bottom: 8px; font-weight: 600; } .ds-swatches legend span { font-weight: 400; color: #4B4F7C; } .ds-swatches__list { display: flex; flex-wrap: wrap; gap: 8px; } .ds-swatches input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; } .ds-swatches label { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px 0 8px; border-radius: 999px; border: 1.5px solid rgb(22 22 28 / .22); background: #FFFFFF; font-size: 1rem; font-weight: 500; cursor: pointer; transition: border-color 160ms cubic-bezier(0.23,1,0.32,1); } .ds-swatches label:hover { border-color: var(--indigo, #2E3A8C); } .ds-chip { width: 26px; height: 26px; border-radius: 50%; background: var(--chip, #FBFAF7); box-shadow: inset 0 0 0 1px rgb(22 22 28 / .22); display: grid; place-items: center; } .ds-chip--none { background-image: repeating-linear-gradient(135deg, transparent 0 5px, rgb(22 22 28 / .16) 5px 6px); } .ds-chip svg { opacity: 0; } .ds-swatches input:checked + label { border: 2px solid var(--indigo, #2E3A8C); font-weight: 650; padding-left: 7.5px; } .ds-swatches input:checked + label .ds-chip svg { opacity: 1; } .ds-swatches input:focus-visible + label { outline: 2px solid var(--indigo, #2E3A8C); outline-offset: 3px; }"
+    },
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Indigo pill for the one committing action: Stick it, Save.",
+      "html": "<button class=\"ds-btn ds-btn--primary\">Stick it</button>",
+      "css": ".ds-btn { font-family: \"Rubik\", ui-rounded, system-ui, sans-serif; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: 999px; border: 1.5px solid transparent; font-size: 1rem; font-weight: 600; line-height: 1; cursor: pointer; transition: background-color 160ms cubic-bezier(0.23,1,0.32,1), border-color 160ms cubic-bezier(0.23,1,0.32,1); } .ds-btn--primary { background: var(--indigo, #2E3A8C); color: #FFFFFF; } .ds-btn--primary:hover { background: var(--periwinkle, #5B63B8); } .ds-btn:active { transform: translateY(1px); } .ds-btn:focus-visible { outline: 2px solid var(--indigo, #2E3A8C); outline-offset: 3px; } .ds-btn[aria-disabled=\"true\"] { background: var(--periwinkle, #5B63B8); cursor: default; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Outlined pill for the quiet alternative: Cancel, Undo.",
+      "html": "<button class=\"ds-btn ds-btn--ghost\">Cancel</button>",
+      "css": ".ds-btn { font-family: \"Rubik\", ui-rounded, system-ui, sans-serif; display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 18px; border-radius: 999px; font-size: 1rem; font-weight: 600; line-height: 1; cursor: pointer; transition: border-color 160ms cubic-bezier(0.23,1,0.32,1); } .ds-btn--ghost { background: transparent; color: var(--board, #16161C); border: 1.5px solid rgb(22 22 28 / .45); } .ds-btn--ghost:hover { border-color: currentColor; } .ds-btn:active { transform: translateY(1px); } .ds-btn:focus-visible { outline: 2px solid var(--indigo, #2E3A8C); outline-offset: 3px; }"
+    },
+    {
+      "name": "Empty Wall",
+      "kind": "custom",
+      "refersTo": "empty-slot",
+      "description": "The board with no notes: a dashed, tilted slot and one plain line.",
+      "html": "<div class=\"ds-empty\"><div class=\"ds-empty__slot\" aria-hidden=\"true\"><svg viewBox=\"0 0 24 24\" width=\"34\" height=\"34\"><path d=\"M12 5v14M5 12h14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"/></svg></div><div><h2>Nothing on the wall yet.</h2><p>The first note you stick goes right here.</p><a href=\"#compose\">Write the first note</a></div></div>",
+      "css": ".ds-empty { font-family: \"Rubik\", ui-rounded, system-ui, sans-serif; display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 2.5rem; padding: 32px; background: var(--board, #16161C); color: var(--paper, #F4F2EE); border-radius: 30px; box-shadow: 0 0 0 3px var(--led, #FFC24E), 0 0 6px 3px rgb(255 196 84 / .75), 0 0 18px 4px rgb(247 178 52 / .4); } .ds-empty__slot { width: 9rem; aspect-ratio: 1/1; border: 2px dashed rgb(244 242 238 / .45); border-radius: 4px; transform: rotate(-2deg); display: grid; place-items: center; color: rgb(244 242 238 / .6); } .ds-empty h2 { margin: 0; font-size: clamp(1.6rem, 1.35rem + 1.2vw, 2.25rem); font-weight: 600; letter-spacing: -0.02em; line-height: 1.15; } .ds-empty p { margin: 8px 0 0; color: #C9C8D6; } .ds-empty a { display: inline-flex; align-items: center; min-height: 44px; margin-top: 12px; color: var(--paper, #F4F2EE); font-weight: 600; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: .28em; } .ds-empty a:focus-visible { outline: 2px solid var(--paper, #F4F2EE); outline-offset: 3px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Corridor Wall",
+    "overview": "The page is the room's actual wall, flattened. The ground is grey marble with thin pale veins. The headquarters' own painted wayfinding sits on it: a stack of indigo pills with white rounded type and periwinkle arrow discs, one of them lit with a yellow disc because that is the room you are standing in. Beside it is the wall as built. Across the top run the neon \"Creative Episode\" wordmark, the marker-written \"Good Ideas Start Here\" and a neon lightbulb. Below them is the bottle board: one shape, a long whiteboard on the left that flows into a felt-black bulb on the right, outlined by a single warm LED strip. Square paper notes in four pastels or plain paper sit on the felt, each tilted a degree or two as if pressed on by hand. Paper flowers sit on the frame. The whiteboard really draws. The page ends in a sheet of paper you can write on. Nothing on screen is a web convention dressed up; every surface is a material that exists in the room.\n\nDensity is low and the chrome is quiet so the wall can be loud. Color lives in the notes, the neon and the LED; the interface around them is indigo, marble, felt and white. Depth is physical and soft. Notes sit on the felt with a short contact shadow. The bottle is lit by its LED strip rather than lifted by a shadow. One moment of real motion (the flight) carries a new note from the field to its slot. Everything else is still.\n\nRejected outright, by brand commitment: glassmorphism, gradient text, emoji icons, section numbers, eyebrow labels, a theme toggle, and red. Glow is rejected everywhere except the LED strip, which is a real light in the room.",
+    "keyCharacteristics": [
+      "The materials are the room's: marble wall, indigo sign, neon lettering, the LED-lit bottle (whiteboard + felt), paper notes, paper flowers.",
+      "One rounded geometric sans (Rubik) for every word the interface sets; wordmark, marker line and bulb are supplied images.",
+      "Flat surfaces with soft, hue-tinted contact shadows; the LED strip is the only light source and the only glow.",
+      "Pills, discs and near-square paper for controls and notes; one large organic bottle silhouette for the board.",
+      "Exactly one engineered motion; the rest is a one-time reveal and state transitions.",
+      "Light only, by design."
+    ],
+    "rules": [
+      {
+        "name": "The One Spark Rule",
+        "body": "Spark yellow (#EFE52B) appears on exactly one interface element per view: the current pill's arrow disc. The neon lightbulb and the yellow \"Episode\" in the neon wordmark are supplied images of what is mounted on the real wall. They are accepted as the spark's painted twins and are never extended into interface color. Note Yellow (#FFE56B) is paper, and LED Amber (#FFC24E) is light; neither is the spark.",
+        "section": "colors"
+      },
+      {
+        "name": "The No Red Rule",
+        "body": "Red belongs to the ON AIR lamp in another room. It never appears here, including in error states. Errors are carried by Felt Board ink at weight 600, a heavier 2px ink edge on the field, and an alert icon.",
+        "section": "colors"
+      },
+      {
+        "name": "The Quiet Chrome Rule",
+        "body": "Pastels are for paper and amber is for the LED. Chrome is indigo, periwinkle, marble, felt and white; if a control needs a new color to be understood, the control is wrong.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Face Rule",
+        "body": "Rubik sets every word the interface writes. No second family, no display serif, no mono.",
+        "section": "typography"
+      },
+      {
+        "name": "The Weight Not Size Rule",
+        "body": "The ramp tops out at the headline. Emphasis comes from 600 weight and indigo, never from a giant hero size; the big type on this page is neon and marker, not typeset.",
+        "section": "typography"
+      },
+      {
+        "name": "The Material Shadow Rule",
+        "body": "A shadow means an object is resting on something: paper on felt, the composer sheet on marble, a note in the air. Nothing gets a shadow for emphasis alone.",
+        "section": "elevation"
+      },
+      {
+        "name": "The LED Exception Rule",
+        "body": "The only glow on the page is the LED strip around the bottle board, because it is a physical light on the real wall. It is a deliberate exception to the no-glow stance and stays even though automated detectors flag it. No other element may glow, and the LED never outlines anything but the board.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** keep the corridor sign as the only navigation, with the six rooms in the painted order and arrow directions, and Creative Episode as the current pill.",
+      "**Do** keep Spark yellow (#EFE52B) to the one current-pill disc per view; the neon bulb and wordmark carry the wall's other yellow as images.",
+      "**Do** put color on paper only: notes, the composer sheet, and swatch chips.",
+      "**Do** keep the bottle as one shape at wide sizes (whiteboard flowing into the felt bulb, one LED outline), and let it come apart into two LED-ringed panels when stacked.",
+      "**Do** set every interface word in Rubik and take hierarchy from weight (600) before size.",
+      "**Do** tilt paper (±0.8–2deg, deterministic per item) and keep chrome straight; straighten paper while it is being edited.",
+      "**Do** give every control a 44px target, a visible focus ring (indigo with a white halo on marble, paper on the felt), and a visible name.",
+      "**Do** expose tool state with `aria-pressed` and `aria-disabled`, and on touch screens draw nothing until a marker is picked.",
+      "**Do** show errors in Felt Board ink at weight 600 with a heavier ink edge and an alert icon.",
+      "**Do** use soft two-part shadows tinted to the felt hue, and only where an object rests on something.",
+      "**Do** let a saved note fly to its slot, and only that."
+    ],
+    "donts": [
+      "**Don't** use red (#E2231A or any red) anywhere, including errors.",
+      "**Don't** add eyebrow labels, kickers, section numbers, or emoji icons.",
+      "**Don't** add a theme toggle or a dark mode; the page is light by design and the felt is its only dark surface.",
+      "**Don't** introduce a second palette, a second font family, or pastel or amber color on chrome.",
+      "**Don't** add a second menu, sidebar, or footer that renames the rooms, or make the inert pills link to placeholder pages.",
+      "**Don't** use glassmorphism, backdrop blur, gradient text, or glow on anything but the LED strip.",
+      "**Don't** set the wordmark, the marker line or the bulb in type; use the supplied images.",
+      "**Don't** add a second engineered motion (parallax, scroll-scrub, magnetic hover, animated LED) to the page."
+    ]
+  }
+}
