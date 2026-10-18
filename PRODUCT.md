@@ -40,6 +40,8 @@ Does:
 - Lets a person type a note, optionally choose one of four colors, and see the note appear on the board.
 - Edits and deletes a note.
 - A shared whiteboard (added 2026-10-16 at Draven's request): freehand drawing with black and blue markers, a stroke eraser, undo and clear. Ink appears at once and saves to Neon in the background; if a save fails the lines stay on screen and the status says how many are not saved yet, with Retry. Clear is one tap and clears the board for everyone; Undo brings it back. On touch screens nothing draws until a marker is picked, so the page still scrolls.
+- Rooms (added 2026-10-18 at Draven's request). Black Box is booked as a round table: the host takes chair 1 and puts each attendee on one of chairs 2 to 8 (a chair is an invite; one person per chair, seven guests at most). A declined invite frees its chair. CK Hall keeps the plain invite list and has no chairs.
+- Office days (added 2026-10-18): a player-style card for weekdays only, up to 14 days ahead. Each person sets Coming in or Not coming, an optional arrive-by time and note; Repeat copies the day to the same weekday next week. On the day itself, On my way and I've arrived fill a trip line (left, ETA, arrived). Only "Coming in" notifies followers. A mini player on the sign shows today's state.
 - Saves a note with no color.
 - Real empty, saving, saved, and failed states.
 - Sample notes (only when the page is opened without the server) are labeled "Sample" in the interface; the board logic still runs (add, edit, delete). Served by the server, the wall never shows samples: if it cannot load, it says so and offers Retry.

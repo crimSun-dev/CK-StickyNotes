@@ -60,6 +60,9 @@
     --r-note: 4px;
     --r-board: 28px;
     --tap: 44px;
+    --player: #0E194F;         /* the music-player frame's navy, from the supplied frame */
+    --player-led: #0096FC;     /* its blue LED rim */
+    --player-soft: #B9C6F2;    /* secondary type on the navy and the black window */
     color-scheme: light;
   }
 
@@ -138,13 +141,22 @@
   .sheet .lamp { margin: 0 8px 0 0; border-color: rgb(22 22 28 / 0.35); color: var(--note-meta); }
   .sheet .lamp.is-on { border-color: var(--on-air); color: #FFFFFF; }
 
-  /* Today at the office: a quiet line under the sign, not another door. */
-  .sign__today { margin: 12px 0 0; }
-  .sign__today button {
+  /* Under the sign: who you are on the hub, your notices, and who is in today. Quiet lines, not doors. */
+  .sign__you { margin: 14px 0 0; display: grid; gap: 0; justify-items: start; }
+  .sign__you button, .linkish {
     min-height: var(--tap); padding: 0 4px; border: 0; background: none; color: var(--sc-ink-soft);
     font: inherit; font-size: var(--sc-t-sm); font-weight: 600; text-decoration: underline; text-underline-offset: 3px;
   }
-  .sign__today button:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; }
+  .linkish { min-height: 0; padding: 0; color: inherit; }
+  .sign__you button:focus-visible, .linkish:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; }
+  .sign__you strong { color: var(--sc-ink); }
+  .badge {
+    display: inline-grid; place-items: center; min-width: 1.4rem; height: 1.4rem; margin-left: 4px; padding: 0 5px;
+    border-radius: var(--sc-r-pill); background: var(--indigo); color: #FFFFFF; font-size: var(--sc-t-xs); font-weight: 700;
+    text-decoration: none; vertical-align: 1px;
+  }
+  .composer__who { margin: 0; font-size: var(--sc-t-sm); color: var(--sc-ink-soft); }
+  .composer__who strong { color: var(--sc-ink); }
   .toggle { display: flex; flex-wrap: wrap; gap: 8px; }
   .toggle .btn[aria-pressed="true"] { background: var(--indigo); color: #FFFFFF; border-color: var(--indigo); }
   .toggle .btn[aria-pressed="false"] { background: #FFFFFF; }
@@ -183,8 +195,80 @@
   .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; }
   .row .field { flex: 1 1 10rem; }
 
-  .who { display: grid; gap: 12px; padding: 14px; border-radius: 14px; background: #FFFFFF; }
+  .sheet[data-view="schedule"] { width: min(64rem, calc(100vw - 32px)); }
+  .sheet__now > span { display: flex; align-items: center; gap: 0; }
+  .sheet__now > span + span { margin-top: 4px; }
+  .card { display: grid; gap: 10px; padding: 14px; border-radius: 14px; background: #FFFFFF; }
+  .card h3 { margin: 0; }
   .who__line { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; justify-content: space-between; }
+  .tag { display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: var(--sc-r-pill); background: rgb(46 58 140 / 0.12);
+    color: var(--indigo); font-size: var(--sc-t-xs); font-weight: 650; vertical-align: 1px; }
+
+  /* The day strip: today and the next 13 days. Nothing before today. */
+  .days { list-style: none; margin: 0; padding: 0 0 4px; display: flex; gap: 6px; overflow-x: auto; }
+  .days button {
+    min-height: var(--tap); padding: 2px 12px; border-radius: 12px; border: 1.5px solid rgb(22 22 28 / 0.3);
+    background: #FFFFFF; color: var(--note-ink); font: inherit; font-size: var(--sc-t-sm); font-weight: 600; white-space: nowrap; line-height: 1.15;
+  }
+  .days button small { display: block; font-weight: 500; color: var(--note-meta); }
+  .days button[aria-pressed="true"] { background: var(--indigo); border-color: var(--indigo); color: #FFFFFF; }
+  .days button[aria-pressed="true"] small { color: #FFFFFF; }
+  .days button:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; }
+
+  .sched { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(17rem, 1fr); gap: 20px; align-items: start; }
+  .sched__side { display: grid; gap: 16px; }
+  @media (max-width: 860px) { .sched { grid-template-columns: 1fr; } }
+
+  /* The timetable: both rooms side by side, one hour per --hour, bookings placed to the minute. */
+  .tt { border-radius: 14px; background: #FFFFFF; padding: 0 8px 10px 0; max-height: 32rem; overflow-y: auto; }
+  .tt__head, .tt__body { display: grid; grid-template-columns: 3.4rem 1fr 1fr; }
+  .tt__head { position: sticky; top: 0; z-index: 3; background: #FFFFFF; padding: 10px 0 6px; font-size: var(--sc-t-sm); font-weight: 650; }
+  .tt__head span { padding-left: 8px; }
+  .tt__body { position: relative; margin-top: 10px; }
+  .tt__hours { position: relative; }
+  .tt__hour {
+    position: absolute; left: 0; right: 8px; transform: translateY(-0.55em);
+    font-size: var(--sc-t-xs); color: var(--note-meta); text-align: right; font-variant-numeric: tabular-nums;
+  }
+  .tt__col {
+    position: relative; border-left: 1px solid rgb(22 22 28 / 0.18); cursor: copy;
+    background-image: repeating-linear-gradient(to bottom, rgb(22 22 28 / 0.12) 0 1px, transparent 1px var(--hour, 48px));
+  }
+  .tt__block {
+    position: absolute; left: 4px; right: 4px; z-index: 1; overflow: hidden;
+    padding: 3px 7px; border: 0; border-radius: 8px; text-align: left;
+    background: var(--indigo); color: #FFFFFF; font: inherit; font-size: var(--sc-t-xs); line-height: 1.25; cursor: pointer;
+  }
+  .tt__block strong { display: block; font-size: var(--sc-t-sm); font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tt__block--confirmed { background: var(--periwinkle); }
+  .tt__block--requested { background: var(--paper); color: var(--indigo); border: 1.5px dashed var(--indigo); }
+  .tt__block.is-mine, .tt__block.is-invited { box-shadow: inset 5px 0 0 var(--spark); }
+  .tt__block.is-selected { outline: 3px solid var(--board); outline-offset: 1px; z-index: 2; }
+  .tt__block:focus-visible { outline: 3px solid var(--board); outline-offset: 1px; z-index: 2; }
+  .tt__past {
+    position: absolute; left: 0; right: 0; top: 0; pointer-events: none;
+    background: repeating-linear-gradient(135deg, rgb(22 22 28 / 0.07) 0 6px, transparent 6px 12px);
+  }
+  .tt__now { position: absolute; left: 0; right: 0; height: 2px; background: var(--board); pointer-events: none; z-index: 2; }
+  .tt__key { margin: 0; font-size: var(--sc-t-xs); color: var(--note-meta); }
+
+  .attendees { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: var(--sc-t-sm); }
+  .attendees small { color: var(--note-meta); }
+  .choices { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; border: 0; }
+  .choices legend { padding: 0 0 6px; font-size: var(--sc-t-sm); font-weight: 600; }
+  .choice {
+    display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 12px 0 8px;
+    border: 1.5px solid rgb(22 22 28 / 0.3); border-radius: var(--sc-r-pill); background: #FFFFFF; font-size: var(--sc-t-sm); cursor: pointer;
+  }
+  .choice:has(input:checked) { border-color: var(--indigo); background: rgb(46 58 140 / 0.1); font-weight: 650; }
+  .choice input { accent-color: var(--indigo); }
+  .seg { display: flex; gap: 6px; flex-wrap: wrap; }
+  .card .fields { grid-template-columns: 1fr 1fr; }
+  .card .fields .field:first-child { grid-column: 1 / -1; }
+  #day-other { max-width: 13rem; }
+  .slot--plain { grid-template-columns: minmax(0, 1fr) auto; }
+  .slot--stack { grid-template-columns: 7.5rem minmax(0, 1fr); }
+  .slot--stack .slot__acts { grid-column: 2; justify-content: start; }
 
   .slots { list-style: none; margin: 0; padding: 0; display: grid; }
   .slot {
@@ -200,11 +284,121 @@
   .slot .btn { min-height: 36px; padding: 0 12px; font-size: var(--sc-t-sm); }
   .slots__empty { margin: 0; color: var(--note-meta); font-size: var(--sc-t-sm); }
 
+
+  /* --------------------------------------------- Black Box: the table -- */
+  /* The room's round table seen from above, 8 chairs. Chair 1, at the head, is the host. A seated
+     name is an invitation: solid once they accept, outlined until they answer. A decline empties it. */
+  .seats { border: 0; margin: 0; padding: 0; min-width: 0; display: grid; gap: 10px; }
+  .seats legend { padding: 0 0 6px; font-size: var(--sc-t-sm); font-weight: 600; }
+  .seats legend span { font-weight: 400; color: var(--note-meta); }
+  .table { position: relative; width: min(calc(100% - 3.5rem), 22rem); aspect-ratio: 1 / 1; margin: 6px auto; }
+  .table__img { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; user-select: none; }
+  .chair {
+    position: absolute; left: var(--x); top: var(--y); translate: -50% -50%; z-index: 1;
+    min-width: var(--tap); min-height: var(--tap); max-width: 6.25rem; padding: 4px 10px;
+    display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
+    border-radius: var(--sc-r-pill); font: inherit; font-size: 0.82rem; font-weight: 650; line-height: 1.1;
+    box-shadow: 0 2px 6px hsl(240 30% 4% / 0.45);
+  }
+  .chair > span { display: block; max-width: 5.25rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .chair small { font-size: 0.68rem; font-weight: 600; }
+  .chair--free { background: rgb(244 242 238 / 0.94); color: var(--indigo); border: 2px dashed var(--indigo); font-size: 1.15rem; }
+  .chair--host { background: var(--board); color: #FFFFFF; border: 2px solid var(--paper); }
+  .chair--accepted { background: var(--indigo); color: #FFFFFF; border: 2px solid var(--paper); }
+  .chair--invited, .chair--chosen { background: var(--paper); color: var(--indigo); border: 2px solid var(--indigo); }
+  button.chair { cursor: pointer; }
+  button.chair:focus-visible { outline: 3px solid var(--board); outline-offset: 2px; }
+  .chair.is-open { outline: 3px solid var(--indigo); outline-offset: 3px; }
+  @media (hover: hover) and (pointer: fine) {
+    button.chair--free:hover { background: #FFFFFF; border-style: solid; }
+  }
+  .seatpick { display: grid; gap: 10px; padding: 12px; border-radius: 14px; background: var(--paper); border: 1.5px solid rgb(22 22 28 / 0.2); }
+  .seatpick__title { margin: 0; font-weight: 650; }
+  .seatpick__list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; max-height: 12rem; overflow: auto; }
+  .seatpick__list .btn { font-size: var(--sc-t-sm); font-weight: 600; }
+  .seatpick__list small { font-weight: 500; color: var(--note-meta); }
+
+  /* -------------------------------------------- Office days: the player -- */
+  /* The lounge's music-player frame (navy body, blue LED rim, black window), with live controls.
+     Its navy and blue come from that supplied frame, the way the wall's amber comes from its LED strip. */
+  .player {
+    display: grid; gap: 14px; padding: 18px 18px 14px; border-radius: 26px;
+    background: var(--player); color: #FFFFFF;
+    box-shadow: 0 0 0 3px var(--player-led), 0 0 16px 3px rgb(0 150 252 / 0.5);
+  }
+  .player :focus-visible { outline: 2px solid #FFFFFF; outline-offset: 2px; }
+  .pl__window { display: grid; gap: 12px; align-content: start; min-height: 14rem; padding: 16px; border-radius: 16px;
+    background: #000000; box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.14); }
+  .pl__day { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+  .pl__day strong { font-size: 1.6rem; font-weight: 650; letter-spacing: -0.01em; }
+  .pl__day span { color: var(--player-soft); font-weight: 600; }
+  .pl__today { padding: 1px 8px; border-radius: var(--sc-r-pill); background: #FFFFFF; color: var(--player) !important; font-size: var(--sc-t-xs); }
+  .pl__state { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-weight: 600; }
+  .pl__badge { padding: 3px 10px; border-radius: var(--sc-r-pill); background: var(--chip, transparent); color: var(--note-ink); font-weight: 700; }
+  .pl__window[data-status="none"] .pl__badge { --chip: #FFFFFF; }
+  .pl__window[data-status="not"] .pl__badge { --chip: var(--note-pink); }
+  .pl__window[data-status="coming"] .pl__badge { --chip: var(--note-green); }
+  .pl__window[data-status="way"] .pl__badge { --chip: var(--note-yellow); }
+  .pl__window[data-status="arrived"] .pl__badge { --chip: var(--note-blue); }
+  .pl__state .linkish { color: #FFFFFF; font-weight: 600; min-height: var(--tap); }
+  .pl__plan { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pl__plan .btn { background: transparent; color: #FFFFFF; border-color: rgb(255 255 255 / 0.55); }
+  .pl__plan .btn[aria-pressed="true"] { background: #FFFFFF; color: var(--player); border-color: #FFFFFF; }
+  .pl__fields { display: grid; grid-template-columns: minmax(0, 8.5rem) minmax(0, 1fr); gap: 10px; }
+  .pl__fields .field label { color: var(--player-soft); }
+  .pl__fields .field input { background: #0B1033; color: #FFFFFF; border-color: rgb(255 255 255 / 0.45); color-scheme: dark; }
+  .pl__fields .field input::placeholder { color: #9FAEDB; opacity: 1; }
+  .pl__fields .field input:focus-visible { outline: 2px solid #FFFFFF; border-color: #FFFFFF; }
+  .pl__count { margin: 0; color: var(--player-soft); font-size: var(--sc-t-sm); }
+  .pl__days { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }
+  .pl__days button {
+    width: 100%; min-height: var(--tap); border: 0; border-radius: 10px; background: none; color: var(--player-soft);
+    font: inherit; font-size: var(--sc-t-sm); font-weight: 700; letter-spacing: 0.06em; display: grid; place-items: center; gap: 3px; padding: 4px 0;
+  }
+  .pl__days button i { width: 7px; height: 7px; border-radius: 50%; background: var(--dot, transparent); box-shadow: inset 0 0 0 1.5px var(--dot, rgb(255 255 255 / 0.35)); }
+  .pl__days button[data-status="coming"] { --dot: var(--note-green); }
+  .pl__days button[data-status="not"] { --dot: var(--note-pink); }
+  .pl__days button[data-status="way"] { --dot: var(--note-yellow); }
+  .pl__days button[data-status="arrived"] { --dot: var(--note-blue); }
+  .pl__days button[aria-pressed="true"] { color: #FFFFFF; background: rgb(255 255 255 / 0.14); }
+  .pl__days button:disabled { opacity: 0.35; cursor: default; }
+  .pl__line { position: relative; height: 4px; margin: 6px 7px 0; border-radius: 2px; background: rgb(255 255 255 / 0.32); }
+  .pl__fill { position: absolute; left: 0; top: 0; bottom: 0; width: var(--p, 0%); border-radius: 2px; background: #FFFFFF; }
+  .pl__knob { position: absolute; left: var(--p, 0%); top: 50%; width: 14px; height: 14px; translate: -50% -50%; border-radius: 50%; background: #FFFFFF; }
+  .pl__times { margin: 0; display: flex; justify-content: space-between; gap: 10px; color: var(--player-soft); font-size: var(--sc-t-xs);
+    font-variant-numeric: tabular-nums; min-height: 1.2em; }
+  .pl__controls { display: grid; grid-template-columns: 1fr auto auto auto 1fr; align-items: center; gap: 8px; }
+  .pl__btn { width: var(--tap); height: var(--tap); padding: 0; border: 0; border-radius: 50%; background: none; color: #FFFFFF; display: grid; place-items: center; }
+  .pl__btn svg { width: 22px; height: 22px; }
+  .pl__btn[aria-disabled="true"] { opacity: 0.38; cursor: default; }
+  #pl-who { justify-self: start; } #pl-repeat { justify-self: end; }
+  .pl__main { width: 64px; height: 64px; padding: 0; border: 0; border-radius: 50%; background: #FFFFFF; color: var(--player); display: grid; place-items: center; }
+  .pl__main svg { width: 28px; height: 28px; }
+  .pl__main[aria-disabled="true"] { background: var(--note-blue); cursor: default; }
+  .pl__main:active:not([aria-disabled="true"]) { transform: scale(0.96); }
+  .pl__label { margin: -6px 0 0; text-align: center; font-weight: 650; }
+
+  /* The small player under the sign: your next office day at a glance. */
+  .sign__you .miniplayer {
+    margin-top: 6px; display: inline-flex; align-items: center; gap: 10px; padding: 6px 14px 6px 6px;
+    border-radius: 16px; background: var(--player); color: #FFFFFF; text-decoration: none; text-align: left;
+    box-shadow: 0 0 0 2px var(--player-led), 0 0 10px 1px rgb(0 150 252 / 0.4);
+  }
+  .miniplayer__icon { flex: none; width: 32px; height: 32px; border-radius: 50%; background: #FFFFFF; color: var(--player); display: grid; place-items: center; }
+  .miniplayer__icon svg { width: 16px; height: 16px; }
+  .miniplayer__text { display: grid; line-height: 1.2; }
+  .miniplayer__text strong { color: #FFFFFF !important; font-size: var(--sc-t-sm); }
+  .miniplayer__text span { color: var(--player-soft); font-size: var(--sc-t-xs); font-weight: 600; }
+  .sign__you .miniplayer:focus-visible { outline: 2px solid var(--indigo); outline-offset: 3px; }
+
   @media (max-width: 480px) {
+    .pl__fields { grid-template-columns: 1fr; }
     .fields { grid-template-columns: 1fr 1fr; }
     .fields .field:first-child { grid-column: 1 / -1; }
     .slot { grid-template-columns: 1fr auto; }
     .slot__time { grid-column: 1 / -1; }
+    /* Several buttons (an invitation's Accept, Decline, See it) go under the words instead of squeezing them. */
+    .slot__acts:has(> :nth-child(2)) { grid-column: 1 / -1; justify-content: start; }
   }
 
   /* --------------------------------------------------------- the wall itself -- */
@@ -356,6 +550,7 @@
   }
   .note__info { white-space: nowrap; }
   .note__meta { flex-wrap: wrap; row-gap: 0; }
+  .note__by { font-weight: 650; margin-right: 6px; }
   .note__tools { margin-left: auto; }
   .note__tag {
     display: inline-block; padding: 2px 8px; border-radius: var(--sc-r-pill);
@@ -596,6 +791,12 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
     <symbol id="i-eraser" viewBox="0 0 24 24"><path d="m14.5 4.5 5 5L11 18H6.5L4 15.5l10.5-11ZM8.5 10.5l5 5M11 18h9" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5M4 9h10.5a5.5 5.5 0 0 1 0 11H11" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5L8 5.5Z" fill="currentColor"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24"><path d="M6 21V4m0 1h10.5l-2 4 2 4H6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-prev" viewBox="0 0 24 24"><path d="M18 6v12L9.5 12 18 6ZM6.5 6v12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/></symbol>
+    <symbol id="i-next" viewBox="0 0 24 24"><path d="M6 6v12l8.5-6L6 6Zm11.5 0v12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/></symbol>
+    <symbol id="i-repeat" viewBox="0 0 24 24"><path d="M5 11V9a3 3 0 0 1 3-3h10m-3-3 3 3-3 3M19 13v2a3 3 0 0 1-3 3H6m3 3-3-3 3-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-people" viewBox="0 0 24 24"><path d="M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm-6 9c.6-3.4 3-5.5 6-5.5s5.4 2.1 6 5.5M16 4.3a3.5 3.5 0 0 1 0 6.4M18.5 14.8c1.4.9 2.3 2.6 2.5 5.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7.5v5.5M12 16.3v.2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
   </defs>
 </svg>
@@ -616,7 +817,11 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
         <li><span class="pill pill--right">GM<span class="sr-only">, to the right</span><span class="pill__arrow"><svg aria-hidden="true"><use href="#i-right"/></svg></span></span></li>
         <li><span class="pill pill--right" title="Money Lab">The M-Lab<span class="sr-only">, to the right. Money Lab, not open yet</span><span class="pill__arrow"><svg aria-hidden="true"><use href="#i-right"/></svg></span></span></li>
       </ol>
-      <p class="sign__today"><button type="button" id="arrivals-open" aria-haspopup="dialog" aria-controls="room-sheet">Today at the office</button></p>
+      <div class="sign__you">
+        <button type="button" id="you-open" aria-haspopup="dialog" aria-controls="room-sheet">You: <strong id="you-name">pick your name</strong></button>
+        <button type="button" id="notices-open" aria-haspopup="dialog" aria-controls="room-sheet">Notices<span class="badge" id="notices-count" hidden>0</span></button>
+        <button type="button" class="miniplayer" id="arrivals-open" aria-haspopup="dialog" aria-controls="room-sheet"><span class="miniplayer__icon" aria-hidden="true"><svg><use href="#i-play"/></svg></span><span class="miniplayer__text"><strong id="mini-day">Office days</strong><span id="mini-state">Plan when you come in</span></span></button>
+      </div>
     </nav>
 
     <div class="bottle" id="bottle">
@@ -707,6 +912,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
 
         <div class="composer__actions">
           <button type="submit" class="btn btn--primary stick" id="stick">Stick it</button>
+          <p class="composer__who">Writing as <strong id="composer-who-name">nobody yet</strong> <button type="button" class="linkish" id="composer-who">Pick your name</button></p>
           <p class="composer__status" id="compose-status" role="status" aria-live="polite"></p>
           <p class="composer__error" id="note-error" role="alert" hidden><svg aria-hidden="true"><use href="#i-alert"/></svg>Write something first. One word is enough.</p>
         </div>
@@ -714,101 +920,153 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     </form>
   </section>
 
-  <!-- THE ROOMS: one sheet for the room whose door was opened on the sign. -->
+  <!-- THE ROOMS: one sheet for the schedule, your name, your notices, or today at the office. -->
   <dialog class="sheet" id="room-sheet" aria-labelledby="sheet-title">
     <div class="sheet__inner">
       <header class="sheet__head">
-        <h2 id="sheet-title">Black Box</h2>
+        <h2 id="sheet-title">Room schedule</h2>
         <button type="button" class="btn btn--ghost" id="sheet-close">Close</button>
       </header>
       <p class="sheet__now" id="sheet-now" role="status" aria-live="polite"></p>
+      <p class="sheet__msg" id="sheet-msg" role="status" aria-live="polite"></p>
 
-      <!-- Who you are on the hub. Staff and hall operators sign in with the code the office gave them. -->
-      <div class="who" id="who">
-        <p class="who__line" id="who-in" hidden><span id="who-name"></span><button type="button" class="btn btn--ghost" id="who-out">Sign out</button></p>
-        <div id="who-out-forms">
-          <form id="code-form" class="row" novalidate>
-            <div class="field"><label for="code-input">Hub code</label><input id="code-input" name="code" autocomplete="off" spellcheck="false" placeholder="From the office"></div>
-            <button type="submit" class="btn btn--primary">Sign in</button>
-          </form>
-          <form id="join-form" class="row" novalidate>
-            <div class="field"><label for="join-name">Or join as a visitor</label><input id="join-name" name="name" maxlength="60" autocomplete="name" placeholder="Your name"></div>
-            <div class="field" id="join-role-field" hidden><label for="join-role">Role on this device</label>
-              <select id="join-role"><option value="visitor">Visitor</option><option value="staff">Staff</option><option value="hall_operator">Hall operator</option></select></div>
-            <button type="submit" class="btn btn--ghost">Join</button>
+      <!-- Your name: the hub's names list. No codes until sign-in exists. -->
+      <section id="names-panel" aria-label="Your name" hidden>
+        <div class="card">
+          <p class="who__line"><span id="names-me"></span><button type="button" class="btn btn--ghost" id="names-forget" hidden>Not me</button></p>
+          <form id="name-form" class="row" novalidate>
+            <div class="field"><label for="name-input">Add your name</label><input id="name-input" maxlength="60" autocomplete="name" placeholder="Your name"></div>
+            <div class="field" id="name-role-field" hidden><label for="name-role">On this device</label>
+              <select id="name-role"><option value="guest">Guest</option><option value="hall_operator">Hall operator</option></select></div>
+            <button type="submit" class="btn btn--primary">Add and use</button>
           </form>
         </div>
-        <p class="sheet__msg" id="who-msg" role="status" aria-live="polite"></p>
-      </div>
-
-      <!-- Black Box: staff meetings, one span each. -->
-      <section id="bb-panel" aria-label="Black Box meetings">
-        <div class="row">
-          <div class="field"><label for="bb-day">Day</label><input type="date" id="bb-day"></div>
-        </div>
-        <p class="sheet__note" id="bb-locked">Black Box meetings are for staff. Sign in with your staff code to see the day and book.</p>
-        <div id="bb-open">
-          <h3 id="bb-day-title"></h3>
-          <ol class="slots" id="bb-list" aria-labelledby="bb-day-title"></ol>
-          <p class="slots__empty" id="bb-empty">Nothing booked. The room is free all day.</p>
-        </div>
-        <form id="bb-form" novalidate>
-          <h3>Book the Black Box</h3>
-          <div class="field"><label for="bb-title">Meeting</label><input id="bb-title" maxlength="120" required placeholder="What is it for?"></div>
-          <div class="fields">
-            <div class="field"><label for="bb-date">Date</label><input type="date" id="bb-date" required></div>
-            <div class="field"><label for="bb-start">From</label><input type="time" id="bb-start" required step="300"></div>
-            <div class="field"><label for="bb-end">To</label><input type="time" id="bb-end" required step="300"></div>
-          </div>
-          <div class="field"><label for="bb-note">Note <span>(optional)</span></label><textarea id="bb-note" maxlength="600" rows="2"></textarea></div>
-          <div class="row"><button type="submit" class="btn btn--primary">Book</button></div>
-          <p class="sheet__msg" id="bb-msg" role="status" aria-live="polite"></p>
-        </form>
+        <h3>Everyone on the hub</h3>
+        <p class="sheet__note">Pick your own name to use it here. Follow colleagues to be told when they are coming in.</p>
+        <ul class="slots" id="names-list" aria-label="Names on the hub"></ul>
+        <p class="slots__empty" id="names-empty">No names yet. Add yours above.</p>
       </section>
 
-      <!-- CK Hall: anyone on the hub asks; a hall operator confirms. Confirmed spans light the lamp. -->
-      <section id="hall-panel" aria-label="CK Hall bookings" hidden>
+      <!-- The schedule: both rooms, one day at a time, from today on. -->
+      <section id="sched-panel" aria-label="Room schedule" hidden>
+        <ol class="days" id="days" aria-label="Day"></ol>
         <div class="row">
-          <div class="field"><label for="hall-day">Day</label><input type="date" id="hall-day"></div>
+          <div class="field"><label for="day-other">Another day</label><input type="date" id="day-other"></div>
         </div>
-        <p class="sheet__note" id="hall-locked">Sign in, or join as a visitor, to ask for the hall.</p>
-        <div id="hall-open">
-          <h3 id="hall-day-title"></h3>
-          <ol class="slots" id="hall-list" aria-labelledby="hall-day-title"></ol>
-          <p class="slots__empty" id="hall-empty">No bookings or requests. The hall is free all day.</p>
-          <p class="sheet__msg" id="hall-decide-msg" role="status" aria-live="polite"></p>
-        </div>
-        <form id="hall-form" novalidate>
-          <h3>Ask for CK Hall</h3>
-          <div class="field"><label for="hall-name">Name on the booking</label><input id="hall-name" maxlength="120" required autocomplete="name"></div>
-          <div class="fields">
-            <div class="field"><label for="hall-date">Date</label><input type="date" id="hall-date" required></div>
-            <div class="field"><label for="hall-start">From</label><input type="time" id="hall-start" required step="300"></div>
-            <div class="field"><label for="hall-end">To</label><input type="time" id="hall-end" required step="300"></div>
-          </div>
-          <div class="field"><label for="hall-note">Note <span>(optional)</span></label><textarea id="hall-note" maxlength="600" rows="2"></textarea></div>
-          <div class="row"><button type="submit" class="btn btn--primary">Send request</button></div>
-          <p class="sheet__msg" id="hall-msg" role="status" aria-live="polite"></p>
-          <p class="sheet__note">A hall operator confirms each request. The ON AIR lamp lights only for confirmed bookings.</p>
-        </form>
-      </section>
-
-      <!-- Today at the office: one line per person for today in Jakarta. Staff only. -->
-      <section id="arr-panel" aria-label="Today at the office" hidden>
-        <p class="sheet__note" id="arr-locked">The arrival list is for staff. Sign in with your staff code.</p>
-        <div id="arr-open">
-          <form id="arr-form" novalidate>
-            <div class="toggle" role="group" aria-label="Are you coming in today?">
-              <button type="button" class="btn btn--ghost" id="arr-yes" aria-pressed="false">I'm coming in</button>
-              <button type="button" class="btn btn--ghost" id="arr-no" aria-pressed="false">Not coming</button>
+        <div class="sched">
+          <div>
+            <h3 id="tt-title"></h3>
+            <div class="tt" id="tt">
+              <div class="tt__head" aria-hidden="true"><span></span><span>Black Box</span><span>CK Hall</span></div>
+              <div class="tt__body" id="tt-body">
+                <div class="tt__hours" id="tt-hours" aria-hidden="true"></div>
+                <div class="tt__col" id="tt-col-black_box" data-room="black_box" role="group" aria-label="Black Box"></div>
+                <div class="tt__col" id="tt-col-ck_hall" data-room="ck_hall" role="group" aria-label="CK Hall"></div>
+              </div>
             </div>
-            <div class="field"><label for="arr-note">Note <span>(optional)</span></label><input id="arr-note" maxlength="280" placeholder="From 10, after the shoot…"></div>
-            <p class="sheet__msg" id="arr-msg" role="status" aria-live="polite"></p>
-          </form>
-          <h3 id="arr-title"></h3>
-          <ul class="slots" id="arr-list" aria-labelledby="arr-title"></ul>
-          <p class="slots__empty" id="arr-empty">No one has said yet today.</p>
+            <p class="tt__key">Click a free time to start a booking. Dashed: a hall request waiting for approval. Yellow edge: yours or you are invited.</p>
+          </div>
+
+          <div class="sched__side">
+            <div class="card" id="detail" hidden>
+              <h3 id="detail-title"></h3>
+              <p class="sheet__note" id="detail-when"></p>
+              <p class="sheet__note" id="detail-note" hidden></p>
+              <div class="table" id="detail-table" hidden></div>
+              <div class="seatpick" id="detail-pick" hidden>
+                <p class="seatpick__title" id="detail-pick-title"></p>
+                <div class="field"><label for="detail-pick-q">Find a name</label><input id="detail-pick-q" autocomplete="off" maxlength="60" placeholder="Type a name"></div>
+                <ul class="seatpick__list" id="detail-pick-list" aria-label="Names"></ul>
+                <div class="row">
+                  <button type="button" class="btn btn--ghost" id="detail-pick-add" hidden></button>
+                  <button type="button" class="btn btn--ghost" id="detail-pick-close">Done</button>
+                </div>
+              </div>
+              <ul class="attendees" id="detail-people" aria-label="Who is coming"></ul>
+              <div class="seg" id="detail-acts"></div>
+              <form id="more-form" novalidate hidden>
+                <fieldset class="choices" id="more-choices"><legend>Invite more</legend></fieldset>
+                <div class="row"><button type="submit" class="btn btn--ghost">Send invites</button></div>
+              </form>
+              <p class="sheet__msg" id="detail-msg" role="status" aria-live="polite"></p>
+            </div>
+
+            <form class="card" id="book-form" novalidate>
+              <h3>Book a room</h3>
+              <div class="seg" role="radiogroup" aria-label="Room">
+                <label class="choice"><input type="radio" name="book-room" value="black_box" checked> Black Box</label>
+                <label class="choice"><input type="radio" name="book-room" value="ck_hall"> CK Hall <small>(needs approval)</small></label>
+              </div>
+              <div class="field"><label for="book-title" id="book-title-label">Meeting</label><input id="book-title" maxlength="120" required></div>
+              <div class="fields">
+                <div class="field"><label for="book-date">Date</label><input type="date" id="book-date" required></div>
+                <div class="field"><label for="book-start">From</label><input type="time" id="book-start" required step="60"></div>
+                <div class="field"><label for="book-end">To</label><input type="time" id="book-end" required step="60"></div>
+              </div>
+              <div class="field"><label for="book-note">Note <span>(optional)</span></label><textarea id="book-note" maxlength="600" rows="2"></textarea></div>
+              <fieldset class="seats" id="book-seats">
+                <legend>Who sits where <span>(optional)</span></legend>
+                <div class="table" id="book-table"></div>
+                <p class="sheet__note" id="book-seats-note">Chair 1 is you, the host. Tap a chair to seat someone: booking sends them the invite.</p>
+                <div class="seatpick" id="book-pick" hidden>
+                  <p class="seatpick__title" id="book-pick-title"></p>
+                  <div class="field"><label for="book-pick-q">Find a name</label><input id="book-pick-q" autocomplete="off" maxlength="60" placeholder="Type a name"></div>
+                  <ul class="seatpick__list" id="book-pick-list" aria-label="Names"></ul>
+                  <div class="row">
+                    <button type="button" class="btn btn--ghost" id="book-pick-add" hidden></button>
+                    <button type="button" class="btn btn--ghost" id="book-pick-clear">Empty this chair</button>
+                    <button type="button" class="btn btn--ghost" id="book-pick-close">Done</button>
+                  </div>
+                </div>
+              </fieldset>
+              <fieldset class="choices" id="book-invite"><legend>Invite <span>(optional)</span></legend></fieldset>
+              <div class="row"><button type="submit" class="btn btn--primary" id="book-submit">Book</button></div>
+              <p class="sheet__msg" id="book-msg" role="status" aria-live="polite"></p>
+            </form>
+          </div>
         </div>
+      </section>
+
+      <!-- Notices: invitations to answer, and followed colleagues coming in today. Nothing leaves the page. -->
+      <section id="notices-panel" aria-label="Notices" hidden>
+        <ul class="slots" id="notices-list" aria-label="Notices"></ul>
+        <p class="slots__empty" id="notices-empty">Nothing new. Invitations and colleagues you follow coming in show up here.</p>
+        <div class="row"><button type="button" class="btn btn--ghost" id="alerts-allow" hidden>Allow browser alerts</button></div>
+      </section>
+
+      <!-- Office days: the lounge's music player. One weekday at a time, today through two weeks. -->
+      <section id="arr-panel" aria-label="Office days" hidden>
+        <div class="player" id="player">
+          <div class="pl__window" id="pl-window" data-status="none">
+            <p class="pl__day"><strong id="pl-day"></strong><span id="pl-date"></span><span class="pl__today" id="pl-today" hidden>Today</span></p>
+            <p class="pl__state"><span class="pl__badge" id="pl-badge"></span><span id="pl-detail"></span><button type="button" class="linkish" id="pl-undo" hidden>Undo</button></p>
+            <form id="arr-form" novalidate>
+              <div class="pl__plan" role="group" aria-label="Your plan for this day">
+                <button type="button" class="btn btn--ghost" id="arr-yes" aria-pressed="false">Coming in</button>
+                <button type="button" class="btn btn--ghost" id="arr-no" aria-pressed="false">Not coming</button>
+              </div>
+              <div class="pl__fields">
+                <div class="field"><label for="pl-arrive">Arrive by</label><input type="time" id="pl-arrive" step="300"></div>
+                <div class="field"><label for="arr-note">Note <span>(optional)</span></label><input id="arr-note" maxlength="280" placeholder="From 10, after the shoot…"></div>
+              </div>
+            </form>
+            <p class="pl__count" id="pl-count"></p>
+          </div>
+          <ol class="pl__days" id="pl-days" aria-label="Weekdays"></ol>
+          <div class="pl__line" id="pl-line" aria-hidden="true"><span class="pl__fill"></span><span class="pl__knob"></span></div>
+          <p class="pl__times"><span id="pl-left"></span><span id="pl-eta"></span></p>
+          <div class="pl__controls">
+            <button type="button" class="pl__btn" id="pl-who" aria-label="Who's in this day"><svg aria-hidden="true"><use href="#i-people"/></svg></button>
+            <button type="button" class="pl__btn" id="pl-prev" aria-label="Previous weekday"><svg aria-hidden="true"><use href="#i-prev"/></svg></button>
+            <button type="button" class="pl__main" id="pl-main" aria-describedby="pl-main-label"><svg aria-hidden="true"><use href="#i-play" id="pl-main-icon"/></svg></button>
+            <button type="button" class="pl__btn" id="pl-next" aria-label="Next weekday"><svg aria-hidden="true"><use href="#i-next"/></svg></button>
+            <button type="button" class="pl__btn" id="pl-repeat" aria-label="Same plan next week"><svg aria-hidden="true"><use href="#i-repeat"/></svg></button>
+          </div>
+          <p class="pl__label" id="pl-main-label" aria-hidden="true"></p>
+        </div>
+        <h3 id="arr-title" tabindex="-1"></h3>
+        <ul class="slots" id="arr-list" aria-labelledby="arr-title"></ul>
+        <p class="slots__empty" id="arr-empty">No one has said yet for this day.</p>
       </section>
     </div>
   </dialog>
@@ -932,6 +1190,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
 
     var meta = el('footer', 'note__meta');
     var info = el('span', 'note__info');
+    if (n.authorName) info.appendChild(el('span', 'note__by', n.authorName));
     if (isSample(n)) {
       info.appendChild(el('span', 'note__tag', 'Sample'));
     } else {
@@ -1124,6 +1383,12 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     var body = ta.value.trim();
     if (!body) { showError(true); composeStatus(''); ta.focus(); return; }
     showError(false);
+    /* Every note says who stuck it: a name from the hub's list (the corridor script asks for one). */
+    if (!CE.rooms.me()) {
+      composeStatus('Pick or add your name first, so the note says who stuck it.', 'error');
+      document.dispatchEvent(new CustomEvent('ce:need-name'));
+      return;
+    }
     var color = readColor(form, 'note-color');
     if (!pendingCreate || pendingCreate.body !== body || pendingCreate.color !== color) {
       pendingCreate = { id: uid(), body: body, color: color };
@@ -1858,9 +2123,9 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
 })();
 </script>
 <script>
-/* The corridor's rooms. CE.rooms (ce-store.js) owns every booking and arrival and says when; this
-   script paints the sign and the room sheet and hands what people type to CE.rooms. Times are the
-   office's: Asia/Jakarta. */
+/* The corridor's rooms. CE.rooms (ce-store.js) owns every name, booking, invitation, follow and arrival
+   and says when; this script paints the sign and the sheet and hands what people do to CE.rooms.
+   Times are the office's: Asia/Jakarta. Nothing before today is offered. */
 (function () {
   'use strict';
 
@@ -1869,26 +2134,39 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
   var TZ = 'Asia/Jakarta';
   var clock = new Intl.DateTimeFormat('en-GB', { timeZone: TZ, hour: '2-digit', minute: '2-digit', hour12: false });
   var longDay = new Intl.DateTimeFormat('en-GB', { timeZone: TZ, weekday: 'long', day: 'numeric', month: 'long' });
-  var ROLE = { visitor: 'visitor', staff: 'staff', hall_operator: 'hall operator' };
+  var shortDay = new Intl.DateTimeFormat('en-GB', { timeZone: TZ, weekday: 'short', day: 'numeric', month: 'short' });
+  var ROOM = { black_box: 'Black Box', ck_hall: 'CK Hall' };
+  var TITLE = { schedule: 'Room schedule', names: 'Your name', notices: 'Notices', arrivals: 'Office days' };
+  var STATUS = { active: 'Booked', requested: 'Requested, waiting for a hall operator', confirmed: 'Confirmed',
+    declined: 'Declined', cancelled: 'Cancelled' };
+  var ANSWER = { invited: 'invited', accepted: 'coming', declined: 'not coming' };
   var SAY = {
     booking_conflict: 'Already booked for part of that time. Pick another slot.',
-    forbidden: 'Your hub role cannot do that.',
-    person_required: 'Say who you are first.',
-    validation_failed: 'Check the name and the times: the end must be after the start.',
+    forbidden: 'This name cannot do that.',
+    person_required: 'Pick or add your name first.',
+    validation_failed: 'Check the details: a title, a time from now on, and an end after the start.',
     not_found: 'That is no longer there.',
-    invalid_state: 'That booking has already been decided.'
+    invalid_state: 'That booking is already decided or over.',
+    seat_taken: 'Someone just took that chair. Pick another one.',
+    table_full: 'The table is full: the host and 7 more.'
   };
+  var HOUR_PX = 48;           /* the timetable's height for one hour */
 
   var sheet = $('room-sheet');
-  var openRoom = null;       /* 'black_box' | 'ck_hall' | 'arrivals' while the sheet is open */
-  var day = { black_box: null, ck_hall: null };
-  var TITLE = { black_box: 'Black Box', ck_hall: 'CK Hall', arrivals: 'Today at the office' };
-  var STATUS = { requested: 'Requested', confirmed: 'Confirmed' };
+  var view = null;            /* 'schedule' | 'names' | 'notices' | 'arrivals' while the sheet is open */
+  var day = null;             /* the schedule's day, YYYY-MM-DD, today or later */
+  var selected = null;        /* the booking shown in the detail card */
+  var firstHour = 7;          /* the timetable's first hour, for turning a click into a time */
+  var seen = null;            /* notice keys already shown; null until the first full snapshot */
 
   function time(iso) { return clock.format(new Date(iso)); }
-  function dayTitle(d) { return d === rooms.today() ? 'Today, ' + longDay.format(rooms.dayStart(d)) : longDay.format(rooms.dayStart(d)); }
+  function dayTitle(d) { return (d === rooms.today() ? 'Today, ' : '') + longDay.format(rooms.dayStart(d)); }
   /* A date and a wall-clock time in the office, as an instant. */
   function instant(d, hhmm) { return new Date(d + 'T' + hhmm + ':00+07:00').toISOString(); }
+  function hhmm(minutes) {
+    var m = Math.max(0, Math.min(24 * 60 - 1, Math.round(minutes)));
+    return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
+  }
   function say(el, text, tone) { el.textContent = text || ''; if (tone) el.dataset.tone = tone; else delete el.dataset.tone; }
   function refusal(err) { return (err && SAY[err.code]) || 'That did not save. Check your connection and try again.'; }
   function el(tag, cls, text) {
@@ -1896,6 +2174,380 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     if (cls) n.className = cls;
     if (text !== undefined) n.textContent = text;
     return n;
+  }
+  /* A button that runs a CE.rooms write; a refusal is said in msgEl. */
+  function action(label, run, msgEl, cls) {
+    var b = el('button', cls || 'btn btn--ghost', label);
+    b.type = 'button';
+    b.addEventListener('click', function () {
+      b.disabled = true;
+      run().then(function () { b.disabled = false; say(msgEl, ''); }, function (err) { b.disabled = false; say(msgEl, refusal(err), 'error'); });
+    });
+    return b;
+  }
+  /* Checkbox chips, one per name on the hub except the ones in skip. */
+  function choices(box, skip) {
+    var keep = {};
+    Array.prototype.forEach.call(box.children, function (c) { if (c.tagName === 'LABEL' && c.firstChild && c.firstChild.checked) keep[c.firstChild.value] = true; });
+    Array.prototype.slice.call(box.children).forEach(function (c) { if (c.tagName === 'LABEL') box.removeChild(c); });
+    rooms.people().forEach(function (p) {
+      if (skip.indexOf(p.id) >= 0) return;
+      var label = el('label', 'choice');
+      var box1 = el('input');
+      box1.type = 'checkbox'; box1.value = p.id; box1.checked = !!keep[p.id];
+      label.appendChild(box1);
+      label.appendChild(el('span', '', p.displayName));
+      box.appendChild(label);
+    });
+  }
+  function checked(box) {
+    var out = [];
+    Array.prototype.forEach.call(box.children, function (c) { if (c.tagName === 'LABEL' && c.firstChild.checked) out.push(c.firstChild.value); });
+    return out;
+  }
+
+
+  /* ------------------------------------------- Black Box: the table -- */
+  /* The round table from above. Chair 1, at the head, is the host; chairs 2-8 go clockwise. Seating
+     someone is inviting them. In a booking, named chairs come first, then anyone invited without a
+     chair (from before chairs, or the names list) sits at the free ones in list order. */
+  var CHAIRS = [1, 2, 3, 4, 5, 6, 7, 8];
+  var CHAIR_SAYS = { chosen: 'to be invited', invited: 'invited, no answer yet', accepted: 'coming' };
+  var bookSeats = {};          /* chair -> person id, for the meeting in the form */
+  var picking = null;          /* { where: 'book' | 'detail', seat } while a chair's name picker is open */
+
+  function chairAt(n) {
+    var a = (n - 1) * Math.PI / 4;
+    return { x: (50 + 41 * Math.sin(a)).toFixed(2) + '%', y: (50 - 41 * Math.cos(a)).toFixed(2) + '%' };
+  }
+  function firstName(name) { return String(name || '').trim().split(/\s+/)[0] || ''; }
+  function seating(b) {
+    var out = {}, loose = [];
+    (b.invites || []).forEach(function (i) {
+      if (i.status === 'declined') return;
+      if (i.seat >= 2 && i.seat <= 8 && !out[i.seat]) out[i.seat] = i; else loose.push(i);
+    });
+    CHAIRS.slice(1).forEach(function (n) { if (!out[n] && loose.length) out[n] = loose.shift(); });
+    return out;
+  }
+  function isPicking(where, n) { return !!picking && picking.where === where && (n === undefined || picking.seat === n); }
+
+  /* opts: { where, host (name or null), seats: { n: { name, status } }, canSeat(n, who) } */
+  function paintTable(box, opts) {
+    box.textContent = '';
+    var img = el('img', 'table__img');
+    img.src = 'assets/black-box-table.webp';
+    img.alt = '';
+    img.setAttribute('width', '760'); img.setAttribute('height', '760');
+    box.appendChild(img);
+    CHAIRS.forEach(function (n) {
+      var at = chairAt(n);
+      var who = n === 1 ? null : opts.seats[n] || null;
+      var open = n !== 1 && opts.canSeat(n, who);
+      var kind = n === 1 ? 'host' : who ? who.status : 'free';
+      var chair = el(open ? 'button' : 'span', 'chair chair--' + kind);
+      chair.dataset.seat = String(n);
+      chair.style.setProperty('--x', at.x);
+      chair.style.setProperty('--y', at.y);
+      if (n === 1) {
+        chair.appendChild(el('span', '', opts.host ? firstName(opts.host) : 'You'));
+        chair.appendChild(el('small', '', 'Host'));
+        chair.setAttribute('aria-label', 'Chair 1, the host: ' + (opts.host || 'you, once you pick your name'));
+      } else if (who) {
+        chair.appendChild(el('span', '', firstName(who.name)));
+        if (who.status === 'invited') chair.appendChild(el('small', '', 'invited'));
+        chair.setAttribute('aria-label', 'Chair ' + n + ', ' + who.name + ', ' + CHAIR_SAYS[who.status] + (open ? '. Change who sits here' : ''));
+      } else {
+        chair.appendChild(el('span', '', '+'));
+        chair.setAttribute('aria-label', 'Chair ' + n + ', empty' + (open ? '. Seat someone here' : ''));
+      }
+      if (open) {
+        chair.type = 'button';
+        chair.setAttribute('aria-expanded', String(isPicking(opts.where, n)));
+        chair.setAttribute('aria-controls', opts.where + '-pick');
+        if (isPicking(opts.where, n)) chair.classList.add('is-open');
+        chair.addEventListener('click', function () {
+          picking = isPicking(opts.where, n) ? null : { where: opts.where, seat: n };
+          $(opts.where + '-pick-q').value = '';
+          paintSheet();
+          if (picking) $(opts.where + '-pick-q').focus();
+        });
+      } else {
+        chair.setAttribute('role', 'img');
+      }
+      box.appendChild(chair);
+    });
+  }
+
+  /* The name picker under a table. taken: ids that cannot sit here. choose(id) seats one. */
+  function paintPicker(where, taken, choose, onDay) {
+    var box = $(where + '-pick');
+    box.hidden = !isPicking(where);
+    if (box.hidden) return;
+    var n = picking.seat;
+    $(where + '-pick-title').textContent = 'Chair ' + n + ': who sits here?';
+    var q = $(where + '-pick-q').value.trim(), ql = q.toLowerCase();
+    var coming = {};
+    if (onDay) rooms.plans(onDay).forEach(function (a) { if (a.coming) coming[a.personId] = true; });
+    var list = $(where + '-pick-list');
+    list.textContent = '';
+    var people = rooms.people().filter(function (p) {
+      return !taken[p.id] && (!ql || p.displayName.toLowerCase().indexOf(ql) >= 0);
+    }).slice(0, 40);
+    people.forEach(function (p) {
+      var li = el('li');
+      var b = el('button', 'btn btn--ghost', p.displayName);
+      b.type = 'button';
+      if (coming[p.id]) b.appendChild(el('small', '', ' · coming in'));
+      b.addEventListener('click', function () { choose(p.id, p.displayName); });
+      li.appendChild(b);
+      list.appendChild(li);
+    });
+    if (!people.length) list.appendChild(el('li', 'slots__empty', q ? 'No name matches.' : 'Everyone on the list is already here.'));
+    var exact = rooms.people().some(function (p) { return p.displayName.toLowerCase() === ql; });
+    var add = $(where + '-pick-add');
+    add.hidden = !q || exact;
+    add.textContent = 'Add “' + q + '” to the names list';
+  }
+  function addAndSeat(where, choose) {
+    var q = $(where + '-pick-q').value.trim();
+    if (!q) return;
+    rooms.addPerson(q).then(function (p) { choose(p.id, p.displayName); },
+      function (err) { say($(where === 'book' ? 'book-msg' : 'detail-msg'), refusal(err), 'error'); });
+  }
+  function closePicker(where) {
+    var n = picking && picking.seat;
+    picking = null;
+    paintSheet();
+    var chair = n ? Array.prototype.filter.call($(where + '-table').children, function (c) { return c.dataset && c.dataset.seat === String(n); })[0] : null;
+    if (chair && chair.focus) chair.focus();
+  }
+
+  function seatInBooking(id, name) {
+    bookSeats[picking.seat] = id;
+    say($('book-msg'), name + ' is at chair ' + picking.seat + '. Booking sends the invite.', 'ok');
+    closePicker('book');
+  }
+  function seatInMeeting(id, name) {
+    var n = picking.seat, b = selected && rooms.booking(selected);
+    if (!b) return;
+    say($('detail-msg'), 'Inviting ' + name + '…');
+    rooms.invite(b.id, [id], [n]).then(function () {
+      say($('detail-msg'), 'Invited ' + name + ' to chair ' + n + '.', 'ok');
+      closePicker('detail');
+    }, function (err) { say($('detail-msg'), refusal(err), 'error'); });
+  }
+  function takenInBooking() {
+    var me = rooms.me(), out = {};
+    if (me) out[me.id] = true;
+    Object.keys(bookSeats).forEach(function (n) { if (Number(n) !== (picking && picking.seat)) out[bookSeats[n]] = true; });
+    return out;
+  }
+  function takenInMeeting(b) {
+    var out = {};
+    out[b.createdBy] = true;
+    (b.invites || []).forEach(function (i) { if (i.status !== 'declined') out[i.personId] = true; });
+    return out;
+  }
+  function paintBookTable() {
+    var me = rooms.me(), seats = {};
+    Object.keys(bookSeats).forEach(function (n) {
+      var p = rooms.person(bookSeats[n]);
+      if (p) seats[n] = { name: p.displayName, status: 'chosen' }; else delete bookSeats[n];
+    });
+    paintTable($('book-table'), { where: 'book', host: me ? me.displayName : null, seats: seats, canSeat: function () { return true; } });
+    paintPicker('book', takenInBooking(), seatInBooking, $('book-date').value || day);
+    $('book-pick-clear').hidden = !(picking && bookSeats[picking.seat]);
+  }
+
+  /* --------------------------------------- Office days: the player -- */
+  /* One weekday at a time, today through the two-week reach. The window says the plan; the strip picks
+     the day; the big button is the next step: Coming in, then on the day On my way, then I've arrived.
+     Repeat copies the day to the same weekday next week. Times are Jakarta's. */
+  var WEEK = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+  var plDay = null;            /* the player's weekday, YYYY-MM-DD */
+  var plFilled = '';           /* which plan the time and note fields were last filled from */
+  var dayName = new Intl.DateTimeFormat('en-GB', { timeZone: TZ, weekday: 'long' });
+  var dayDate = new Intl.DateTimeFormat('en-GB', { timeZone: TZ, day: 'numeric', month: 'short' });
+
+  function officeDays() {
+    var out = [];
+    for (var i = 0; i < rooms.reachDays; i++) {
+      var d = rooms.addDays(rooms.today(), i);
+      if (rooms.isOfficeDay(d)) out.push(d);
+    }
+    return out;
+  }
+  function weekdayIndex(d) { return (new Date(rooms.dayStart(d).getTime() + 7 * 3600000).getUTCDay() + 6) % 7; }
+  function nextOfficeDay() { return officeDays()[0] || rooms.today(); }
+  /* none | not | coming | way | arrived */
+  function planStatus(a) {
+    if (!a) return 'none';
+    if (!a.coming) return 'not';
+    return a.trip === 'arrived' ? 'arrived' : a.trip === 'on_the_way' ? 'way' : 'coming';
+  }
+  function planLine(a, d) {
+    var st = planStatus(a), isToday = d === rooms.today();
+    if (st === 'none') return { badge: 'Not planned', detail: '' };
+    if (st === 'not') return { badge: 'Not coming', detail: a.note || '' };
+    var by = a.arriveAt ? 'by ' + a.arriveAt : '';
+    if (st === 'arrived') return { badge: 'Arrived ' + time(a.arrivedAt), detail: a.note || '' };
+    if (st === 'way') return { badge: 'On the way', detail: [a.arriveAt ? 'ETA ' + a.arriveAt : '', a.note].filter(Boolean).join(' · ') };
+    return { badge: isToday ? 'Coming in today' : 'Coming in', detail: [by, a.note].filter(Boolean).join(' · ') };
+  }
+  function shortPlan(a) {
+    var st = planStatus(a);
+    return { none: 'not planned', not: 'not coming', coming: 'coming in' + (a && a.arriveAt ? ' · ' + a.arriveAt : ''),
+      way: 'on the way', arrived: 'arrived' }[st];
+  }
+  function savePlan(coming, okText) {
+    var d = plDay, arrive = $('pl-arrive').value || null, note = $('arr-note').value.trim() || null;
+    if (!rooms.me()) { open('names', { msg: 'Pick or add your name, then plan your days.' }); return; }
+    rooms.planDay(d, { coming: coming, note: note, arriveAt: coming ? arrive : null }).then(function () {
+      plFilled = '';
+      say($('sheet-msg'), okText || (coming
+        ? (d === rooms.today() ? 'Marked: coming in today. People who follow you will see it.' : 'Marked: coming in on ' + dayName.format(rooms.dayStart(d)) + '.')
+        : (d === rooms.today() ? 'Marked: not coming today.' : 'Marked: not coming on ' + dayName.format(rooms.dayStart(d)) + '.')), 'ok');
+    }, function (err) {
+      say($('sheet-msg'), err && err.code === 'validation_failed' ? 'Plans are for weekdays, today through two weeks ahead.' : refusal(err), 'error');
+    });
+  }
+  function tripStep(step, okText) {
+    rooms.trip(step).then(function () { say($('sheet-msg'), okText, 'ok'); }, function (err) { say($('sheet-msg'), refusal(err), 'error'); });
+  }
+  /* The big button: what it says and does for this day. */
+  function mainStep(a, d) {
+    var st = planStatus(a), isToday = d === rooms.today();
+    if (!rooms.me()) return { label: 'Pick your name', icon: 'play', run: function () { open('names', { msg: 'Pick or add your name, then plan your days.' }); } };
+    if (st === 'none' || st === 'not') return { label: 'Coming in', icon: 'play', run: function () { savePlan(true); } };
+    if (st === 'coming' && !isToday) return { label: 'Coming in', icon: 'check', pressed: true, run: function () { savePlan(false); } };
+    if (st === 'coming') return { label: 'On my way', icon: 'play', run: function () { tripStep('on_the_way', 'On your way. The list shows you heading in.'); } };
+    if (st === 'way') return { label: 'I’ve arrived', icon: 'flag', run: function () { tripStep('arrived', 'Arrived. Welcome in.'); } };
+    return { label: 'Arrived ' + time(a.arrivedAt), icon: 'check', done: true, run: null };
+  }
+
+  function paintPlayer() {
+    var days = officeDays();
+    if (!plDay || days.indexOf(plDay) < 0) plDay = days[0] || rooms.today();
+    var d = plDay, isToday = d === rooms.today(), mine = rooms.myPlan(d), st = planStatus(mine), me = rooms.me();
+
+    $('pl-window').dataset.status = st;
+    $('pl-day').textContent = dayName.format(rooms.dayStart(d));
+    $('pl-date').textContent = dayDate.format(rooms.dayStart(d));
+    $('pl-today').hidden = !isToday;
+    var line = planLine(mine, d);
+    $('pl-badge').textContent = me ? line.badge : 'Pick your name';
+    $('pl-detail').textContent = me ? line.detail : 'to plan your office days';
+    $('pl-undo').hidden = !(isToday && (st === 'way' || st === 'arrived'));
+    $('arr-form').hidden = !me;
+    $('arr-yes').setAttribute('aria-pressed', String(st === 'coming' || st === 'way' || st === 'arrived'));
+    $('arr-no').setAttribute('aria-pressed', String(st === 'not'));
+    var key = d + '|' + (mine ? mine.updatedAt : '');
+    if (plFilled !== key) {
+      plFilled = key;
+      $('pl-arrive').value = mine && mine.arriveAt ? mine.arriveAt : '';
+      $('arr-note').value = mine && mine.note ? mine.note : '';
+    }
+    var plans = rooms.plans(d), coming = plans.filter(function (a) { return a.coming; }).length;
+    $('pl-count').textContent = coming === 1 ? '1 person coming in' : coming + ' people coming in';
+
+    /* the strip: the week of this day */
+    var strip = $('pl-days');
+    strip.textContent = '';
+    var monday = rooms.addDays(d, -weekdayIndex(d));
+    WEEK.forEach(function (w, i) {
+      var wd = rooms.addDays(monday, i), ok = days.indexOf(wd) >= 0, p = rooms.myPlan(wd);
+      var li = el('li');
+      var b = el('button', '', w);
+      b.type = 'button';
+      b.appendChild(el('i'));
+      b.dataset.day = wd;
+      b.dataset.status = planStatus(p);
+      b.disabled = !ok;
+      b.setAttribute('aria-pressed', String(wd === d));
+      b.setAttribute('aria-label', dayName.format(rooms.dayStart(wd)) + ' ' + dayDate.format(rooms.dayStart(wd)) + (ok ? ', ' + shortPlan(p) : ', closed'));
+      b.addEventListener('click', function () { plDay = this.dataset.day; say($('sheet-msg'), ''); paintSheet(); });
+      li.appendChild(b);
+      strip.appendChild(li);
+    });
+    var at = days.indexOf(d);
+    $('pl-prev').setAttribute('aria-disabled', String(at <= 0));
+    $('pl-next').setAttribute('aria-disabled', String(at < 0 || at >= days.length - 1));
+    var nextWeek = rooms.addDays(d, 7);
+    var canRepeat = !!mine && rooms.isOfficeDay(nextWeek);
+    $('pl-repeat').setAttribute('aria-disabled', String(!canRepeat));
+    $('pl-repeat').setAttribute('aria-label', 'Same plan next week, ' + dayName.format(rooms.dayStart(nextWeek)) + ' ' + dayDate.format(rooms.dayStart(nextWeek)) +
+      (canRepeat ? '' : mine ? ' (past the two-week plan)' : ' (make a plan first)'));
+
+    /* the trip line: on the way, from leaving to the time you said */
+    var travelling = isToday && (st === 'way' || st === 'arrived');
+    var lineEl = $('pl-line'), p = 0;
+    if (travelling) {
+      var left = Date.parse(mine.leftAt), eta = mine.arriveAt ? Date.parse(instant(d, mine.arriveAt)) : NaN, t = rooms.now().getTime();
+      p = st === 'arrived' ? 1 : eta > left ? Math.max(0.03, Math.min(1, (t - left) / (eta - left))) : 0.5;
+      $('pl-left').textContent = 'Left ' + time(mine.leftAt);
+      $('pl-eta').textContent = st === 'arrived' ? 'Arrived ' + time(mine.arrivedAt)
+        : mine.arriveAt ? (t > eta ? 'Past ' + mine.arriveAt : 'ETA ' + mine.arriveAt) : 'No arrival time';
+      lineEl.setAttribute('role', 'progressbar');
+      lineEl.setAttribute('aria-hidden', 'false');
+      lineEl.setAttribute('aria-label', 'Your trip in');
+      lineEl.setAttribute('aria-valuemin', '0'); lineEl.setAttribute('aria-valuemax', '100');
+      lineEl.setAttribute('aria-valuenow', String(Math.round(p * 100)));
+      lineEl.setAttribute('aria-valuetext', $('pl-left').textContent + ', ' + $('pl-eta').textContent);
+    } else {
+      $('pl-left').textContent = '';
+      $('pl-eta').textContent = mine && mine.coming && mine.arriveAt ? 'Arrive by ' + mine.arriveAt : '';
+      lineEl.setAttribute('role', 'presentation');
+      lineEl.setAttribute('aria-hidden', 'true');
+    }
+    lineEl.style.setProperty('--p', (p * 100).toFixed(1) + '%');
+
+    var step = mainStep(mine, d);
+    var main = $('pl-main');
+    main.setAttribute('aria-label', step.label);
+    if (step.pressed) main.setAttribute('aria-pressed', 'true'); else main.setAttribute('aria-pressed', 'false');
+    main.setAttribute('aria-disabled', String(!!step.done));
+    $('pl-main-icon').setAttribute('href', '#i-' + step.icon);
+    $('pl-main-label').textContent = step.label;
+    mainRun = step.run;
+
+    /* who's in that day */
+    var head = (isToday ? 'Today, ' : '') + longDay.format(rooms.dayStart(d));
+    $('arr-title').textContent = head;
+    $('sheet-now').textContent = isToday
+      ? (coming === 1 ? '1 person coming in today.' : coming + ' people coming in today.')
+      : (coming === 1 ? '1 person coming in on ' : coming + ' people coming in on ') + dayName.format(rooms.dayStart(d)) + '.';
+    $('sheet-now').dataset.state = 'idle';
+    var listEl = $('arr-list');
+    listEl.textContent = '';
+    plans.forEach(function (a) {
+      var li = el('li', 'slot');
+      var s = planStatus(a);
+      li.appendChild(el('span', 'slot__time', s === 'not' ? 'Not coming' : s === 'way' ? 'On the way' : s === 'arrived' ? 'Arrived ' + time(a.arrivedAt) : 'Coming in'));
+      var who = el('span', 'slot__what', a.name + (me && a.personId === me.id ? ' (you)' : ''));
+      var more = [a.note, a.coming && a.arriveAt ? (s === 'way' ? 'ETA ' : 'by ') + a.arriveAt : ''].filter(Boolean).join(' · ');
+      if (more) who.appendChild(el('small', '', more));
+      li.appendChild(who);
+      var acts = el('span', 'slot__acts');
+      if (me && a.personId !== me.id) {
+        var on = rooms.isFollowing(a.personId);
+        var f = action(on ? 'Following' : 'Follow', function () { return rooms.follow(a.personId, !on); }, $('sheet-msg'));
+        f.setAttribute('aria-pressed', String(on));
+        acts.appendChild(f);
+      }
+      li.appendChild(acts);
+      listEl.appendChild(li);
+    });
+    $('arr-empty').hidden = plans.length > 0;
+  }
+  var mainRun = null;
+
+  /* The small player under the sign: your next office day. */
+  function paintMini() {
+    var me = rooms.me(), d = nextOfficeDay(), a = me ? rooms.myPlan(d) : null;
+    var when = d === rooms.today() ? 'Today' : dayName.format(rooms.dayStart(d)).slice(0, 3) + ' ' + dayDate.format(rooms.dayStart(d));
+    $('mini-day').textContent = 'Office days';
+    $('mini-state').textContent = me ? when + ': ' + shortPlan(a) : 'Plan when you come in';
   }
 
   /* ----------------------------------------------------------- the sign -- */
@@ -1907,248 +2559,493 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     var h = rooms.ckHallOnAir();
     $('ck-hall-lamp').classList[h ? 'add' : 'remove']('is-on');
     $('ck-hall-sr').textContent = ', to the left' + (h ? ', ON AIR until ' + time(h.endAt) : ', off air');
+    var me = rooms.me();
+    $('you-name').textContent = me ? me.displayName : 'pick your name';
+    var n = rooms.notices().length;
+    $('notices-count').textContent = String(n);
+    $('notices-count').hidden = n === 0;
+    $('composer-who-name').textContent = me ? me.displayName : 'nobody yet';
+    $('composer-who').textContent = me ? 'Change' : 'Pick your name';
+    paintMini();
   }
 
-  /* ---------------------------------------------------------- the sheet -- */
-  function paintWho() {
-    var p = rooms.person();
-    $('who-in').hidden = !p;
-    $('who-out-forms').hidden = !!p;
-    $('who-name').textContent = p ? 'Signed in as ' + p.displayName + ' · ' + ROLE[p.role] : '';
-  }
-
-  function slot(b, actions) {
-    var li = el('li', 'slot');
-    var now = rooms.now();
-    if (Date.parse(b.startAt) <= now && now < Date.parse(b.endAt)) li.classList.add('is-now');
-    li.appendChild(el('span', 'slot__time', time(b.startAt) + '–' + time(b.endAt)));
-    var what = el('span', 'slot__what', b.title || 'Booked');
-    var meta = [b.byName, b.note].filter(Boolean).join(' · ');
-    if (meta) what.appendChild(el('small', '', meta));
-    li.appendChild(what);
-    var acts = el('span', 'slot__acts');
-    (actions || []).forEach(function (a) { acts.appendChild(a); });
-    li.appendChild(acts);
-    return li;
-  }
-  function action(label, run, msgEl) {
-    var b = el('button', 'btn btn--ghost', label);
-    b.type = 'button';
-    b.addEventListener('click', function () {
-      b.disabled = true;
-      run().then(function () { say(msgEl, ''); }, function (err) { b.disabled = false; say(msgEl, refusal(err), 'error'); });
+  /* ------------------------------------------------------- your name -- */
+  function paintNames() {
+    var me = rooms.me();
+    $('names-me').textContent = me ? 'You are ' + me.displayName + (me.role === 'hall_operator' ? ' (hall operator).' : '.')
+      : 'Pick your name from the list, or add it.';
+    $('names-forget').hidden = !me;
+    $('name-role-field').hidden = CE.backend !== 'local';
+    var list = $('names-list');
+    list.textContent = '';
+    var people = rooms.people();
+    people.forEach(function (p) {
+      var li = el('li', 'slot slot--plain');
+      var who = el('span', 'slot__what', p.displayName);
+      if (p.role === 'hall_operator') who.appendChild(el('span', 'tag', 'hall operator'));
+      if (me && me.id === p.id) who.appendChild(el('span', 'tag', 'you'));
+      li.appendChild(who);
+      var acts = el('span', 'slot__acts');
+      if (!me || me.id !== p.id) {
+        acts.appendChild(action('This is me', function () {
+          return rooms.pick(p.id).then(function () { say($('sheet-msg'), 'You are ' + p.displayName + ' on this device.', 'ok'); });
+        }, $('sheet-msg')));
+      }
+      if (me && me.id !== p.id) {
+        var on = rooms.isFollowing(p.id);
+        var f = action(on ? 'Following' : 'Follow', function () { return rooms.follow(p.id, !on); }, $('sheet-msg'));
+        f.setAttribute('aria-pressed', String(on));
+        acts.appendChild(f);
+      }
+      li.appendChild(acts);
+      list.appendChild(li);
     });
-    return b;
+    $('names-empty').hidden = people.length > 0;
   }
 
-  function paintBlackBox() {
-    var m = rooms.blackBoxInUse();
+  /* -------------------------------------------------------- schedule -- */
+  function paintNow() {
     var now = $('sheet-now');
-    now.dataset.state = m ? 'in-use' : 'idle';
-    now.textContent = m ? 'In use now' + (m.title ? ': ' + m.title : '') + ', until ' + time(m.endAt) + '.' : 'Free right now.';
-    var staff = rooms.isStaff();
-    $('bb-locked').hidden = staff;
-    $('bb-open').hidden = !staff;
-    $('bb-form').hidden = !staff;
-    if (!staff) return;
-    var d = day.black_box;
-    $('bb-day-title').textContent = dayTitle(d);
-    var listEl = $('bb-list');
-    listEl.textContent = '';
-    var meetings = rooms.meetings(d);
-    meetings.forEach(function (b) {
-      listEl.appendChild(slot(b, [action('Cancel', function () { return rooms.cancelMeeting(b.id); }, $('bb-msg'))]));
-    });
-    $('bb-empty').hidden = meetings.length > 0;
-  }
-
-  function paintHall() {
-    var h = rooms.ckHallOnAir();
-    var now = $('sheet-now');
-    now.dataset.state = h ? 'on-air' : 'idle';
     now.textContent = '';
+    var m = rooms.blackBoxInUse(), h = rooms.ckHallOnAir();
+    now.appendChild(el('span', '', 'Black Box: ' + (m ? 'in use' + (m.title ? ' (' + m.title + ')' : '') + ' until ' + time(m.endAt) : 'free now')));
+    var hall = el('span', '');
     var lamp = el('span', 'lamp' + (h ? ' is-on' : ''), 'ON AIR');
     lamp.setAttribute('aria-hidden', 'true');
-    now.appendChild(lamp);
-    now.appendChild(el('span', '', h ? 'On air now' + (h.title ? ': ' + h.title : '') + ', until ' + time(h.endAt) + '.'
-      : 'Off air. No confirmed booking right now.'));
-    var p = rooms.person();
-    $('hall-locked').hidden = !!p;
-    $('hall-open').hidden = !p;
-    $('hall-form').hidden = !p;
-    if (!p) return;
-    if (!$('hall-name').value) $('hall-name').value = p.displayName;
-    var d = day.ck_hall;
-    $('hall-day-title').textContent = dayTitle(d);
-    var listEl = $('hall-list');
-    listEl.textContent = '';
-    var operator = rooms.isHallOperator();
-    var msg = $('hall-decide-msg');
-    var hall = rooms.hall(d);
-    hall.forEach(function (b) {
-      var acts = [];
-      if (operator && b.status === 'requested') {
-        acts.push(action('Confirm', function () { return rooms.decideHall(b.id, 'confirm'); }, msg));
-        acts.push(action('Decline', function () { return rooms.decideHall(b.id, 'decline'); }, msg));
-      } else if (operator && b.status === 'confirmed') {
-        acts.push(action('Cancel', function () { return rooms.decideHall(b.id, 'cancel'); }, msg));
-      }
-      var row = slot(b, acts);
-      row.children[1].appendChild(el('small', '', STATUS[b.status] + (b.mine ? ' · yours' : '')));
-      listEl.appendChild(row);
-    });
-    $('hall-empty').hidden = hall.length > 0;
+    hall.appendChild(lamp);
+    hall.appendChild(el('span', '', 'CK Hall: ' + (h ? 'on air' + (h.title ? ' (' + h.title + ')' : '') + ' until ' + time(h.endAt) : 'off air')));
+    now.appendChild(hall);
+    now.dataset.state = h ? 'on-air' : m ? 'in-use' : 'idle';
   }
 
-  function paintArrivals() {
-    var list = rooms.arrivals();
-    var coming = list.filter(function (a) { return a.coming; }).length;
-    var now = $('sheet-now');
-    now.dataset.state = 'idle';
-    var staff = rooms.isStaff();
-    now.textContent = staff ? (coming === 1 ? '1 person coming in today.' : coming + ' people coming in today.') : '';
-    $('arr-locked').hidden = staff;
-    $('arr-open').hidden = !staff;
-    if (!staff) return;
-    var mine = rooms.myArrival();
-    $('arr-yes').setAttribute('aria-pressed', String(!!mine && mine.coming));
-    $('arr-no').setAttribute('aria-pressed', String(!!mine && !mine.coming));
-    $('arr-title').textContent = dayTitle(rooms.today());
-    var listEl = $('arr-list');
-    listEl.textContent = '';
-    list.forEach(function (a) {
-      var li = el('li', 'slot');
-      li.appendChild(el('span', 'slot__time', a.coming ? 'Coming in' : 'Not coming'));
-      var who = el('span', 'slot__what', a.name + (a.mine ? ' (you)' : ''));
-      if (a.note) who.appendChild(el('small', '', a.note));
-      li.appendChild(who);
-      li.appendChild(el('span', 'slot__acts'));
-      listEl.appendChild(li);
-    });
-    $('arr-empty').hidden = list.length > 0;
-  }
-
-  function paintSheet() {
-    if (!sheet.open) return;
-    paintWho();
-    $('bb-panel').hidden = openRoom !== 'black_box';
-    $('hall-panel').hidden = openRoom !== 'ck_hall';
-    $('arr-panel').hidden = openRoom !== 'arrivals';
-    if (openRoom === 'black_box') paintBlackBox();
-    else if (openRoom === 'ck_hall') paintHall();
-    else if (openRoom === 'arrivals') paintArrivals();
-  }
-
-  function render() { paintSign(); paintSheet(); }
-
-  function open(room) {
-    openRoom = room;
-    $('sheet-title').textContent = TITLE[room];
-    $('join-role-field').hidden = CE.backend !== 'local';
-    ['who-msg', 'bb-msg', 'hall-msg', 'hall-decide-msg', 'arr-msg'].forEach(function (id) { say($(id), ''); });
-    if (room !== 'arrivals') {
-      day[room] = day[room] || rooms.today();
-      var prefix = room === 'black_box' ? 'bb' : 'hall';
-      $(prefix + '-day').value = day[room];
-      if (!$(prefix + '-date').value) $(prefix + '-date').value = rooms.today();
+  function paintDays() {
+    var list = $('days');
+    list.textContent = '';
+    for (var i = 0; i < rooms.reachDays; i++) {
+      var d = rooms.addDays(rooms.today(), i);
+      var li = el('li');
+      var b = el('button', '', i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : shortDay.format(rooms.dayStart(d)).split(' ')[0]);
+      b.type = 'button';
+      b.dataset.day = d;
+      b.setAttribute('aria-pressed', String(d === day));
+      b.appendChild(el('small', '', shortDay.format(rooms.dayStart(d)).replace(/^\S+\s/, '')));
+      b.addEventListener('click', function () { showDay(this.dataset.day); });
+      li.appendChild(b);
+      list.appendChild(li);
     }
-    sheet.showModal();
-    paintSheet();
-    if (room !== 'arrivals') rooms.load(day[room]).catch(function () { /* today's snapshot is already shown */ });
+    $('day-other').min = rooms.today();
+    $('day-other').value = day;
+    $('book-date').min = rooms.today();
   }
 
-  $('pill-black-box').addEventListener('click', function () { open('black_box'); });
-  $('pill-ck-hall').addEventListener('click', function () { open('ck_hall'); });
+  function paintTimetable() {
+    var from = rooms.dayStart(day).getTime();
+    var list = rooms.bookings(day);
+    var start = 7, end = 22;
+    list.forEach(function (b) {
+      var s = (Math.max(Date.parse(b.startAt), from) - from) / 3600000;
+      var e = (Math.min(Date.parse(b.endAt), from + 24 * 3600000) - from) / 3600000;
+      start = Math.min(start, Math.floor(s));
+      end = Math.max(end, Math.ceil(e));
+    });
+    var now = rooms.now().getTime();
+    if (day === rooms.today()) end = Math.max(end, Math.min(24, Math.ceil((now - from) / 3600000) + 1));
+    firstHour = start;
+    var px = function (t) { return ((t - from) / 60000 - start * 60) * HOUR_PX / 60; };
+    var body = $('tt-body');
+    body.style.height = ((end - start) * HOUR_PX) + 'px';
+    body.style.setProperty('--hour', HOUR_PX + 'px');
+    $('tt-title').textContent = dayTitle(day);
+
+    var hours = $('tt-hours');
+    hours.textContent = '';
+    for (var hr = start; hr < end; hr++) {
+      var lab = el('span', 'tt__hour', String(hr).padStart(2, '0') + ':00');
+      lab.style.top = ((hr - start) * HOUR_PX) + 'px';
+      hours.appendChild(lab);
+    }
+    ['black_box', 'ck_hall'].forEach(function (room) {
+      var col = $('tt-col-' + room);
+      col.textContent = '';
+      if (day === rooms.today() && now > from + start * 3600000) {
+        var past = el('div', 'tt__past');
+        past.style.height = Math.min(px(now), (end - start) * HOUR_PX) + 'px';
+        col.appendChild(past);
+        var line = el('div', 'tt__now');
+        line.style.top = px(now) + 'px';
+        col.appendChild(line);
+      }
+      list.filter(function (b) { return b.room === room; }).forEach(function (b) {
+        var top = px(Math.max(Date.parse(b.startAt), from));
+        var bottom = px(Math.min(Date.parse(b.endAt), from + 24 * 3600000));
+        var block = el('button', 'tt__block tt__block--' + b.status);
+        block.type = 'button';
+        block.dataset.id = b.id;
+        if (rooms.isMine(b)) block.classList.add('is-mine');
+        if (rooms.myInvite(b)) block.classList.add('is-invited');
+        if (b.id === selected) block.classList.add('is-selected');
+        block.style.top = top + 'px';
+        block.style.height = Math.max(bottom - top, 20) + 'px';
+        block.appendChild(el('strong', '', b.title || 'Booked'));
+        block.appendChild(el('span', '', time(b.startAt) + '–' + time(b.endAt) + (b.status === 'requested' ? ' · requested' : '')));
+        block.setAttribute('aria-label', ROOM[room] + ', ' + (b.title || 'booked') + ', ' + time(b.startAt) + ' to ' + time(b.endAt) +
+          ', ' + STATUS[b.status]);
+        block.addEventListener('click', function (e) { e.stopPropagation(); selected = b.id; say($('detail-msg'), ''); paintSheet(); });
+        col.appendChild(block);
+      });
+    });
+  }
+
+  function paintDetail() {
+    var b = selected && rooms.booking(selected);
+    var card = $('detail');
+    card.hidden = !b;
+    if (!b) return;
+    var me = rooms.me(), mine = rooms.isMine(b), invite = rooms.myInvite(b);
+    var over = !(b.status === 'active' || b.status === 'requested' || b.status === 'confirmed') || Date.parse(b.endAt) <= rooms.now().getTime();
+    $('detail-title').textContent = (b.title || 'Booked') + ' · ' + ROOM[b.room];
+    $('detail-when').textContent = longDay.format(new Date(b.startAt)) + ', ' + time(b.startAt) + '–' + time(b.endAt) + ' · ' + STATUS[b.status];
+    $('detail-note').textContent = b.note || '';
+    $('detail-note').hidden = !b.note;
+    var people = $('detail-people');
+    people.textContent = '';
+    var canInvite = !!me && !over && (mine || !!invite);
+    var seated = b.room === 'black_box';
+    $('detail-table').hidden = !seated;
+    if (seated) {
+      if (picking && picking.where === 'detail' && (!canInvite || (picking.booking && picking.booking !== b.id))) picking = null;
+      var seats = {}, sit = seating(b);
+      Object.keys(sit).forEach(function (n) { seats[n] = { name: sit[n].name, status: sit[n].status }; });
+      paintTable($('detail-table'), { where: 'detail', host: b.byName, seats: seats,
+        canSeat: function (n, who) { return canInvite && !who; } });
+      if (picking && picking.where === 'detail') picking.booking = b.id;
+      paintPicker('detail', takenInMeeting(b), seatInMeeting, jakartaDayOf(b.startAt));
+    } else {
+      $('detail-pick').hidden = true;
+    }
+    if (b.byName) {
+      var host = el('li', '', b.byName);
+      host.appendChild(el('small', '', ' · booked it'));
+      people.appendChild(host);
+    }
+    (b.invites || []).forEach(function (i) {
+      var li = el('li', '', i.name);
+      li.appendChild(el('small', '', ' · ' + ANSWER[i.status]));
+      people.appendChild(li);
+    });
+    var acts = $('detail-acts');
+    acts.textContent = '';
+    var msg = $('detail-msg');
+    if (invite && !over) {
+      var yes = action('Accept', function () { return rooms.respond(b.id, 'accepted'); }, msg);
+      yes.setAttribute('aria-pressed', String(invite.status === 'accepted'));
+      var no = action('Decline', function () { return rooms.respond(b.id, 'declined'); }, msg);
+      no.setAttribute('aria-pressed', String(invite.status === 'declined'));
+      acts.appendChild(yes); acts.appendChild(no);
+    }
+    if (b.room === 'ck_hall' && rooms.isHallOperator() && b.status === 'requested') {
+      acts.appendChild(action('Confirm', function () { return rooms.decideHall(b.id, 'confirm'); }, msg));
+      acts.appendChild(action('Decline request', function () { return rooms.decideHall(b.id, 'decline'); }, msg));
+    }
+    if (b.room === 'black_box' && mine && b.status === 'active') {
+      acts.appendChild(action('Cancel meeting', function () { return rooms.cancelMeeting(b.id); }, msg));
+    }
+    if (b.room === 'ck_hall' && (mine || rooms.isHallOperator()) && (b.status === 'requested' || b.status === 'confirmed')) {
+      acts.appendChild(action('Cancel booking', function () { return rooms.decideHall(b.id, 'cancel'); }, msg));
+    }
+    $('more-form').hidden = !canInvite || seated;
+    if (canInvite && !seated) choices($('more-choices'), [b.createdBy].concat((b.invites || []).map(function (i) { return i.personId; })));
+  }
+
+  function paintBookForm() {
+    var me = rooms.me();
+    var room = bookRoom();
+    $('book-title-label').textContent = room === 'black_box' ? 'Meeting' : 'Name on the booking';
+    if (room === 'ck_hall' && !$('book-title').value && me) $('book-title').value = me.displayName;
+    $('book-submit').textContent = room === 'black_box' ? 'Book' : 'Send request';
+    $('book-seats').hidden = room !== 'black_box';
+    $('book-invite').hidden = room === 'black_box';
+    choices($('book-invite'), me ? [me.id] : []);
+    if (room === 'black_box') paintBookTable();
+    else if (picking && picking.where === 'book') picking = null;
+  }
+  function bookRoom() {
+    var r = document.querySelector('input[name="book-room"]:checked');
+    return r ? r.value : 'black_box';
+  }
+  function setBookRoom(room) {
+    Array.prototype.forEach.call(document.querySelectorAll('input[name="book-room"]'), function (r) { r.checked = r.value === room; });
+  }
+
+  function paintSchedule() {
+    if (!day || day < rooms.today()) day = rooms.today();
+    paintNow();
+    paintDays();
+    paintTimetable();
+    paintDetail();
+    paintBookForm();
+  }
+
+  function showDay(d) {
+    if (!d || d < rooms.today()) { say($('sheet-msg'), 'Days before today are closed.', 'error'); return; }
+    day = d;
+    if (!$('book-date').value || $('book-date').value < d || $('book-date').value !== d) $('book-date').value = d;
+    say($('sheet-msg'), '');
+    paintSheet();
+    rooms.load(d).catch(function () { /* the snapshot already has the next two weeks */ });
+  }
+
+  /* ---------------------------------------------------------- notices -- */
+  function noticeText(n) {
+    if (n.kind === 'invite') {
+      var b = n.booking;
+      return (b.byName || 'Someone') + ' invited you to ' + (b.title ? '“' + b.title + '”' : 'a booking') + ' · ' + ROOM[b.room] +
+        ' · ' + shortDay.format(new Date(b.startAt)) + ', ' + time(b.startAt) + '–' + time(b.endAt);
+    }
+    return n.arrival.name + ' is coming in today' + (n.arrival.note ? ' · ' + n.arrival.note : '');
+  }
+  function paintNotices() {
+    var list = $('notices-list');
+    list.textContent = '';
+    var notices = rooms.notices();
+    notices.forEach(function (n) {
+      var li = el('li', 'slot slot--stack');
+      li.appendChild(el('span', 'slot__time', n.kind === 'invite' ? 'Invitation' : 'Coming in'));
+      li.appendChild(el('span', 'slot__what', noticeText(n)));
+      var acts = el('span', 'slot__acts');
+      if (n.kind === 'invite') {
+        acts.appendChild(action('Accept', function () { return rooms.respond(n.booking.id, 'accepted'); }, $('sheet-msg')));
+        acts.appendChild(action('Decline', function () { return rooms.respond(n.booking.id, 'declined'); }, $('sheet-msg')));
+        var see = el('button', 'btn btn--ghost', 'See it');
+        see.type = 'button';
+        see.addEventListener('click', function () {
+          selected = n.booking.id;
+          open('schedule', { day: jakartaDayOf(n.booking.startAt), room: n.booking.room });
+        });
+        acts.appendChild(see);
+      }
+      li.appendChild(acts);
+      list.appendChild(li);
+    });
+    $('notices-empty').hidden = notices.length > 0;
+    var allow = $('alerts-allow');
+    var N = window.Notification;
+    allow.hidden = !N || N.permission === 'granted' || N.permission === 'denied';
+  }
+  function jakartaDayOf(iso) { return new Date(Date.parse(iso) + 7 * 3600000).toISOString().slice(0, 10); }
+
+  /* A notice that appears while the page is open may also raise a browser notification, if allowed. */
+  function alertNew() {
+    if (!rooms.ready()) return;
+    var notices = rooms.notices();
+    var first = seen === null;
+    if (first) seen = {};
+    notices.forEach(function (n) {
+      if (seen[n.key]) return;
+      seen[n.key] = true;
+      var N = window.Notification;
+      if (first || !N || N.permission !== 'granted') return;
+      try { new N('Creative Episode', { body: noticeText(n), tag: n.key }); } catch (e) { /* the list on the page still has it */ }
+    });
+  }
+
+  /* --------------------------------------------------------- the sheet -- */
+  function paintSheet() {
+    if (!sheet.open || !view) return;
+    sheet.dataset.view = view;
+    $('sheet-title').textContent = TITLE[view];
+    $('names-panel').hidden = view !== 'names';
+    $('sched-panel').hidden = view !== 'schedule';
+    $('notices-panel').hidden = view !== 'notices';
+    $('arr-panel').hidden = view !== 'arrivals';
+    $('sheet-now').hidden = view === 'names' || view === 'notices';
+    if (view === 'names') paintNames();
+    else if (view === 'schedule') paintSchedule();
+    else if (view === 'notices') paintNotices();
+    else if (view === 'arrivals') paintPlayer();
+  }
+
+  function render() { paintSign(); alertNew(); paintSheet(); }
+
+  /* opts: { room, day, msg } */
+  function open(v, opts) {
+    opts = opts || {};
+    view = v;
+    picking = null;
+    if (v === 'arrivals') plDay = null;
+    say($('sheet-msg'), opts.msg || '', opts.msg ? 'error' : null);
+    ['detail-msg', 'book-msg'].forEach(function (id) { say($(id), ''); });
+    if (v === 'schedule') {
+      if (opts.room) setBookRoom(opts.room);
+      day = opts.day && opts.day >= rooms.today() ? opts.day : day || rooms.today();
+      if (!$('book-date').value || $('book-date').value < rooms.today()) $('book-date').value = day;
+    }
+    if (!sheet.open) sheet.showModal();
+    paintSheet();
+    if (v === 'schedule') rooms.load(day).catch(function () { /* the snapshot already has the next two weeks */ });
+  }
+
+  $('pill-black-box').addEventListener('click', function () { open('schedule', { room: 'black_box' }); });
+  $('pill-ck-hall').addEventListener('click', function () { open('schedule', { room: 'ck_hall' }); });
+  $('you-open').addEventListener('click', function () { open('names'); });
+  $('notices-open').addEventListener('click', function () { open('notices'); });
   $('arrivals-open').addEventListener('click', function () { open('arrivals'); });
+  $('composer-who').addEventListener('click', function () { open('names'); });
+  document.addEventListener('ce:need-name', function () {
+    open('names', { msg: 'Pick or add your name, then stick your note.' });
+  });
   $('sheet-close').addEventListener('click', function () { sheet.close(); });
-  /* 'close' arrives a task later: if another door was opened meanwhile, the sheet belongs to it now. */
-  sheet.addEventListener('close', function () { if (!sheet.open) openRoom = null; });
+  /* 'close' arrives a task later: if another view was opened meanwhile, the sheet belongs to it now. */
+  sheet.addEventListener('close', function () { if (!sheet.open) view = null; });
 
-  $('bb-day').addEventListener('change', function () {
-    if (!this.value) return;
-    day.black_box = this.value;
-    $('bb-date').value = this.value;
-    paintSheet();
-    rooms.load(this.value).catch(function () {});
-  });
-
-  $('hall-day').addEventListener('change', function () {
-    if (!this.value) return;
-    day.ck_hall = this.value;
-    $('hall-date').value = this.value;
-    paintSheet();
-    rooms.load(this.value).catch(function () {});
-  });
-
-  /* ------------------------------------------------------- who you are -- */
-  function signedIn(p) {
-    say($('who-msg'), 'Welcome, ' + p.displayName + '.', 'ok');
-    var d = openRoom && day[openRoom];
-    if (d) rooms.load(d).catch(function () {});
-  }
-  $('code-form').addEventListener('submit', function (e) {
+  /* ------------------------------------------------------- your name -- */
+  $('name-form').addEventListener('submit', function (e) {
     e.preventDefault();
-    var code = $('code-input').value.trim();
-    if (!code) { say($('who-msg'), 'Type the code the office gave you.', 'error'); return; }
-    rooms.signIn(code).then(function (p) { $('code-input').value = ''; signedIn(p); }, function (err) {
-      say($('who-msg'), err && (err.status === 404 || err.status === 400) ? 'No one on the hub has that code.' : refusal(err), 'error');
+    var name = $('name-input').value.trim();
+    if (!name) { say($('sheet-msg'), 'Type your name first.', 'error'); return; }
+    rooms.addName(name, $('name-role').value).then(function (p) {
+      $('name-input').value = '';
+      say($('sheet-msg'), 'You are ' + p.displayName + ' on this device.', 'ok');
+    }, function (err) { say($('sheet-msg'), refusal(err), 'error'); });
+  });
+  $('names-forget').addEventListener('click', function () {
+    rooms.forget();
+    say($('sheet-msg'), 'This device is not using a name now.');
+  });
+
+  /* -------------------------------------------------------- schedule -- */
+  $('day-other').addEventListener('change', function () { if (this.value) showDay(this.value); });
+  ['black_box', 'ck_hall'].forEach(function (room) {
+    /* A click on free time starts a booking there: the hour under the pointer, to the quarter. */
+    $('tt-col-' + room).addEventListener('click', function (e) {
+      if (e.target !== this) return;
+      var minutes = firstHour * 60 + Math.floor((e.offsetY / HOUR_PX) * 4) * 15;
+      if (instant(day, hhmm(minutes)) < new Date(Math.floor(rooms.now().getTime() / 60000) * 60000).toISOString()) {
+        say($('book-msg'), 'That time has passed. Pick a later one.', 'error');
+        return;
+      }
+      setBookRoom(room);
+      $('book-date').value = day;
+      $('book-start').value = hhmm(minutes);
+      $('book-end').value = hhmm(Math.min(minutes + 60, 24 * 60 - 1));
+      say($('book-msg'), ROOM[room] + ' from ' + hhmm(minutes) + '. Give it a title and book.', 'ok');
+      paintBookForm();
+      $('book-title').focus();
     });
   });
-  $('join-form').addEventListener('submit', function (e) {
-    e.preventDefault();
-    var name = $('join-name').value.trim();
-    if (!name) { say($('who-msg'), 'Type your name first.', 'error'); return; }
-    rooms.join(name, $('join-role').value).then(function (p) { $('join-name').value = ''; signedIn(p); },
-      function (err) { say($('who-msg'), refusal(err), 'error'); });
-  });
-  $('who-out').addEventListener('click', function () {
-    rooms.signOut().then(function () { say($('who-msg'), 'Signed out.'); });
+  Array.prototype.forEach.call(document.querySelectorAll('input[name="book-room"]'), function (r) {
+    r.addEventListener('change', paintBookForm);
   });
 
-  /* ------------------------------------------------------- Black Box -- */
-  $('bb-form').addEventListener('submit', function (e) {
+  $('book-form').addEventListener('submit', function (e) {
     e.preventDefault();
-    var msg = $('bb-msg');
-    var title = $('bb-title').value.trim(), d = $('bb-date').value, s = $('bb-start').value, t = $('bb-end').value;
-    if (!title || !d || !s || !t) { say(msg, 'Give the meeting a name, a date, and both times.', 'error'); return; }
-    if (t <= s) { say(msg, 'The meeting has to end after it starts.', 'error'); return; }
-    say(msg, 'Booking…');
-    rooms.bookMeeting({ title: title, startAt: instant(d, s), endAt: instant(d, t), note: $('bb-note').value.trim() || null })
-      .then(function (b) {
-        $('bb-title').value = ''; $('bb-note').value = '';
-        say(msg, 'Booked: ' + b.title + ', ' + time(b.startAt) + '–' + time(b.endAt) + '.', 'ok');
-        if (d !== day.black_box) { day.black_box = d; $('bb-day').value = d; rooms.load(d).catch(function () {}); }
-        paintSheet();
-      }, function (err) { say(msg, refusal(err), 'error'); });
-  });
-
-  /* --------------------------------------------------------- CK Hall -- */
-  $('hall-form').addEventListener('submit', function (e) {
-    e.preventDefault();
-    var msg = $('hall-msg');
-    var name = $('hall-name').value.trim(), d = $('hall-date').value, s = $('hall-start').value, t = $('hall-end').value;
-    if (!name || !d || !s || !t) { say(msg, 'Give a name, a date, and both times.', 'error'); return; }
-    if (t <= s) { say(msg, 'The booking has to end after it starts.', 'error'); return; }
-    say(msg, 'Sending…');
-    rooms.requestHall({ name: name, startAt: instant(d, s), endAt: instant(d, t), note: $('hall-note').value.trim() || null })
-      .then(function (b) {
-        $('hall-note').value = '';
-        say(msg, 'Requested ' + time(b.startAt) + '–' + time(b.endAt) + '. A hall operator will confirm it.', 'ok');
-        if (d !== day.ck_hall) { day.ck_hall = d; $('hall-day').value = d; rooms.load(d).catch(function () {}); }
-        paintSheet();
-      }, function (err) { say(msg, refusal(err), 'error'); });
-  });
-
-  /* -------------------------------------------------------- arrivals -- */
-  function mark(coming) {
-    var msg = $('arr-msg');
-    rooms.markArrival(coming, $('arr-note').value.trim() || null).then(function () {
-      say(msg, coming ? 'Marked: coming in today.' : 'Marked: not coming today.', 'ok');
+    var msg = $('book-msg');
+    if (!rooms.me()) { open('names', { msg: 'Pick or add your name, then book.' }); return; }
+    var room = bookRoom();
+    var title = $('book-title').value.trim(), d = $('book-date').value, s = $('book-start').value, t = $('book-end').value;
+    if (!title || !d || !s || !t) { say(msg, 'Give it a title, a date, and both times.', 'error'); return; }
+    if (d < rooms.today()) { say(msg, 'Days before today are closed.', 'error'); return; }
+    if (t <= s) { say(msg, 'It has to end after it starts.', 'error'); return; }
+    if (instant(d, s) < new Date(Math.floor(rooms.now().getTime() / 60000) * 60000).toISOString()) {
+      say(msg, 'That time has passed. Pick a later one.', 'error'); return;
+    }
+    var input = { startAt: instant(d, s), endAt: instant(d, t), note: $('book-note').value.trim() || null, invite: checked($('book-invite')) };
+    if (room === 'black_box') {
+      var chairs = Object.keys(bookSeats).map(Number).sort(function (x, y) { return x - y; });
+      input.invite = chairs.map(function (n) { return bookSeats[n]; });
+      input.seats = chairs;
+    }
+    say(msg, room === 'black_box' ? 'Booking…' : 'Sending…');
+    var write = room === 'black_box'
+      ? rooms.bookMeeting(Object.assign({ title: title }, input))
+      : rooms.requestHall(Object.assign({ name: title }, input));
+    write.then(function (b) {
+      $('book-title').value = ''; $('book-note').value = '';
+      Array.prototype.forEach.call($('book-invite').children, function (c) { if (c.tagName === 'LABEL') c.firstChild.checked = false; });
+      if (room === 'black_box') { bookSeats = {}; picking = null; }
+      selected = b.id;
+      day = d;
+      say(msg, (room === 'black_box' ? 'Booked: ' : 'Requested: ') + b.title + ', ' + time(b.startAt) + '–' + time(b.endAt) +
+        (room === 'ck_hall' ? '. A hall operator will confirm it.' : '.'), 'ok');
+      paintSheet();
+      rooms.load(d).catch(function () {});
     }, function (err) { say(msg, refusal(err), 'error'); });
-  }
-  $('arr-yes').addEventListener('click', function () { mark(true); });
-  $('arr-no').addEventListener('click', function () { mark(false); });
+  });
+
+  $('more-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var ids = checked($('more-choices'));
+    if (!ids.length) { say($('detail-msg'), 'Tick at least one name.', 'error'); return; }
+    rooms.invite(selected, ids).then(function () { say($('detail-msg'), 'Invited.', 'ok'); },
+      function (err) { say($('detail-msg'), refusal(err), 'error'); });
+  });
+
+  /* ---------------------------------------------------------- notices -- */
+  $('alerts-allow').addEventListener('click', function () {
+    var N = window.Notification;
+    if (!N) return;
+    Promise.resolve(N.requestPermission()).then(paintSheet, paintSheet);
+  });
+
+  /* --------------------------------------------------------- arrivals -- */
+  $('arr-yes').addEventListener('click', function () { savePlan(true); });
+  $('arr-no').addEventListener('click', function () { savePlan(false); });
   $('arr-form').addEventListener('submit', function (e) { e.preventDefault(); });
+  /* A new time or note on a day you are coming in saves as you leave the field. */
+  ['pl-arrive', 'arr-note'].forEach(function (id) {
+    $(id).addEventListener('change', function () {
+      var a = rooms.myPlan(plDay);
+      if (a && a.coming) savePlan(true, 'Saved.');
+    });
+  });
+  $('pl-main').addEventListener('click', function () { if (this.getAttribute('aria-disabled') !== 'true' && mainRun) mainRun(); });
+  function stepDay(by) {
+    var days = officeDays(), at = days.indexOf(plDay);
+    if (at < 0) return;
+    var next = days[at + by];
+    if (!next) return;
+    plDay = next;
+    say($('sheet-msg'), '');
+    paintSheet();
+  }
+  $('pl-prev').addEventListener('click', function () { if (this.getAttribute('aria-disabled') !== 'true') stepDay(-1); });
+  $('pl-next').addEventListener('click', function () { if (this.getAttribute('aria-disabled') !== 'true') stepDay(1); });
+  $('pl-repeat').addEventListener('click', function () {
+    if (this.getAttribute('aria-disabled') === 'true') return;
+    var to = rooms.addDays(plDay, 7);
+    rooms.repeatDay(plDay).then(function () {
+      say($('sheet-msg'), 'Same plan on ' + dayName.format(rooms.dayStart(to)) + ' ' + dayDate.format(rooms.dayStart(to)) + '.', 'ok');
+    }, function (err) { say($('sheet-msg'), refusal(err), 'error'); });
+  });
+  $('pl-who').addEventListener('click', function () {
+    var h = $('arr-title');
+    if (h.scrollIntoView) h.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    h.focus();
+  });
+  $('pl-undo').addEventListener('click', function () { tripStep('reset', 'Undone: you are coming in, not yet on your way.'); });
+
+  /* ------------------------------------------------- the name pickers -- */
+  ['book', 'detail'].forEach(function (where) {
+    var choose = where === 'book' ? seatInBooking : seatInMeeting;
+    $(where + '-pick-q').addEventListener('input', function () { paintSheet(); });
+    $(where + '-pick-q').addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); closePicker(where); }
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        var first = $(where + '-pick-list').children[0];
+        var b = first && first.firstChild;
+        if (b && b.tagName === 'BUTTON') b.click(); else addAndSeat(where, choose);
+      }
+    });
+    $(where + '-pick-add').addEventListener('click', function () { addAndSeat(where, choose); });
+    $(where + '-pick-close').addEventListener('click', function () { closePicker(where); });
+  });
+  $('book-pick-clear').addEventListener('click', function () {
+    if (!picking) return;
+    delete bookSeats[picking.seat];
+    say($('book-msg'), 'Chair ' + picking.seat + ' is empty.', 'ok');
+    closePicker('book');
+  });
 
   rooms.on('change', render);
   render();

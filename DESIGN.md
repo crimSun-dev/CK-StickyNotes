@@ -427,6 +427,12 @@ The trip takes 680ms on cubic-bezier(0.23, 1, 0.32, 1), and the real note is rev
 
 Supporting motion, not engineered: notes stagger in once (45ms apart, 14px rise, 620ms ease-out; opacity only under reduced motion), and hover/border/background transitions run at 160ms on the same ease-out, on fine pointers only. The bottle outline and LED are static.
 
+### Office-days player (asset exception)
+The player follows the music-player design Draven supplied: navy `#0E194F` body, LED blue `#0096FC` edge glow, soft blue `#B9C6F2` for secondary text, black window with the day, a status chip (yellow spark for On the way, note blue for Arrived), a weekday strip, a trip line, and prev / main / next / repeat controls. These three colors and the edge glow belong to this one card only and are an accepted exception to the single palette and the LED-only glow rule.
+
+### Black Box round table
+The booking form and the booking card show the table image (`assets/black-box-table.webp`) with eight chairs placed clockwise from the top. Chair states: free (dashed), host, invited (outline), accepted (solid), chosen (focus). Tapping a free chair opens a name picker with search and "add a name".
+
 ## Do's and Don'ts
 
 ### Do:
