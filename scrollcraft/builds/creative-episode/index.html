@@ -2279,6 +2279,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     table_full: 'The table is full: the host and 7 more.'
   };
   var HOUR_PX = 48;           /* the timetable's height for one hour */
+  var WEEKDAYS_ONLY = 'The rooms are booked Monday to Friday. Pick a weekday.';
 
   var sheet = $('room-sheet');
   var view = null;            /* 'schedule' | 'names' | 'notices' | 'arrivals' while the sheet is open */
@@ -2775,13 +2776,14 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     now.dataset.state = h ? 'on-air' : m ? 'in-use' : 'idle';
   }
 
+  /* The rooms are booked Monday to Friday: the strip lists the weekdays of the reach. */
   function paintDays() {
     var list = $('days');
     list.textContent = '';
-    for (var i = 0; i < rooms.reachDays; i++) {
-      var d = rooms.addDays(rooms.today(), i);
+    officeDays().forEach(function (d) {
       var li = el('li');
-      var b = el('button', '', i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : shortDay.format(rooms.dayStart(d)).split(' ')[0]);
+      var b = el('button', '', d === rooms.today() ? 'Today' : d === rooms.addDays(rooms.today(), 1) ? 'Tomorrow'
+        : shortDay.format(rooms.dayStart(d)).split(' ')[0]);
       b.type = 'button';
       b.dataset.day = d;
       b.setAttribute('aria-pressed', String(d === day));
@@ -2789,7 +2791,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
       b.addEventListener('click', function () { showDay(this.dataset.day); });
       li.appendChild(b);
       list.appendChild(li);
-    }
+    });
     $('day-other').min = rooms.today();
     $('day-other').value = day;
     $('book-date').min = rooms.today();
@@ -2942,8 +2944,11 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     Array.prototype.forEach.call(document.querySelectorAll('input[name="book-room"]'), function (r) { r.checked = r.value === room; });
   }
 
+  function isWeekend(d) { return weekdayIndex(d) > 4; }
+  /* d if the rooms can be booked that day, else the next office day. */
+  function roomDay(d) { return d && d >= rooms.today() && !isWeekend(d) ? d : nextOfficeDay(); }
   function paintSchedule() {
-    if (!day || day < rooms.today()) day = rooms.today();
+    day = roomDay(day);
     paintNow();
     paintDays();
     paintTimetable();
@@ -2953,6 +2958,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
 
   function showDay(d) {
     if (!d || d < rooms.today()) { say($('sheet-msg'), 'Days before today are closed.', 'error'); return; }
+    if (isWeekend(d)) { say($('sheet-msg'), WEEKDAYS_ONLY, 'error'); return; }
     day = d;
     if (!$('book-date').value || $('book-date').value < d || $('book-date').value !== d) $('book-date').value = d;
     say($('sheet-msg'), '');
@@ -3042,7 +3048,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     ['detail-msg', 'book-msg'].forEach(function (id) { say($(id), ''); });
     if (v === 'schedule') {
       if (opts.room) setBookRoom(opts.room);
-      day = opts.day && opts.day >= rooms.today() ? opts.day : day || rooms.today();
+      day = roomDay(opts.day || day);
       if (!$('book-date').value || $('book-date').value < rooms.today()) $('book-date').value = day;
     }
     if (!sheet.open) sheet.showModal();
@@ -3110,6 +3116,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     var title = $('book-title').value.trim(), d = $('book-date').value, s = $('book-start').value, t = $('book-end').value;
     if (!title || !d || !s || !t) { say(msg, 'Give it a title, a date, and both times.', 'error'); return; }
     if (d < rooms.today()) { say(msg, 'Days before today are closed.', 'error'); return; }
+    if (isWeekend(d)) { say(msg, WEEKDAYS_ONLY, 'error'); return; }
     if (t <= s) { say(msg, 'It has to end after it starts.', 'error'); return; }
     if (instant(d, s) < new Date(Math.floor(rooms.now().getTime() / 60000) * 60000).toISOString()) {
       say(msg, 'That time has passed. Pick a later one.', 'error'); return;
@@ -3182,7 +3189,11 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     if (this.dataset.on === 'true') {
       rooms.clearDay(to).then(function () {
         say($('sheet-msg'), 'Repeat off. ' + toName + ' is unplanned again.', 'ok');
-      }, function (err) { say($('sheet-msg'), refusal(err), 'error'); });
+      }, function (err) {
+        /* The database keeps a day whose trip in has started (invalid_state here is the trip, not a booking). */
+        say($('sheet-msg'), err && err.code === 'invalid_state'
+          ? 'The trip in has started on ' + toName + ', so its plan stays. Undo the trip first.' : refusal(err), 'error');
+      });
       return;
     }
     rooms.repeatDay(plDay).then(function () {

@@ -888,6 +888,14 @@
   function dayStart(day) { return Date.parse(day + 'T00:00:00Z') - JAKARTA_MS; }
   function covers(b, from, to) { return Date.parse(b.startAt) < to && Date.parse(b.endAt) > from; }
   function byName(a, b) { return String(a.displayName).toLowerCase().localeCompare(String(b.displayName).toLowerCase()); }
+  function isWeekday(day) { var wd = new Date(dayStart(day) + JAKARTA_MS).getUTCDay(); return wd !== 0 && wd !== 6; }
+  /* Rooms are booked Monday to Friday (010): every office day a span touches is a weekday. */
+  function onWeekdays(s, e) {
+    for (var d = jakartaDay(s), last = jakartaDay(e - 1); d <= last; d = jakartaDay(dayStart(d) + DAY_MS)) {
+      if (!isWeekday(d)) return false;
+    }
+    return true;
+  }
   /* A local note's author name, from this device's names list. */
   function localName(id) {
     var d = readJSON(HUB_KEY);
@@ -951,7 +959,7 @@
     function today() { return jakartaDay(Date.now()); }
     function span(b) {
       var s = Date.parse(b.startAt), e = Date.parse(b.endAt);
-      if (!(e > s) || s < Math.floor(Date.now() / 60000) * 60000) throw storeError(400, 'validation_failed');
+      if (!(e > s) || s < Math.floor(Date.now() / 60000) * 60000 || !onWeekdays(s, e)) throw storeError(400, 'validation_failed');
       return { startAt: new Date(s).toISOString(), endAt: new Date(e).toISOString() };
     }
     function clash(d, b, id) {
