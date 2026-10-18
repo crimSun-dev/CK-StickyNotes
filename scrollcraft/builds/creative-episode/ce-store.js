@@ -362,6 +362,7 @@
         },
         trip: function (me, step) { return rpc('trip', { me: me, step: step }); },
         repeatDay: function (me, day) { return rpc('repeat_day', { me: me, day: day }); },
+        clearDay: function (me, day) { return rpc('clear_day', { me: me, day: day }); },
         follow: function (me, id, on) { return rpc('follow', { me: me, person_id: id, follow: on }); }
       },
       saveStroke: saveStroke
@@ -915,6 +916,7 @@
     },
     trip: function (me, step) { return call('POST', 'v1/hub/arrivals/today/trip', { me: me, step: step }); },
     repeatDay: function (me, day) { return call('POST', 'v1/hub/arrivals/' + day + '/repeat', { me: me }); },
+    clearDay: function (me, day) { return call('DELETE', 'v1/hub/arrivals/' + day, { me: me }); },
     follow: function (me, id, on) { return call('PUT', 'v1/hub/follows/' + encodeURIComponent(id), { me: me, follow: on }); }
   };
 
@@ -1188,6 +1190,18 @@
           return plan(d, p, to, src.coming, src.note, src.arriveAt || null);
         });
       },
+      clearDay: function (me, day) {
+        return act(function (d) {
+          var p = need(d, me), on = officeDay(day);
+          var a = d.arrivals.filter(function (x) { return x.personId === p.id && x.day === on; })[0];
+          if (!a) throw storeError(404, 'not_found');
+          if (a.leftAt) throw storeError(409, 'invalid_state');
+          var out = arrival(d, a);
+          d.arrivals = d.arrivals.filter(function (x) { return x !== a; });
+          out.cleared = true;
+          return out;
+        });
+      },
       follow: function (me, id, on) {
         return act(function (d) {
           var p = need(d, me);
@@ -1299,6 +1313,7 @@
       var id = meId();
       return (b.invites || []).filter(function (i) { return i.personId === id; })[0] || null;
     }
+    function putArrival(a) { if (a.cleared) delete arrivals[a.id]; else arrivals[a.id] = a; }
     function following() {
       var id = meId();
       return follows.filter(function (f) { return f.personId === id; }).map(function (f) { return f.followsId; });
@@ -1308,7 +1323,7 @@
       live.on('hello', function (msg) { if (msg.rooms) { lastSnap = ''; snapshot(msg.rooms); } });
       live.on('rooms', snapshot);
       live.on('booking', function (b) { put(b); lastSnap = ''; emit(); });
-      live.on('arrival', function (a) { if (a.day >= today()) { arrivals[a.id] = a; lastSnap = ''; emit(); } });
+      live.on('arrival', function (a) { if (a.day >= today()) { putArrival(a); lastSnap = ''; emit(); } });
       live.on('person', function (p) { people[p.id] = p; lastSnap = ''; emit(); });
       live.on('follows', function (out) { setFollows(out); lastSnap = ''; emit(); });
     }
@@ -1456,6 +1471,10 @@
       /* The same plan on the same weekday next week. */
       repeatDay: function (day) {
         return adapter.repeatDay(meId(), day).then(function (a) { arrivals[a.id] = a; lastSnap = ''; emit(); return a; });
+      },
+      /* Take a day's plan back (Repeat off). */
+      clearDay: function (day) {
+        return adapter.clearDay(meId(), day).then(function (a) { putArrival(a); lastSnap = ''; emit(); return a; });
       }
     };
   }

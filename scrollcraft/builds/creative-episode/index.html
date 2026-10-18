@@ -155,6 +155,44 @@
   .linkish { min-height: 0; padding: 0; color: inherit; }
   .sign__you button:focus-visible, .linkish:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; }
   .sign__you strong { color: var(--sc-ink); }
+  /* You and your notices: a name chip with your initials, and a bell with the count. */
+  .sign__me { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .sign__you .youchip {
+    display: inline-flex; align-items: center; gap: 10px; min-height: 50px; padding: 5px 16px 5px 5px; max-width: 13rem;
+    border-radius: var(--sc-r-pill); background: var(--paper); color: var(--indigo); text-decoration: none; text-align: left;
+    box-shadow: 0 0 0 1.5px rgb(46 58 140 / 0.25), 0 3px 10px hsl(232 30% 12% / 0.22);
+  }
+  .youchip__av {
+    flex: none; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center;
+    background: var(--tint, var(--indigo)); color: var(--tint-ink, #FFFFFF); font-weight: 750; font-size: 0.95rem; letter-spacing: 0.02em;
+    box-shadow: inset 0 0 0 2px rgb(255 255 255 / 0.6);
+  }
+  .youchip__av svg { width: 20px; height: 20px; }
+  .youchip__av:not([data-tint="none"]) svg, .youchip__av[data-tint="none"] b { display: none; }
+  .youchip__av b { font-weight: 750; }
+  .youchip__av[data-tint="blue"] { --tint: var(--note-blue); --tint-ink: var(--note-ink); }
+  .youchip__av[data-tint="pink"] { --tint: var(--note-pink); --tint-ink: var(--note-ink); }
+  .youchip__av[data-tint="green"] { --tint: var(--note-green); --tint-ink: var(--note-ink); }
+  .youchip__av[data-tint="yellow"] { --tint: var(--note-yellow); --tint-ink: var(--note-ink); }
+  .youchip__text { display: grid; min-width: 0; line-height: 1.15; }
+  .youchip__text small { font-size: var(--sc-t-xs); font-weight: 600; color: var(--note-meta); }
+  .sign__you .youchip strong { color: var(--indigo); font-size: var(--sc-t-sm); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sign__you .youchip[data-empty="true"] strong { text-decoration: underline; text-underline-offset: 3px; }
+  .sign__you .bell {
+    position: relative; flex: none; width: 50px; height: 50px; padding: 0; border-radius: 50%; display: grid; place-items: center;
+    background: var(--indigo); color: #FFFFFF; text-decoration: none;
+    box-shadow: 0 3px 10px hsl(232 30% 12% / 0.28);
+  }
+  .bell svg { width: 24px; height: 24px; }
+  .bell .badge {
+    position: absolute; top: -4px; right: -4px; margin: 0; min-width: 22px; height: 22px;
+    background: var(--spark); color: var(--indigo); font-weight: 800; box-shadow: 0 0 0 2px var(--paper);
+  }
+  .sign__you .bell[data-new="true"] { background: var(--periwinkle); }
+  @media (hover: hover) and (pointer: fine) {
+    .sign__you .youchip:hover { background: #FFFFFF; }
+    .sign__you .bell:hover { background: var(--periwinkle); }
+  }
   .badge {
     display: inline-grid; place-items: center; min-width: 1.4rem; height: 1.4rem; margin-left: 4px; padding: 0 5px;
     border-radius: var(--sc-r-pill); background: var(--indigo); color: #FFFFFF; font-size: var(--sc-t-xs); font-weight: 700;
@@ -405,6 +443,7 @@
   .pl__brand img:nth-child(2) { height: 25px; }
   /* Repeat: off is a plain outline; on (next week already has this plan) it lights LED blue with a 1. */
   .pl__btn { position: relative; }
+  #pl-who[data-on="true"] { color: #6CC4FF; background: rgb(0 150 252 / 0.18); box-shadow: 0 0 0 1.5px var(--player-led), 0 0 14px 2px rgb(0 150 252 / 0.55); }
   #pl-repeat[data-on="true"] { color: #6CC4FF; background: rgb(0 150 252 / 0.18); box-shadow: 0 0 0 1.5px var(--player-led), 0 0 14px 2px rgb(0 150 252 / 0.55); }
   #pl-repeat[data-on="true"] svg { filter: drop-shadow(0 0 4px rgb(0 150 252 / 0.9)); animation: repeatGlow 0.7s ease-out; }
   #pl-repeat[data-on="true"]::after {
@@ -424,6 +463,23 @@
   .pl__welcome { display: grid; justify-items: center; gap: 2px; padding: 6px 0 2px; }
   .pl__welcome img { width: min(78%, 17rem); height: auto; }
   .pl__welcome .pl__welcome-tiger { width: min(46%, 10rem); margin-top: -10px; filter: drop-shadow(0 0 10px rgb(255 229 0 / 0.7)); }
+  /* Who's in, as the player's playlist: opened by the people button. */
+  .pl-list { display: grid; gap: 6px; padding: 16px 18px 10px; border-radius: 22px; background: var(--player); color: #FFFFFF;
+    box-shadow: 0 0 0 2px var(--player-led), 0 0 12px 1px rgb(0 150 252 / 0.35); }
+  .pl-list[hidden] { display: none; }
+  .pl-list h3 { margin: 0 0 4px; color: #FFFFFF; }
+  .pl-list .slot { border-color: rgb(255 255 255 / 0.14); grid-template-columns: 7.5rem minmax(0, 1fr) auto; }
+  .pl-list .slot__time { display: flex; align-items: center; gap: 8px; color: #FFFFFF; }
+  .pl-list .slot__time::before { content: ""; flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--dot, #FFFFFF); }
+  .pl-list .slot[data-status="coming"] { --dot: var(--note-green); }
+  .pl-list .slot[data-status="not"] { --dot: var(--note-pink); }
+  .pl-list .slot[data-status="way"] { --dot: var(--note-yellow); }
+  .pl-list .slot[data-status="arrived"] { --dot: var(--note-blue); }
+  .pl-list .slot__what small { color: var(--player-soft); }
+  .pl-list .slot .btn--ghost { background: transparent; color: #FFFFFF; border-color: rgb(255 255 255 / 0.55); }
+  .pl-list .slot .btn--ghost[aria-pressed="true"] { background: #FFFFFF; color: var(--player); border-color: #FFFFFF; }
+  .pl-list .slots__empty { color: var(--player-soft); padding: 4px 0 8px; }
+  .pl-list :focus-visible { outline: 2px solid #FFFFFF; outline-offset: 2px; }
   /* Wide screens: the player stands against the navy wall with 홍삼볼 painted on it. */
   .pl-stage { display: grid; gap: 16px; }
   .pl-wall { display: none; }
@@ -431,11 +487,10 @@
     .sheet[data-view="arrivals"] { width: min(50rem, calc(100vw - 32px)); }
     .pl-stage { grid-template-columns: 10.5rem minmax(0, 1fr); align-items: stretch; }
     .pl-wall {
-      display: grid; grid-template-rows: 1fr auto; justify-items: center; gap: 14px; padding: 22px 14px 18px; border-radius: 22px;
+      display: grid; place-items: center; padding: 22px 14px 18px; border-radius: 22px;
       background: var(--hq-navy); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.05);
     }
     .pl-wall__hongsam { width: 100%; max-width: 7.5rem; height: 100%; max-height: 26rem; object-fit: contain; align-self: center; }
-    .pl-wall__name { width: 100%; height: auto; opacity: 0.92; }
   }
 
   /* The small player under the sign: your next office day at a glance. */
@@ -856,6 +911,8 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     <symbol id="i-prev" viewBox="0 0 24 24"><path d="M18 6v12L9.5 12 18 6ZM6.5 6v12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/></symbol>
     <symbol id="i-next" viewBox="0 0 24 24"><path d="M6 6v12l8.5-6L6 6Zm11.5 0v12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/></symbol>
     <symbol id="i-repeat" viewBox="0 0 24 24"><path d="M5 11V9a3 3 0 0 1 3-3h10m-3-3 3 3-3 3M19 13v2a3 3 0 0 1-3 3H6m3 3-3-3 3-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.6 2H4.4L6 16.5ZM10 20.5a2.1 2.1 0 0 0 4 0M12 3v2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-person" viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8.5c.7-3.6 3.6-6 7-6s6.3 2.4 7 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-people" viewBox="0 0 24 24"><path d="M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm-6 9c.6-3.4 3-5.5 6-5.5s5.4 2.1 6 5.5M16 4.3a3.5 3.5 0 0 1 0 6.4M18.5 14.8c1.4.9 2.3 2.6 2.5 5.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7.5v5.5M12 16.3v.2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
   </defs>
@@ -878,8 +935,10 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
         <li><span class="pill pill--right" title="Money Lab">The M-Lab<span class="sr-only">, to the right. Money Lab, not open yet</span><span class="pill__arrow"><svg aria-hidden="true"><use href="#i-right"/></svg></span></span></li>
       </ol>
       <div class="sign__you">
-        <button type="button" id="you-open" aria-haspopup="dialog" aria-controls="room-sheet">You: <strong id="you-name">pick your name</strong></button>
-        <button type="button" id="notices-open" aria-haspopup="dialog" aria-controls="room-sheet">Notices<span class="badge" id="notices-count" hidden>0</span></button>
+        <div class="sign__me">
+          <button type="button" class="youchip" id="you-open" aria-haspopup="dialog" aria-controls="room-sheet"><span class="youchip__av" id="you-avatar" data-tint="none" aria-hidden="true"><svg id="you-avatar-icon"><use href="#i-person"/></svg><b id="you-initials"></b></span><span class="youchip__text"><small>You</small><strong id="you-name">pick your name</strong></span></button>
+          <button type="button" class="bell" id="notices-open" aria-haspopup="dialog" aria-controls="room-sheet" aria-label="Notices"><svg aria-hidden="true"><use href="#i-bell"/></svg><span class="badge" id="notices-count" hidden>0</span></button>
+        </div>
         <button type="button" class="miniplayer" id="arrivals-open" aria-haspopup="dialog" aria-controls="room-sheet"><span class="miniplayer__icon" aria-hidden="true"><svg><use href="#i-play"/></svg></span><span class="miniplayer__text"><strong id="mini-day">Office days</strong><span id="mini-state">Plan when you come in</span></span></button>
       </div>
     </nav>
@@ -1099,7 +1158,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
       <!-- Office days: the lounge's music player. One weekday at a time, today through two weeks. -->
       <section id="arr-panel" aria-label="Office days" hidden>
         <div class="pl-stage">
-        <div class="pl-wall" aria-hidden="true"><img class="pl-wall__hongsam" src="assets/hongsam-vertical.webp" width="332" height="900" alt=""><img class="pl-wall__name" src="assets/shin-tae-yong.webp" width="600" height="61" alt=""></div>
+        <div class="pl-wall" aria-hidden="true"><img class="pl-wall__hongsam" src="assets/hongsam-vertical.webp" width="332" height="900" alt=""></div>
         <div class="player" id="player">
           <div class="pl__window" id="pl-window" data-status="none">
             <p class="pl__day"><strong id="pl-day"></strong><span id="pl-date"></span><span class="pl__today" id="pl-today" hidden>Today</span></p>
@@ -1122,7 +1181,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
           <div class="pl__line" id="pl-line" aria-hidden="true" data-trip="none"><span class="pl__fill"></span><span class="pl__knob"></span></div>
           <p class="pl__times"><span id="pl-left"></span><span id="pl-eta"></span></p>
           <div class="pl__controls">
-            <button type="button" class="pl__btn" id="pl-who" aria-label="Who's in this day"><svg aria-hidden="true"><use href="#i-people"/></svg></button>
+            <button type="button" class="pl__btn" id="pl-who" aria-label="Who's in this day" aria-controls="pl-list" aria-expanded="false" data-on="false"><svg aria-hidden="true"><use href="#i-people"/></svg></button>
             <button type="button" class="pl__btn" id="pl-prev" aria-label="Previous weekday"><svg aria-hidden="true"><use href="#i-prev"/></svg></button>
             <button type="button" class="pl__main" id="pl-main" aria-describedby="pl-main-label"><svg aria-hidden="true"><use href="#i-play" id="pl-main-icon"/></svg></button>
             <button type="button" class="pl__btn" id="pl-next" aria-label="Next weekday"><svg aria-hidden="true"><use href="#i-next"/></svg></button>
@@ -1131,9 +1190,11 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
           <p class="pl__label" id="pl-main-label" aria-hidden="true"></p>
         </div>
         </div>
-        <h3 id="arr-title" tabindex="-1"></h3>
-        <ul class="slots" id="arr-list" aria-labelledby="arr-title"></ul>
-        <p class="slots__empty" id="arr-empty">No one has said yet for this day.</p>
+        <div class="pl-list" id="pl-list" hidden>
+          <h3 id="arr-title" tabindex="-1"></h3>
+          <ul class="slots" id="arr-list" aria-labelledby="arr-title"></ul>
+          <p class="slots__empty" id="arr-empty">No one has said yet for this day.</p>
+        </div>
       </section>
     </div>
   </dialog>
@@ -2545,8 +2606,9 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     var nwName = dayName.format(rooms.dayStart(nextWeek)) + ' ' + dayDate.format(rooms.dayStart(nextWeek));
     $('pl-repeat').setAttribute('aria-disabled', String(!canRepeat));
     $('pl-repeat').dataset.on = String(repeated);
-    $('pl-repeat').setAttribute('aria-label', repeated ? 'Repeated on ' + nwName + '. Go to that day'
-      : 'Same plan next week, ' + nwName + (canRepeat ? '' : mine ? ' (past the two-week plan)' : ' (make a plan first)'));
+    $('pl-repeat').setAttribute('aria-pressed', String(repeated));
+    $('pl-repeat').setAttribute('aria-label', repeated ? 'Repeat on for ' + nwName + '. Press to turn it off'
+      : 'Repeat this plan next week, ' + nwName + (canRepeat ? '' : mine ? ' (past the two-week plan)' : ' (make a plan first)'));
 
     /* the trip line: on the way, from leaving to the time you said */
     var travelling = isToday && (st === 'way' || st === 'arrived');
@@ -2584,7 +2646,11 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     $('pl-main-label').textContent = step.label;
     mainRun = step.run;
 
-    /* who's in that day */
+    /* who's in that day: the playlist, shown by the people button */
+    $('pl-list').hidden = !plListOpen;
+    $('pl-who').dataset.on = String(plListOpen);
+    $('pl-who').setAttribute('aria-expanded', String(plListOpen));
+    $('pl-who').setAttribute('aria-label', (plListOpen ? 'Hide' : 'Show') + ' who’s in this day');
     var head = (isToday ? 'Today, ' : '') + longDay.format(rooms.dayStart(d));
     $('arr-title').textContent = head;
     $('sheet-now').textContent = isToday
@@ -2596,6 +2662,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     plans.forEach(function (a) {
       var li = el('li', 'slot');
       var s = planStatus(a);
+      li.dataset.status = s;
       li.appendChild(el('span', 'slot__time', s === 'not' ? 'Not coming' : s === 'way' ? 'On the way' : s === 'arrived' ? 'Arrived ' + time(a.arrivedAt) : 'Coming in'));
       var who = el('span', 'slot__what', a.name + (me && a.personId === me.id ? ' (you)' : ''));
       var more = [a.note, a.coming && a.arriveAt ? (s === 'way' ? 'ETA ' : 'by ') + a.arriveAt : ''].filter(Boolean).join(' · ');
@@ -2614,6 +2681,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     $('arr-empty').hidden = plans.length > 0;
   }
   var mainRun = null;
+  var plListOpen = false;
   /* Next week already says the same: the repeat button is lit. */
   function samePlan(a, b) {
     return !!a && !!b && a.coming === b.coming && (a.arriveAt || null) === (b.arriveAt || null) && (a.note || null) === (b.note || null);
@@ -2628,6 +2696,12 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
   }
 
   /* ----------------------------------------------------------- the sign -- */
+  var TINTS = ['blue', 'pink', 'green', 'yellow'];
+  function initials(name) {
+    var w = String(name).trim().split(/\s+/).filter(Boolean);
+    return ((w[0] || '?').charAt(0) + (w.length > 1 ? w[w.length - 1].charAt(0) : '')).toUpperCase();
+  }
+  function hashName(name) { var h = 0, t = String(name); for (var i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) % 9973; return h; }
   function paintSign() {
     var m = rooms.blackBoxInUse();
     $('pill-black-box').dataset.state = m ? 'in-use' : 'idle';
@@ -2638,9 +2712,15 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     $('ck-hall-sr').textContent = ', to the left' + (h ? ', ON AIR until ' + time(h.endAt) : ', off air');
     var me = rooms.me();
     $('you-name').textContent = me ? me.displayName : 'pick your name';
+    $('you-open').dataset.empty = String(!me);
+    $('you-open').setAttribute('aria-label', me ? 'You: ' + me.displayName + '. Change name' : 'You: pick your name');
+    $('you-initials').textContent = me ? initials(me.displayName) : '';
+    $('you-avatar').dataset.tint = me ? TINTS[hashName(me.displayName) % TINTS.length] : 'none';
     var n = rooms.notices().length;
     $('notices-count').textContent = String(n);
     $('notices-count').hidden = n === 0;
+    $('notices-open').dataset.new = String(n > 0);
+    $('notices-open').setAttribute('aria-label', n ? 'Notices, ' + n + ' new' : 'Notices, nothing new');
     $('composer-who-name').textContent = me ? me.displayName : 'nobody yet';
     $('composer-who').textContent = me ? 'Change' : 'Pick your name';
     paintMini();
@@ -3098,10 +3178,11 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
   $('pl-repeat').addEventListener('click', function () {
     if (this.getAttribute('aria-disabled') === 'true') return;
     var to = rooms.addDays(plDay, 7);
+    var toName = dayName.format(rooms.dayStart(to)) + ' ' + dayDate.format(rooms.dayStart(to));
     if (this.dataset.on === 'true') {
-      plDay = to;
-      say($('sheet-msg'), dayName.format(rooms.dayStart(to)) + ' ' + dayDate.format(rooms.dayStart(to)) + ' already has this plan.', 'ok');
-      paintSheet();
+      rooms.clearDay(to).then(function () {
+        say($('sheet-msg'), 'Repeat off. ' + toName + ' is unplanned again.', 'ok');
+      }, function (err) { say($('sheet-msg'), refusal(err), 'error'); });
       return;
     }
     rooms.repeatDay(plDay).then(function () {
@@ -3109,9 +3190,13 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     }, function (err) { say($('sheet-msg'), refusal(err), 'error'); });
   });
   $('pl-who').addEventListener('click', function () {
-    var h = $('arr-title');
-    if (h.scrollIntoView) h.scrollIntoView({ block: 'start', behavior: 'smooth' });
-    h.focus();
+    plListOpen = !plListOpen;
+    paintSheet();
+    if (plListOpen) {
+      var h = $('arr-title');
+      if (h.scrollIntoView) h.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      h.focus();
+    }
   });
   $('pl-undo').addEventListener('click', function () { tripStep('reset', 'Undone: you are coming in, not yet on your way.'); });
 
