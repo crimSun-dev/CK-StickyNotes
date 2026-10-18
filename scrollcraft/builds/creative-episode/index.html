@@ -63,6 +63,9 @@
     --player: #0E194F;         /* the music-player frame's navy, from the supplied frame */
     --player-led: #0096FC;     /* its blue LED rim */
     --player-soft: #B9C6F2;    /* secondary type on the navy and the black window */
+    --hq-navy: #222D66;        /* the painted navy walls (COME BACK STRONG, 홍삼볼), sampled from the photos */
+    --ec-stone: #232428;       /* Energy Corner's dark curved wall, where the Black Box table stands */
+    --tiger: #FFE500;          /* the Hongsam Ball tiger's yellow, for its glow only */
     color-scheme: light;
   }
 
@@ -132,14 +135,16 @@
     button.pill { transition: none; }
   }
   /* The CK Hall lamp. Off: an unlit outline. On: the studio red, steady. It has no switch of its own. */
+  /* The lamp is the supplied ON AIR sign: unlit it is a dark grey box, lit it is the real sign. */
   .lamp {
-    display: inline-block; margin-left: 8px; padding: 2px 6px; border-radius: 4px;
-    border: 1.5px solid rgb(255 255 255 / 0.4); color: rgb(255 255 255 / 0.7);
-    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; line-height: 1.2; vertical-align: 1px;
+    display: inline-block; width: 3.4rem; height: 1.05rem; margin-left: 8px; vertical-align: -3px;
+    background: url(assets/on-air.webp) center / contain no-repeat; border-radius: 3px;
+    color: transparent; font-size: 0.6rem; overflow: hidden; white-space: nowrap; text-indent: 110%;
+    filter: grayscale(1) brightness(0.5) contrast(1.2); opacity: 0.85;
   }
-  .lamp.is-on { background: var(--on-air); border-color: var(--on-air); color: #FFFFFF; box-shadow: 0 0 10px 1px rgb(226 35 26 / 0.6); }
-  .sheet .lamp { margin: 0 8px 0 0; border-color: rgb(22 22 28 / 0.35); color: var(--note-meta); }
-  .sheet .lamp.is-on { border-color: var(--on-air); color: #FFFFFF; }
+  .lamp.is-on { filter: none; opacity: 1; box-shadow: 0 0 12px 2px rgb(226 35 26 / 0.55); background-color: var(--on-air); }
+  .sheet .lamp { margin: 0 8px 0 0; filter: grayscale(1) brightness(0.62); opacity: 0.6; }
+  .sheet .lamp.is-on { filter: none; opacity: 1; }
 
   /* Under the sign: who you are on the hub, your notices, and who is in today. Quiet lines, not doors. */
   .sign__you { margin: 14px 0 0; display: grid; gap: 0; justify-items: start; }
@@ -312,6 +317,23 @@
   @media (hover: hover) and (pointer: fine) {
     button.chair--free:hover { background: #FFFFFF; border-style: solid; }
   }
+  /* Energy Corner: the Black Box table stands in it. Dark curved wall, the white brush lettering lit above. */
+  .ec {
+    position: relative; display: grid; justify-items: center; gap: 4px; padding: 16px 10px 14px; border-radius: 20px;
+    background: radial-gradient(120% 70% at 50% 0%, #3A3B41 0%, var(--ec-stone) 55%, #18181B 100%);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06);
+  }
+  .ec__sign { width: min(54%, 13.5rem); height: auto; rotate: -4deg; filter: drop-shadow(0 0 10px rgb(255 255 255 / 0.28)); pointer-events: none; }
+  .ec .table { margin-top: 10px; }
+  .ec + .sheet__note { margin-top: -2px; }
+  /* CK Hall: the black brush lettering on the white wall, the ON AIR sign over the door. */
+  .hall {
+    display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 18px; border-radius: 18px;
+    background: #FFFFFF; border: 1.5px solid rgb(22 22 28 / 0.12);
+  }
+  .hall__sign { width: 7.5rem; height: auto; }
+  .hall__lamp { display: grid; justify-items: end; gap: 6px; text-align: right; font-size: var(--sc-t-xs); color: var(--note-meta); max-width: 13rem; }
+  .hall .lamp { width: 6.5rem; height: 2rem; margin: 0; }
   .seatpick { display: grid; gap: 10px; padding: 12px; border-radius: 14px; background: var(--paper); border: 1.5px solid rgb(22 22 28 / 0.2); }
   .seatpick__title { margin: 0; font-weight: 650; }
   .seatpick__list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; max-height: 12rem; overflow: auto; }
@@ -377,6 +399,44 @@
   .pl__main[aria-disabled="true"] { background: var(--note-blue); cursor: default; }
   .pl__main:active:not([aria-disabled="true"]) { transform: scale(0.96); }
   .pl__label { margin: -6px 0 0; text-align: center; font-weight: 650; }
+  /* The frame's own marks, under the window as on the wall: SLANK, the YB tuning fork, OTAKK. */
+  .pl__brand { margin: 2px 6px -4px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .pl__brand img { width: auto; height: 17px; }
+  .pl__brand img:nth-child(2) { height: 25px; }
+  /* Repeat: off is a plain outline; on (next week already has this plan) it lights LED blue with a 1. */
+  .pl__btn { position: relative; }
+  #pl-repeat[data-on="true"] { color: #6CC4FF; background: rgb(0 150 252 / 0.18); box-shadow: 0 0 0 1.5px var(--player-led), 0 0 14px 2px rgb(0 150 252 / 0.55); }
+  #pl-repeat[data-on="true"] svg { filter: drop-shadow(0 0 4px rgb(0 150 252 / 0.9)); animation: repeatGlow 0.7s ease-out; }
+  #pl-repeat[data-on="true"]::after {
+    content: "1"; position: absolute; right: -3px; top: -3px; min-width: 17px; height: 17px; padding: 0 3px; border-radius: 9px;
+    display: grid; place-items: center; background: var(--player-led); color: #FFFFFF; font-size: 11px; font-weight: 800; line-height: 1;
+    box-shadow: 0 0 0 2px var(--player), 0 0 8px rgb(0 150 252 / 0.9);
+  }
+  @keyframes repeatGlow { 0% { transform: scale(0.8) rotate(-90deg); filter: drop-shadow(0 0 0 transparent); } 60% { transform: scale(1.15); } 100% { transform: none; } }
+  @media (prefers-reduced-motion: reduce) { #pl-repeat[data-on="true"] svg { animation: none; } }
+  /* The Hongsam Ball tiger runs the trip line while you are on the way, and waits at the end once you arrive. */
+  .pl__line:not([data-trip="none"]) .pl__knob {
+    width: 46px; height: 19px; translate: -78% -62%; border-radius: 0; background: url(assets/lion.webp) center / contain no-repeat;
+    filter: drop-shadow(0 0 5px rgb(255 229 0 / 0.75));
+  }
+  .pl__line:not([data-trip="none"]) .pl__fill { background: var(--tiger); box-shadow: 0 0 8px rgb(255 229 0 / 0.6); }
+  /* Arrived: the window says what the wall by the door says. */
+  .pl__welcome { display: grid; justify-items: center; gap: 2px; padding: 6px 0 2px; }
+  .pl__welcome img { width: min(78%, 17rem); height: auto; }
+  .pl__welcome .pl__welcome-tiger { width: min(46%, 10rem); margin-top: -10px; filter: drop-shadow(0 0 10px rgb(255 229 0 / 0.7)); }
+  /* Wide screens: the player stands against the navy wall with 홍삼볼 painted on it. */
+  .pl-stage { display: grid; gap: 16px; }
+  .pl-wall { display: none; }
+  @media (min-width: 760px) {
+    .sheet[data-view="arrivals"] { width: min(50rem, calc(100vw - 32px)); }
+    .pl-stage { grid-template-columns: 10.5rem minmax(0, 1fr); align-items: stretch; }
+    .pl-wall {
+      display: grid; grid-template-rows: 1fr auto; justify-items: center; gap: 14px; padding: 22px 14px 18px; border-radius: 22px;
+      background: var(--hq-navy); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.05);
+    }
+    .pl-wall__hongsam { width: 100%; max-width: 7.5rem; height: 100%; max-height: 26rem; object-fit: contain; align-self: center; }
+    .pl-wall__name { width: 100%; height: auto; opacity: 0.92; }
+  }
 
   /* The small player under the sign: your next office day at a glance. */
   .sign__you .miniplayer {
@@ -972,7 +1032,8 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
               <h3 id="detail-title"></h3>
               <p class="sheet__note" id="detail-when"></p>
               <p class="sheet__note" id="detail-note" hidden></p>
-              <div class="table" id="detail-table" hidden></div>
+              <div class="ec" id="detail-ec" hidden><img class="ec__sign" src="assets/energy-corner.webp" width="720" height="370" alt="Energy Corner"><div class="table" id="detail-table" hidden></div></div>
+              <div class="hall" id="detail-hall" hidden><img class="hall__sign" src="assets/ck-hall.webp" width="520" height="414" alt="CK Hall"><span class="hall__lamp"><span class="lamp" id="detail-hall-lamp" aria-hidden="true">ON AIR</span><span id="detail-hall-say"></span></span></div>
               <div class="seatpick" id="detail-pick" hidden>
                 <p class="seatpick__title" id="detail-pick-title"></p>
                 <div class="field"><label for="detail-pick-q">Find a name</label><input id="detail-pick-q" autocomplete="off" maxlength="60" placeholder="Type a name"></div>
@@ -1006,7 +1067,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
               <div class="field"><label for="book-note">Note <span>(optional)</span></label><textarea id="book-note" maxlength="600" rows="2"></textarea></div>
               <fieldset class="seats" id="book-seats">
                 <legend>Who sits where <span>(optional)</span></legend>
-                <div class="table" id="book-table"></div>
+                <div class="ec"><img class="ec__sign" src="assets/energy-corner.webp" width="720" height="370" alt="Energy Corner"><div class="table" id="book-table"></div></div>
                 <p class="sheet__note" id="book-seats-note">Chair 1 is you, the host. Tap a chair to seat someone: booking sends them the invite.</p>
                 <div class="seatpick" id="book-pick" hidden>
                   <p class="seatpick__title" id="book-pick-title"></p>
@@ -1019,6 +1080,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
                   </div>
                 </div>
               </fieldset>
+              <div class="hall" id="book-hall" hidden><img class="hall__sign" src="assets/ck-hall.webp" width="520" height="414" alt="CK Hall"><span class="hall__lamp"><span class="lamp" aria-hidden="true">ON AIR</span><span>The lamp lights once the hall operator confirms.</span></span></div>
               <fieldset class="choices" id="book-invite"><legend>Invite <span>(optional)</span></legend></fieldset>
               <div class="row"><button type="submit" class="btn btn--primary" id="book-submit">Book</button></div>
               <p class="sheet__msg" id="book-msg" role="status" aria-live="polite"></p>
@@ -1036,6 +1098,8 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
 
       <!-- Office days: the lounge's music player. One weekday at a time, today through two weeks. -->
       <section id="arr-panel" aria-label="Office days" hidden>
+        <div class="pl-stage">
+        <div class="pl-wall" aria-hidden="true"><img class="pl-wall__hongsam" src="assets/hongsam-vertical.webp" width="332" height="900" alt=""><img class="pl-wall__name" src="assets/shin-tae-yong.webp" width="600" height="61" alt=""></div>
         <div class="player" id="player">
           <div class="pl__window" id="pl-window" data-status="none">
             <p class="pl__day"><strong id="pl-day"></strong><span id="pl-date"></span><span class="pl__today" id="pl-today" hidden>Today</span></p>
@@ -1050,19 +1114,22 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
                 <div class="field"><label for="arr-note">Note <span>(optional)</span></label><input id="arr-note" maxlength="280" placeholder="From 10, after the shoot…"></div>
               </div>
             </form>
+            <div class="pl__welcome" id="pl-welcome" hidden><img src="assets/come-back-strong.webp" width="640" height="530" alt="Step in. Come back strong."><img class="pl__welcome-tiger" src="assets/lion.webp" width="480" height="193" alt=""></div>
             <p class="pl__count" id="pl-count"></p>
           </div>
+          <p class="pl__brand" aria-hidden="true"><img src="assets/pl-slank.webp" width="313" height="72" alt=""><img src="assets/pl-yb.webp" width="71" height="72" alt=""><img src="assets/pl-otakk.webp" width="231" height="72" alt=""></p>
           <ol class="pl__days" id="pl-days" aria-label="Weekdays"></ol>
-          <div class="pl__line" id="pl-line" aria-hidden="true"><span class="pl__fill"></span><span class="pl__knob"></span></div>
+          <div class="pl__line" id="pl-line" aria-hidden="true" data-trip="none"><span class="pl__fill"></span><span class="pl__knob"></span></div>
           <p class="pl__times"><span id="pl-left"></span><span id="pl-eta"></span></p>
           <div class="pl__controls">
             <button type="button" class="pl__btn" id="pl-who" aria-label="Who's in this day"><svg aria-hidden="true"><use href="#i-people"/></svg></button>
             <button type="button" class="pl__btn" id="pl-prev" aria-label="Previous weekday"><svg aria-hidden="true"><use href="#i-prev"/></svg></button>
             <button type="button" class="pl__main" id="pl-main" aria-describedby="pl-main-label"><svg aria-hidden="true"><use href="#i-play" id="pl-main-icon"/></svg></button>
             <button type="button" class="pl__btn" id="pl-next" aria-label="Next weekday"><svg aria-hidden="true"><use href="#i-next"/></svg></button>
-            <button type="button" class="pl__btn" id="pl-repeat" aria-label="Same plan next week"><svg aria-hidden="true"><use href="#i-repeat"/></svg></button>
+            <button type="button" class="pl__btn" id="pl-repeat" aria-label="Same plan next week" data-on="false"><svg aria-hidden="true"><use href="#i-repeat"/></svg></button>
           </div>
           <p class="pl__label" id="pl-main-label" aria-hidden="true"></p>
+        </div>
         </div>
         <h3 id="arr-title" tabindex="-1"></h3>
         <ul class="slots" id="arr-list" aria-labelledby="arr-title"></ul>
@@ -2439,7 +2506,6 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     $('pl-badge').textContent = me ? line.badge : 'Pick your name';
     $('pl-detail').textContent = me ? line.detail : 'to plan your office days';
     $('pl-undo').hidden = !(isToday && (st === 'way' || st === 'arrived'));
-    $('arr-form').hidden = !me;
     $('arr-yes').setAttribute('aria-pressed', String(st === 'coming' || st === 'way' || st === 'arrived'));
     $('arr-no').setAttribute('aria-pressed', String(st === 'not'));
     var key = d + '|' + (mine ? mine.updatedAt : '');
@@ -2475,9 +2541,12 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     $('pl-next').setAttribute('aria-disabled', String(at < 0 || at >= days.length - 1));
     var nextWeek = rooms.addDays(d, 7);
     var canRepeat = !!mine && rooms.isOfficeDay(nextWeek);
+    var repeated = canRepeat && samePlan(mine, rooms.myPlan(nextWeek));
+    var nwName = dayName.format(rooms.dayStart(nextWeek)) + ' ' + dayDate.format(rooms.dayStart(nextWeek));
     $('pl-repeat').setAttribute('aria-disabled', String(!canRepeat));
-    $('pl-repeat').setAttribute('aria-label', 'Same plan next week, ' + dayName.format(rooms.dayStart(nextWeek)) + ' ' + dayDate.format(rooms.dayStart(nextWeek)) +
-      (canRepeat ? '' : mine ? ' (past the two-week plan)' : ' (make a plan first)'));
+    $('pl-repeat').dataset.on = String(repeated);
+    $('pl-repeat').setAttribute('aria-label', repeated ? 'Repeated on ' + nwName + '. Go to that day'
+      : 'Same plan next week, ' + nwName + (canRepeat ? '' : mine ? ' (past the two-week plan)' : ' (make a plan first)'));
 
     /* the trip line: on the way, from leaving to the time you said */
     var travelling = isToday && (st === 'way' || st === 'arrived');
@@ -2501,6 +2570,10 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
       lineEl.setAttribute('aria-hidden', 'true');
     }
     lineEl.style.setProperty('--p', (p * 100).toFixed(1) + '%');
+    lineEl.setAttribute('data-trip', travelling ? st : 'none');
+    var welcome = isToday && st === 'arrived';
+    $('pl-welcome').hidden = !welcome;
+    $('arr-form').hidden = !me || welcome;
 
     var step = mainStep(mine, d);
     var main = $('pl-main');
@@ -2541,6 +2614,10 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     $('arr-empty').hidden = plans.length > 0;
   }
   var mainRun = null;
+  /* Next week already says the same: the repeat button is lit. */
+  function samePlan(a, b) {
+    return !!a && !!b && a.coming === b.coming && (a.arriveAt || null) === (b.arriveAt || null) && (a.note || null) === (b.note || null);
+  }
 
   /* The small player under the sign: your next office day. */
   function paintMini() {
@@ -2712,6 +2789,13 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     var canInvite = !!me && !over && (mine || !!invite);
     var seated = b.room === 'black_box';
     $('detail-table').hidden = !seated;
+    $('detail-ec').hidden = !seated;
+    $('detail-hall').hidden = b.room !== 'ck_hall';
+    if (b.room === 'ck_hall') {
+      var air = rooms.ckHallOnAir(), lit = !!air && air.id === b.id;
+      $('detail-hall-lamp').classList[lit ? 'add' : 'remove']('is-on');
+      $('detail-hall-say').textContent = lit ? 'On air now.' : b.status === 'requested' ? 'Lights once the hall operator confirms.' : b.status === 'confirmed' ? 'Lights when the booking starts.' : 'Off.';
+    }
     if (seated) {
       if (picking && picking.where === 'detail' && (!canInvite || (picking.booking && picking.booking !== b.id))) picking = null;
       var seats = {}, sit = seating(b);
@@ -2765,6 +2849,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     $('book-submit').textContent = room === 'black_box' ? 'Book' : 'Send request';
     $('book-seats').hidden = room !== 'black_box';
     $('book-invite').hidden = room === 'black_box';
+    $('book-hall').hidden = room !== 'ck_hall';
     choices($('book-invite'), me ? [me.id] : []);
     if (room === 'black_box') paintBookTable();
     else if (picking && picking.where === 'book') picking = null;
@@ -3013,6 +3098,12 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
   $('pl-repeat').addEventListener('click', function () {
     if (this.getAttribute('aria-disabled') === 'true') return;
     var to = rooms.addDays(plDay, 7);
+    if (this.dataset.on === 'true') {
+      plDay = to;
+      say($('sheet-msg'), dayName.format(rooms.dayStart(to)) + ' ' + dayDate.format(rooms.dayStart(to)) + ' already has this plan.', 'ok');
+      paintSheet();
+      return;
+    }
     rooms.repeatDay(plDay).then(function () {
       say($('sheet-msg'), 'Same plan on ' + dayName.format(rooms.dayStart(to)) + ' ' + dayDate.format(rooms.dayStart(to)) + '.', 'ok');
     }, function (err) { say($('sheet-msg'), refusal(err), 'error'); });

@@ -430,6 +430,11 @@ Supporting motion, not engineered: notes stagger in once (45ms apart, 14px rise,
 ### Office-days player (asset exception)
 The player follows the music-player design Draven supplied: navy `#0E194F` body, LED blue `#0096FC` edge glow, soft blue `#B9C6F2` for secondary text, black window with the day, a status chip (yellow spark for On the way, note blue for Arrived), a weekday strip, a trip line, and prev / main / next / repeat controls. These three colors and the edge glow belong to this one card only and are an accepted exception to the single palette and the LED-only glow rule.
 
+Repeat states: off is the plain icon; on (next week matches) lights LED blue with a glowing ring and a "1" badge. The frame's SLANK · YB · OTAKK marks sit between the window and the weekday strip. On the way, the trip line turns tiger yellow `#FFE500` and the Hongsam Ball tiger is the knob; arrived, the window shows STEP IN. COME BACK STRONG with the tiger. On screens 760px and wider the player stands against the painted navy `#222D66` with 홍삼볼 and SHIN TAE YONG.
+
+### Room signage
+Energy Corner (dark stone `#232428`, white brush lettering with a soft glow) frames the Black Box table. CK Hall: white panel, black brush lettering, the supplied ON AIR sign, shown grey (grayscale, dimmed) when unlit and in full colour only while a confirmed booking is live. These marks are user-supplied images, never re-set in type.
+
 ### Black Box round table
 The booking form and the booking card show the table image (`assets/black-box-table.webp`) with eight chairs placed clockwise from the top. Chair states: free (dashed), host, invited (outline), accepted (solid), chosen (focus). Tapping a free chair opens a name picker with search and "add a name".
 

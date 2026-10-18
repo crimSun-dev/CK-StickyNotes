@@ -31,7 +31,7 @@ The navigation is the painted wayfinding already on the corridor wall. A note is
 - A private collaboration tool, not a marketing page.
 - Used standing in the headquarters or seated in the Creative Episode lounge, on phones and laptops.
 - Ideas arrive in mixed languages (Indonesian, English, Korean).
-- Rooms on the corridor sign, with arrow directions: Founder & Story Producer (up), Black Box (up), CK Hall (left), Creative Episode (left), GM (right), The M-Lab (right). Creative Episode is the open room. The others appear as the map and do not navigate to fake pages. The M-Lab may carry "Money Lab" in a title attribute or a quiet status, and opens no finance tool. Energy Corner exists in the building but is not on the sign and stays off this page.
+- Rooms on the corridor sign, with arrow directions: Founder & Story Producer (up), Black Box (up), CK Hall (left), Creative Episode (left), GM (right), The M-Lab (right). Creative Episode is the open room. The others appear as the map and do not navigate to fake pages. The M-Lab may carry "Money Lab" in a title attribute or a quiet status, and opens no finance tool. Energy Corner is not on the sign; since 2026-10-18 (Draven's request) its lettering marks the Black Box table, because the table stands in it.
 
 ## Capabilities and Constraints
 
@@ -41,6 +41,7 @@ Does:
 - Edits and deletes a note.
 - A shared whiteboard (added 2026-10-16 at Draven's request): freehand drawing with black and blue markers, a stroke eraser, undo and clear. Ink appears at once and saves to Neon in the background; if a save fails the lines stay on screen and the status says how many are not saved yet, with Retry. Clear is one tap and clears the board for everyone; Undo brings it back. On touch screens nothing draws until a marker is picked, so the page still scrolls.
 - Rooms (added 2026-10-18 at Draven's request). Black Box is booked as a round table: the host takes chair 1 and puts each attendee on one of chairs 2 to 8 (a chair is an invite; one person per chair, seven guests at most). A declined invite frees its chair. CK Hall keeps the plain invite list and has no chairs.
+- Room signage (added 2026-10-18 at Draven's request), all supplied artwork: the Black Box table sits under the ENERGY CORNER lettering on a dark wall; CK Hall shows its brush lettering and the real ON AIR sign (unlit grey until a confirmed booking is live). The Office days player carries the frame's SLANK, YB and OTAKK marks, stands against a navy wall with 홍삼볼 and the SHIN TAE YONG wordmark (wide screens only), shows the Hongsam Ball tiger running the trip line, and says STEP IN. COME BACK STRONG once you arrive. Repeat lights LED blue with a 1 when next week already has the same plan; pressing it then goes to that day.
 - Office days (added 2026-10-18): a player-style card for weekdays only, up to 14 days ahead. Each person sets Coming in or Not coming, an optional arrive-by time and note; Repeat copies the day to the same weekday next week. On the day itself, On my way and I've arrived fill a trip line (left, ETA, arrived). Only "Coming in" notifies followers. A mini player on the sign shows today's state.
 - Saves a note with no color.
 - Real empty, saving, saved, and failed states.
